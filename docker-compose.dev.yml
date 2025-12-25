@@ -35,6 +35,10 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: 60
       ADMIN_DEFAULT_EMAIL: admin@meditrack.com
       ADMIN_DEFAULT_PASSWORD: ChangeMe123!
+<<<<<<< HEAD
+=======
+      EMAIL_ENABLED: "false"
+>>>>>>> v2
     volumes:
       - ./backend/app:/app/app
       - ./backend/alembic:/app/alembic

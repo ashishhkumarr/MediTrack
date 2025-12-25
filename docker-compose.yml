@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 version: "3.9"
 
+=======
+>>>>>>> v2
 services:
   db:
     image: postgres:15
@@ -34,6 +37,10 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: 60
       ADMIN_DEFAULT_EMAIL: admin@meditrack.com
       ADMIN_DEFAULT_PASSWORD: ChangeMe123!
+<<<<<<< HEAD
+=======
+      EMAIL_ENABLED: "false"
+>>>>>>> v2
     ports:
       - "8000:8000"
     depends_on:

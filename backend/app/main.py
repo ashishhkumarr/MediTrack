@@ -3,8 +3,14 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+<<<<<<< HEAD
 
 from app.api.v1 import appointments, auth, patients, users
+=======
+from sqlalchemy import DateTime, String, Text, inspect, text
+
+from app.api.v1 import appointments, auth, patients, reminders, users
+>>>>>>> v2
 from app.core.config import settings
 from app.core.security import get_password_hash
 from app.db import base  # noqa: F401 ensures models imported
@@ -14,6 +20,42 @@ from app.services.reminder_service import scheduler
 
 logger = logging.getLogger("meditrack")
 
+<<<<<<< HEAD
+=======
+def ensure_schema_columns():
+    inspector = inspect(engine)
+    existing_tables = set(inspector.get_table_names())
+    desired_columns = {
+        "patients": [
+            ("first_name", String()),
+            ("last_name", String()),
+            ("sex", String()),
+            ("address", Text()),
+        ],
+        "appointments": [
+            ("appointment_end_datetime", DateTime()),
+            ("reminder_sent_at", DateTime()),
+        ],
+    }
+
+    with engine.begin() as connection:
+        for table_name, columns in desired_columns.items():
+            if table_name not in existing_tables:
+                continue
+            existing_columns = {
+                column["name"] for column in inspector.get_columns(table_name)
+            }
+            for column_name, column_type in columns:
+                if column_name in existing_columns:
+                    continue
+                column_sql = column_type.compile(dialect=connection.dialect)
+                connection.execute(
+                    text(
+                        f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_sql}"
+                    )
+                )
+
+>>>>>>> v2
 
 def create_default_admin():
     try:
@@ -42,6 +84,10 @@ def create_default_admin():
 async def lifespan(app: FastAPI):
     try:
         base.Base.metadata.create_all(bind=engine)
+<<<<<<< HEAD
+=======
+        ensure_schema_columns()
+>>>>>>> v2
         create_default_admin()
     except Exception as exc:  # pragma: no cover - keeps app booting during migrations/tests
         logger.warning("Database bootstrap skipped: %s", exc)
@@ -71,6 +117,10 @@ app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(users.router, prefix=settings.API_V1_STR)
 app.include_router(patients.router, prefix=settings.API_V1_STR)
 app.include_router(appointments.router, prefix=settings.API_V1_STR)
+<<<<<<< HEAD
+=======
+app.include_router(reminders.router, prefix=settings.API_V1_STR)
+>>>>>>> v2
 
 
 @app.get("/")

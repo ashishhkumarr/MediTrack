@@ -9,8 +9,13 @@ interface SectionHeaderProps {
 export const SectionHeader = ({ title, description, action }: SectionHeaderProps) => (
   <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
     <div>
+<<<<<<< HEAD
       <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
       {description && <p className="text-sm text-slate-500">{description}</p>}
+=======
+      <h2 className="text-lg font-semibold text-text">{title}</h2>
+      {description && <p className="text-sm text-text-muted">{description}</p>}
+>>>>>>> v2
     </div>
     {action}
   </div>

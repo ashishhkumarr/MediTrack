@@ -57,7 +57,11 @@ const EditProfilePage = () => {
   };
 
   return (
+<<<<<<< HEAD
     <Card className="animate-fadeIn">
+=======
+    <Card className="animate-fadeUp">
+>>>>>>> v2
       <SectionHeader
         title="Profile settings"
         description="Maintain accurate information for secure clinic communication."
@@ -68,7 +72,11 @@ const EditProfilePage = () => {
           name="full_name"
           value={formState.full_name}
           onChange={handleChange}
+<<<<<<< HEAD
       />
+=======
+        />
+>>>>>>> v2
         <InputField label="Phone number" name="phone" value={formState.phone} onChange={handleChange} />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Button type="submit" disabled={mutation.isPending} className="w-full justify-center py-3 sm:w-auto">
@@ -84,7 +92,11 @@ const EditProfilePage = () => {
           </Button>
         </div>
         {mutation.isSuccess && (
+<<<<<<< HEAD
           <p className="text-sm text-accent-emerald">Profile updated successfully.</p>
+=======
+          <p className="text-sm text-success">Profile updated successfully.</p>
+>>>>>>> v2
         )}
       </form>
     </Card>

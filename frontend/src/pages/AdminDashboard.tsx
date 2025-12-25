@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 import {
   ClipboardDocumentCheckIcon,
   ClipboardDocumentListIcon,
   HeartIcon,
   UserGroupIcon
 } from "@heroicons/react/24/outline";
+=======
+import { ArrowUpRight, CheckCircle, ClipboardList, Users } from "lucide-react";
+>>>>>>> v2
 import { useNavigate } from "react-router-dom";
 
 import { AppointmentCard } from "../components/AppointmentCard";
@@ -38,7 +42,11 @@ const AdminDashboard = () => {
   ];
 
   return (
+<<<<<<< HEAD
     <div className="space-y-8">
+=======
+    <div className="space-y-8 animate-fadeUp">
+>>>>>>> v2
       <SectionHeader
         title="Clinical Command Center"
         description="Monitor patient volume, appointments, and take quick action."
@@ -51,6 +59,7 @@ const AdminDashboard = () => {
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="flex items-center gap-4">
+<<<<<<< HEAD
           <div className="rounded-2xl bg-brand/10 p-3 text-brand">
             <UserGroupIcon className="h-6 w-6" />
           </div>
@@ -75,6 +84,32 @@ const AdminDashboard = () => {
           <div>
             <p className="text-sm text-slate-500">Completed Today</p>
             <p className="text-3xl font-semibold text-slate-900">{completedCount}</p>
+=======
+          <div className="rounded-2xl bg-primary-soft/80 p-3 text-primary">
+            <Users className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-sm text-text-muted">Active Patients</p>
+            <p className="text-3xl font-semibold text-text">{patients?.length ?? 0}</p>
+          </div>
+        </Card>
+        <Card className="flex items-center gap-4">
+          <div className="rounded-2xl bg-secondary-soft/80 p-3 text-secondary">
+            <ClipboardList className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-sm text-text-muted">Scheduled Visits</p>
+            <p className="text-3xl font-semibold text-text">{scheduledCount}</p>
+          </div>
+        </Card>
+        <Card className="flex items-center gap-4">
+          <div className="rounded-2xl bg-success-soft/80 p-3 text-success">
+            <CheckCircle className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-sm text-text-muted">Completed Today</p>
+            <p className="text-3xl font-semibold text-text">{completedCount}</p>
+>>>>>>> v2
           </div>
         </Card>
       </div>
@@ -87,7 +122,11 @@ const AdminDashboard = () => {
               <AppointmentCard key={appointment.id} appointment={appointment} />
             ))}
             {!appointments?.length && (
+<<<<<<< HEAD
               <p className="rounded-2xl bg-surface-subtle px-4 py-6 text-center text-sm text-slate-500">
+=======
+              <p className="rounded-2xl bg-surface-subtle px-4 py-6 text-center text-sm text-text-muted">
+>>>>>>> v2
                 No appointments scheduled.
               </p>
             )}
@@ -104,7 +143,11 @@ const AdminDashboard = () => {
                 onClick={() => navigate(action.to)}
               >
                 {action.label}
+<<<<<<< HEAD
                 <ClipboardDocumentListIcon className="h-4 w-4" />
+=======
+                <ArrowUpRight className="h-4 w-4" />
+>>>>>>> v2
               </Button>
             ))}
           </div>

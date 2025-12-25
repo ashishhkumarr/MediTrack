@@ -77,6 +77,30 @@ REMINDER_HOURS_BEFORE=24
 VITE_API_BASE_URL=http://localhost:8000/api/v1
 ```
 
+<<<<<<< HEAD
+=======
+## Dev Setup
+
+Backend (clean install):
+
+```bash
+cd backend
+rm -rf .venv
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+Frontend (clean install):
+
+```bash
+cd frontend
+rm -rf node_modules dist
+npm install
+cp .env.example .env
+```
+
+>>>>>>> v2
 ## Running Locally
 
 ### Backend
@@ -139,6 +163,15 @@ Services:
 
 Stop with `docker compose down` (add `-v` to wipe Postgres volume).
 
+<<<<<<< HEAD
+=======
+Dev reset workflow:
+
+```bash
+docker compose down -v && docker compose up --build
+```
+
+>>>>>>> v2
 ### Dev Hot-Reload (Docker)
 
 For live reload of both backend (uvicorn --reload) and frontend (Vite dev server) without rebuilding on every change:
@@ -184,6 +217,41 @@ All endpoints honor JWT bearer tokens (`Authorization: Bearer <token>`). Passwor
 
 On startup the backend auto-creates an admin using `ADMIN_DEFAULT_EMAIL` and `ADMIN_DEFAULT_PASSWORD` for local/dev. In production or normal flows, create a new admin/doctor from the `/signup` page, which issues a JWT and logs you in immediately.
 
+<<<<<<< HEAD
+=======
+## Deployment
+
+Required environment variables:
+
+- `DATABASE_URL`
+- `SECRET_KEY`
+- `ACCESS_TOKEN_EXPIRE_MINUTES`
+- `ADMIN_DEFAULT_EMAIL`
+- `ADMIN_DEFAULT_PASSWORD`
+- `EMAIL_ENABLED`
+
+Optional email variables (only needed when `EMAIL_ENABLED=true`):
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USERNAME` (or `SMTP_USER`)
+- `SMTP_PASSWORD`
+- `SMTP_FROM`
+- `SMTP_USE_TLS`
+
+Recommended production settings:
+
+- Use a strong `SECRET_KEY` and rotate default admin credentials after first login.
+- Point `DATABASE_URL` at a managed Postgres instance.
+- Restrict CORS origins in `backend/app/main.py`.
+- Keep `EMAIL_ENABLED=false` until SMTP is configured.
+
+Ports and URLs:
+
+- Backend: `http://<host>:8000` (`/api/v1` for API routes)
+- Frontend: `http://<host>:5173` (Dockerized production build via nginx)
+
+>>>>>>> v2
 ## AWS Deployment Guide
 
 1. **Provision EC2:** Launch Ubuntu 22.04 LTS, open ports 22, 80, 443 in the security group.
