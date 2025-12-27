@@ -1,9 +1,5 @@
 import { useState } from "react";
-<<<<<<< HEAD
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-=======
 import { Eye, EyeOff } from "lucide-react";
->>>>>>> v2
 
 import { ErrorState } from "../components/ErrorState";
 import { LoadingSpinner } from "../components/LoadingSpinner";
@@ -100,11 +96,7 @@ const ChangePasswordPage = () => {
     value: string,
     errorMessage?: string
   ) => (
-<<<<<<< HEAD
-    <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-=======
     <label className="flex flex-col gap-2 text-sm font-medium text-text">
->>>>>>> v2
       {label}
       <div className="relative">
         <input
@@ -112,19 +104,6 @@ const ChangePasswordPage = () => {
           name={name}
           value={value}
           onChange={handleChange}
-<<<<<<< HEAD
-          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 pr-12 text-sm shadow-sm transition-all duration-200 placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
-        />
-        <button
-          type="button"
-          className="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-brand"
-          onClick={() => toggleVisibility(name)}
-        >
-          {show[name] ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
-        </button>
-      </div>
-      {errorMessage && <span className="text-xs text-accent-rose">{errorMessage}</span>}
-=======
           className="w-full rounded-2xl border border-border bg-surface px-4 py-3 pr-12 text-sm text-text shadow-sm transition-all duration-200 placeholder:text-text-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
         <button
@@ -136,16 +115,11 @@ const ChangePasswordPage = () => {
         </button>
       </div>
       {errorMessage && <span className="text-xs text-danger">{errorMessage}</span>}
->>>>>>> v2
     </label>
   );
 
   return (
-<<<<<<< HEAD
-    <Card className="animate-fadeIn">
-=======
     <Card className="animate-fadeUp">
->>>>>>> v2
       <SectionHeader
         title="Change password"
         description="Set a new password after verifying your current one."
@@ -160,17 +134,11 @@ const ChangePasswordPage = () => {
           errors.confirm_new_password
         )}
         {apiError && (
-<<<<<<< HEAD
-          <div className="rounded-2xl bg-accent-rose/10 px-4 py-3 text-sm text-accent-rose">{apiError}</div>
-        )}
-        {success && <div className="rounded-2xl bg-accent-emerald/10 px-4 py-3 text-sm text-accent-emerald">{success}</div>}
-=======
           <div className="rounded-2xl bg-danger-soft/80 px-4 py-3 text-sm text-danger">{apiError}</div>
         )}
         {success && (
           <div className="rounded-2xl bg-success-soft/80 px-4 py-3 text-sm text-success">{success}</div>
         )}
->>>>>>> v2
         <Button type="submit" className="w-full justify-center py-3" isLoading={submitting}>
           {submitting ? "Updating..." : "Change Password"}
         </Button>

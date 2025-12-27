@@ -1,34 +1,18 @@
-<<<<<<< HEAD
-import { useEffect, useState } from "react";
-
-import { Button } from "./ui/Button";
-import { InputField, TextAreaField } from "./ui/FormField";
-import { AppointmentStatus } from "../services/appointments";
-=======
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "./ui/Button";
 import { InputField, TextAreaField } from "./ui/FormField";
->>>>>>> v2
 import { Patient } from "../services/patients";
 
 interface Props {
   patients: Patient[];
   onSubmit: (values: {
     patient_id: number;
-<<<<<<< HEAD
-    doctor_name: string;
-    department?: string;
-    appointment_datetime: string;
-    notes?: string;
-    status: AppointmentStatus;
-=======
     doctor_name?: string;
     department?: string;
     appointment_datetime: string;
     appointment_end_datetime?: string;
     notes?: string;
->>>>>>> v2
   }) => Promise<void> | void;
   isSubmitting?: boolean;
 }
@@ -36,14 +20,6 @@ interface Props {
 export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => {
   const [formState, setFormState] = useState({
     patient_id: patients[0]?.id ?? 0,
-<<<<<<< HEAD
-    doctor_name: "",
-    department: "",
-    appointment_datetime: "",
-    notes: "",
-    status: "Scheduled" as AppointmentStatus
-  });
-=======
     appointment_datetime: "",
     appointment_end_datetime: "",
     doctor_name: "",
@@ -52,7 +28,6 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
->>>>>>> v2
 
   useEffect(() => {
     if (patients.length) {
@@ -60,8 +35,6 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
     }
   }, [patients]);
 
-<<<<<<< HEAD
-=======
   const filteredPatients = useMemo(() => {
     const trimmed = searchTerm.trim().toLowerCase();
     if (!trimmed) return patients;
@@ -73,7 +46,6 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
     });
   }, [patients, searchTerm]);
 
->>>>>>> v2
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -81,10 +53,6 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
     setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
-<<<<<<< HEAD
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-=======
   const validate = () => {
     const nextErrors: Record<string, string> = {};
     if (!formState.patient_id) {
@@ -107,32 +75,11 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validate()) return;
->>>>>>> v2
     await onSubmit(formState);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-<<<<<<< HEAD
-      <label className="text-sm font-medium text-slate-600">
-        Patient
-        <select
-          name="patient_id"
-          value={formState.patient_id}
-          onChange={handleChange}
-          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
-        >
-          {patients.map((patient) => (
-            <option key={patient.id} value={patient.id}>
-              {patient.full_name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <div className="grid gap-4 md:grid-cols-2">
-        <InputField
-          label="Doctor"
-=======
       <div className="space-y-3">
         <InputField
           label="Search patients"
@@ -182,61 +129,19 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
         />
         <InputField
           label="Doctor (optional)"
->>>>>>> v2
           name="doctor_name"
           value={formState.doctor_name}
           onChange={handleChange}
           placeholder="Dr. Adams"
-<<<<<<< HEAD
-          required
-        />
-        <InputField
-          label="Department"
-=======
         />
         <InputField
           label="Department (optional)"
->>>>>>> v2
           name="department"
           value={formState.department}
           onChange={handleChange}
           placeholder="Cardiology"
         />
       </div>
-<<<<<<< HEAD
-      <InputField
-        label="Appointment Date & Time"
-        type="datetime-local"
-        name="appointment_datetime"
-        value={formState.appointment_datetime}
-        onChange={handleChange}
-        required
-      />
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="text-sm font-medium text-slate-600">
-          Status
-          <select
-            name="status"
-            value={formState.status}
-            onChange={handleChange}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
-          >
-            <option value="Scheduled">Scheduled</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-        </label>
-        <TextAreaField
-          label="Visit Notes"
-          name="notes"
-          value={formState.notes}
-          onChange={handleChange}
-          placeholder="Add patient prep instructions or key reminders…"
-        />
-      </div>
-      <Button type="submit" className="w-full justify-center py-3" isLoading={isSubmitting}>
-        {isSubmitting ? "Scheduling..." : "Schedule Appointment"}
-=======
       <TextAreaField
         label="Notes (optional)"
         name="notes"
@@ -246,7 +151,6 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
       />
       <Button type="submit" className="w-full justify-center py-3" isLoading={isSubmitting}>
         {isSubmitting ? "Scheduling..." : "Schedule appointment"}
->>>>>>> v2
       </Button>
     </form>
   );

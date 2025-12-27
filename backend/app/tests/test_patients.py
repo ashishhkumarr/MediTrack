@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-from datetime import date
-
-=======
 from datetime import date, datetime, timedelta
 
 from app.models.appointment import Appointment, AppointmentStatus
->>>>>>> v2
 from app.models.patient import Patient
 
 from .test_auth import get_admin_headers
@@ -47,8 +42,6 @@ def test_admin_can_view_patient_details(client, db_session):
 def test_patient_routes_require_authentication(client):
     response = client.get("/api/v1/patients/")
     assert response.status_code == 401
-<<<<<<< HEAD
-=======
 
 
 def test_admin_can_update_patient_notes(client, db_session):
@@ -93,4 +86,3 @@ def test_admin_can_export_patient_record_pdf(client, db_session):
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert len(response.content) > 1000
->>>>>>> v2

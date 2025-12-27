@@ -1,25 +1,11 @@
-<<<<<<< HEAD
-import { useNavigate } from "react-router-dom";
-
-import { AppointmentCard } from "../components/AppointmentCard";
-=======
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 
->>>>>>> v2
 import { ErrorState } from "../components/ErrorState";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
-<<<<<<< HEAD
-import { SectionHeader } from "../components/ui/SectionHeader";
-import { useAppointments } from "../hooks/useAppointments";
-
-const AppointmentListPage = () => {
-  const { data, isLoading, error } = useAppointments();
-  const navigate = useNavigate();
-=======
 import { InputField, TextAreaField } from "../components/ui/FormField";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import {
@@ -253,38 +239,16 @@ const AppointmentListPage = () => {
       setActionError(getApiErrorMessage(completeError));
     }
   };
->>>>>>> v2
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorState message="Unable to fetch appointments." />;
 
   return (
-<<<<<<< HEAD
-    <Card className="animate-fadeIn">
-=======
     <Card className="animate-fadeUp space-y-5">
->>>>>>> v2
       <SectionHeader
         title="Appointments overview"
         description="Every scheduled visit across the clinic."
         action={
-<<<<<<< HEAD
-          <Button onClick={() => navigate("/appointments/create")} className="shadow-card">
-            Create appointment
-          </Button>
-        }
-      />
-      <div className="grid gap-4 md:grid-cols-2">
-        {data?.map((appointment) => (
-          <AppointmentCard key={appointment.id} appointment={appointment} />
-        ))}
-        {!data?.length && (
-          <p className="rounded-2xl bg-surface-subtle px-4 py-6 text-center text-sm text-slate-500">
-            No appointments scheduled yet.
-          </p>
-        )}
-      </div>
-=======
           <div className="flex flex-wrap items-center gap-3">
             <label className="flex items-center gap-2 text-sm text-text-muted">
               <input
@@ -583,7 +547,6 @@ const AppointmentListPage = () => {
           </div>,
           document.body
         )}
->>>>>>> v2
     </Card>
   );
 };

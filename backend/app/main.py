@@ -3,14 +3,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-<<<<<<< HEAD
-
-from app.api.v1 import appointments, auth, patients, users
-=======
 from sqlalchemy import DateTime, String, Text, inspect, text
 
 from app.api.v1 import appointments, auth, patients, reminders, users
->>>>>>> v2
 from app.core.config import settings
 from app.core.security import get_password_hash
 from app.db import base  # noqa: F401 ensures models imported
@@ -20,8 +15,6 @@ from app.services.reminder_service import scheduler
 
 logger = logging.getLogger("meditrack")
 
-<<<<<<< HEAD
-=======
 def ensure_schema_columns():
     inspector = inspect(engine)
     existing_tables = set(inspector.get_table_names())
@@ -55,7 +48,6 @@ def ensure_schema_columns():
                     )
                 )
 
->>>>>>> v2
 
 def create_default_admin():
     try:
@@ -84,10 +76,7 @@ def create_default_admin():
 async def lifespan(app: FastAPI):
     try:
         base.Base.metadata.create_all(bind=engine)
-<<<<<<< HEAD
-=======
         ensure_schema_columns()
->>>>>>> v2
         create_default_admin()
     except Exception as exc:  # pragma: no cover - keeps app booting during migrations/tests
         logger.warning("Database bootstrap skipped: %s", exc)
@@ -117,10 +106,7 @@ app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(users.router, prefix=settings.API_V1_STR)
 app.include_router(patients.router, prefix=settings.API_V1_STR)
 app.include_router(appointments.router, prefix=settings.API_V1_STR)
-<<<<<<< HEAD
-=======
 app.include_router(reminders.router, prefix=settings.API_V1_STR)
->>>>>>> v2
 
 
 @app.get("/")

@@ -1,8 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-<<<<<<< HEAD
-import { Appointment, createAppointment, fetchAppointments } from "../services/appointments";
-=======
 import {
   Appointment,
   AppointmentUpdatePayload,
@@ -12,7 +9,6 @@ import {
   fetchAppointments,
   updateAppointment
 } from "../services/appointments";
->>>>>>> v2
 
 export const useAppointments = () => {
   return useQuery<Appointment[]>({
@@ -30,8 +26,6 @@ export const useCreateAppointment = () => {
     }
   });
 };
-<<<<<<< HEAD
-=======
 
 export const useUpdateAppointment = () => {
   const queryClient = useQueryClient();
@@ -68,4 +62,3 @@ export const useCompleteAppointment = () => {
     }
   });
 };
->>>>>>> v2

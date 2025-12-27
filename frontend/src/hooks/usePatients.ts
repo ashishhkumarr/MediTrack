@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import { useQuery } from "@tanstack/react-query";
-
-import { Patient, fetchPatient, fetchPatients } from "../services/patients";
-=======
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -15,7 +10,6 @@ import {
   fetchPatients,
   updatePatientNotes
 } from "../services/patients";
->>>>>>> v2
 
 export const usePatients = () => {
   return useQuery<Patient[]>({
@@ -31,8 +25,6 @@ export const usePatient = (patientId: number) => {
     enabled: !!patientId
   });
 };
-<<<<<<< HEAD
-=======
 
 export const usePatientAppointments = (patientId: number) => {
   return useQuery({
@@ -68,4 +60,3 @@ export const useUpdatePatientNotes = () => {
     }
   });
 };
->>>>>>> v2

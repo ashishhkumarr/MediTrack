@@ -14,16 +14,10 @@ class AppointmentStatus(str, Enum):
 
 class AppointmentBase(BaseModel):
     patient_id: int
-<<<<<<< HEAD
-    doctor_name: str
-    department: str | None = None
-    appointment_datetime: datetime
-=======
     doctor_name: str | None = None
     department: str | None = None
     appointment_datetime: datetime
     appointment_end_datetime: datetime | None = None
->>>>>>> v2
     notes: str | None = None
     status: AppointmentStatus = AppointmentStatus.scheduled
 
@@ -36,10 +30,7 @@ class AppointmentUpdate(BaseModel):
     doctor_name: str | None = None
     department: str | None = None
     appointment_datetime: datetime | None = None
-<<<<<<< HEAD
-=======
     appointment_end_datetime: datetime | None = None
->>>>>>> v2
     notes: str | None = None
     status: AppointmentStatus | None = None
 
@@ -47,10 +38,7 @@ class AppointmentUpdate(BaseModel):
 class AppointmentResponse(AppointmentBase):
     id: int
     patient: PatientResponse | None = None
-<<<<<<< HEAD
-=======
     reminder_sent_at: datetime | None = None
->>>>>>> v2
     created_at: datetime
 
     class Config:

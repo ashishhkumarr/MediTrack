@@ -1,33 +1,19 @@
-<<<<<<< HEAD
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session, selectinload
-
-=======
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import settings
->>>>>>> v2
 from app.core.security import get_current_admin
 from app.db.session import get_db
 from app.models.appointment import Appointment, AppointmentStatus
 from app.models.patient import Patient
-<<<<<<< HEAD
-from app.models.user import User
-=======
 from app.models.user import User, UserRole
->>>>>>> v2
 from app.schemas.appointment import (
     AppointmentCreate,
     AppointmentResponse,
     AppointmentUpdate,
 )
-<<<<<<< HEAD
-
-router = APIRouter(prefix="/appointments", tags=["appointments"])
-=======
 from app.services.email import (
     build_cancellation_email,
     build_confirmation_email,
@@ -37,7 +23,6 @@ from app.services.email import (
 
 router = APIRouter(prefix="/appointments", tags=["appointments"])
 DEFAULT_DOCTOR_NAME = "TBD"
->>>>>>> v2
 
 
 def _get_appointment(db: Session, appointment_id: int) -> Appointment:
@@ -54,8 +39,6 @@ def _get_appointment(db: Session, appointment_id: int) -> Appointment:
     return appointment
 
 
-<<<<<<< HEAD
-=======
 def _normalize_doctor_name(name: str | None) -> str:
     if name and name.strip():
         return name.strip()
@@ -244,7 +227,6 @@ def _apply_appointment_update(appointment: Appointment, update_data: dict) -> Ap
     return appointment
 
 
->>>>>>> v2
 @router.get("/", response_model=list[AppointmentResponse])
 def list_appointments(
     db: Session = Depends(get_db),
@@ -264,9 +246,6 @@ def create_appointment(
     _: User = Depends(get_current_admin),
 ):
     patient = _ensure_patient_exists(db, payload.patient_id)
-<<<<<<< HEAD
-    appointment = Appointment(**payload.dict())
-=======
     payload_data = payload.dict(exclude_unset=True)
     payload_data["doctor_name"] = _normalize_doctor_name(payload_data.get("doctor_name"))
     _validate_time_range(
@@ -281,15 +260,11 @@ def create_appointment(
             payload_data.get("appointment_end_datetime"),
         )
     appointment = Appointment(**payload_data)
->>>>>>> v2
     db.add(appointment)
     db.commit()
     db.refresh(appointment)
     appointment.patient = patient
-<<<<<<< HEAD
-=======
     _send_confirmation_email(db, appointment, patient)
->>>>>>> v2
     return appointment
 
 
@@ -301,13 +276,6 @@ def update_appointment(
     _: User = Depends(get_current_admin),
 ):
     appointment = _get_appointment(db, appointment_id)
-<<<<<<< HEAD
-    for field, value in payload.dict(exclude_unset=True).items():
-        setattr(appointment, field, value)
-    db.add(appointment)
-    db.commit()
-    db.refresh(appointment)
-=======
     old_snapshot = _snapshot_appointment(appointment)
     update_data = _prepare_update_data(payload)
     start_time = update_data.get("appointment_datetime", appointment.appointment_datetime)
@@ -401,7 +369,6 @@ def complete_appointment(
         db.add(appointment)
         db.commit()
         db.refresh(appointment)
->>>>>>> v2
     return appointment
 
 

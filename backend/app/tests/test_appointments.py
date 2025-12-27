@@ -1,18 +1,12 @@
 from datetime import datetime, timedelta
 
-<<<<<<< HEAD
-=======
 from app.api.v1 import appointments as appointments_api
->>>>>>> v2
 from app.models.patient import Patient
 
 from .test_auth import get_admin_headers
 
-<<<<<<< HEAD
-=======
 BASE_TIME = datetime(2030, 1, 1, 9, 0, 0)
 
->>>>>>> v2
 
 def _create_patient(db_session) -> Patient:
     patient = Patient(
@@ -62,8 +56,6 @@ def test_admin_lists_appointments_with_patient_details(client, db_session):
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]["patient"]["full_name"] == patient.full_name
-<<<<<<< HEAD
-=======
 
 
 def test_admin_can_cancel_appointment(client, db_session):
@@ -401,4 +393,3 @@ def test_no_email_sent_when_patient_missing_email(client, db_session, monkeypatc
     )
     assert create_response.status_code == 201
     assert len(sent) == 0
->>>>>>> v2

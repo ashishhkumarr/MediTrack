@@ -11,17 +11,10 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.1.7",
-<<<<<<< HEAD
-    "@heroicons/react": "^2.1.5",
-    "@tanstack/react-query": "^5.40.0",
-    "axios": "^1.7.7",
-    "classnames": "^2.5.1",
-=======
     "@tanstack/react-query": "^5.40.0",
     "axios": "^1.7.7",
     "classnames": "^2.5.1",
     "lucide-react": "^0.460.0",
->>>>>>> v2
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",

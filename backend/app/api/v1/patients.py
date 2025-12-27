@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-
-from app.core.security import get_current_admin
-from app.db.session import get_db
-from app.models.patient import Patient
-from app.models.user import User
-from app.schemas.patient import (
-    PatientCreate,
-=======
 from datetime import datetime, timedelta
 from io import BytesIO
 
@@ -30,7 +19,6 @@ from app.schemas.appointment import AppointmentResponse
 from app.schemas.patient import (
     PatientCreate,
     PatientNotesUpdate,
->>>>>>> v2
     PatientResponse,
     PatientUpdate,
 )
@@ -47,8 +35,6 @@ def _get_patient(db: Session, patient_id: int) -> Patient:
     return patient
 
 
-<<<<<<< HEAD
-=======
 def _build_full_name(
     full_name: str | None, first_name: str | None, last_name: str | None
 ) -> str | None:
@@ -58,7 +44,6 @@ def _build_full_name(
     return " ".join(name_parts) if name_parts else None
 
 
->>>>>>> v2
 @router.get("/", response_model=list[PatientResponse])
 def list_patients(
     db: Session = Depends(get_db),
@@ -77,8 +62,6 @@ def get_patient(
     return patient
 
 
-<<<<<<< HEAD
-=======
 @router.get("/{patient_id}/appointments", response_model=list[AppointmentResponse])
 def list_patient_appointments(
     patient_id: int,
@@ -243,16 +226,12 @@ def export_patient_record(
     )
 
 
->>>>>>> v2
 @router.post("/", response_model=PatientResponse, status_code=status.HTTP_201_CREATED)
 def create_patient(
     payload: PatientCreate,
     db: Session = Depends(get_db),
     _: User = Depends(get_current_admin),
 ):
-<<<<<<< HEAD
-    patient = Patient(**payload.dict())
-=======
     payload_data = payload.dict(exclude_unset=True)
     full_name = _build_full_name(
         payload_data.get("full_name"),
@@ -266,7 +245,6 @@ def create_patient(
         )
     payload_data["full_name"] = full_name
     patient = Patient(**payload_data)
->>>>>>> v2
     db.add(patient)
     db.commit()
     db.refresh(patient)
@@ -281,9 +259,6 @@ def update_patient(
     _: User = Depends(get_current_admin),
 ):
     patient = _get_patient(db, patient_id)
-<<<<<<< HEAD
-    for field, value in payload.dict(exclude_unset=True).items():
-=======
     payload_data = payload.dict(exclude_unset=True)
     if {"full_name", "first_name", "last_name"} & payload_data.keys():
         full_name = _build_full_name(
@@ -294,7 +269,6 @@ def update_patient(
         if full_name:
             payload_data["full_name"] = full_name
     for field, value in payload_data.items():
->>>>>>> v2
         setattr(patient, field, value)
     db.add(patient)
     db.commit()
@@ -302,8 +276,6 @@ def update_patient(
     return patient
 
 
-<<<<<<< HEAD
-=======
 @router.patch("/{patient_id}", response_model=PatientResponse)
 def update_patient_notes(
     patient_id: int,
@@ -321,7 +293,6 @@ def update_patient_notes(
     return patient
 
 
->>>>>>> v2
 @router.delete("/{patient_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_patient(
     patient_id: int,

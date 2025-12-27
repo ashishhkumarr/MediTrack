@@ -1,23 +1,11 @@
-<<<<<<< HEAD
-from datetime import timedelta
-=======
 import secrets
 from datetime import datetime, timedelta
->>>>>>> v2
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.security import create_access_token, get_current_admin, get_password_hash, verify_password
-<<<<<<< HEAD
-from app.models.user import User, UserRole
-from app.schemas.user import UserCreate, UserLogin, UserResponse, UserSignup
-from app.db.session import get_db
-
-router = APIRouter(prefix="/auth", tags=["auth"])
-
-=======
 from app.models.signup_otp import SignupOtp
 from app.models.user import User, UserRole
 from app.schemas.auth import SignupOtpRequest, SignupOtpVerify
@@ -41,7 +29,6 @@ def _normalize_email(email: str) -> str:
 def _generate_otp() -> str:
     return f"{secrets.randbelow(10**OTP_LENGTH):0{OTP_LENGTH}d}"
 
->>>>>>> v2
 
 @router.post("/login")
 def login(payload: UserLogin, db: Session = Depends(get_db)):
@@ -63,17 +50,6 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
     return {"access_token": token, "token_type": "bearer", "user": UserResponse.from_orm(user)}
 
 
-<<<<<<< HEAD
-@router.post("/signup", response_model=dict, status_code=status.HTTP_201_CREATED)
-def signup(payload: UserSignup, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.email == payload.email).first()
-    if existing:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
-        )
-    user = User(
-        email=payload.email,
-=======
 @router.post("/signup", response_model=dict, status_code=status.HTTP_410_GONE)
 def signup(_: UserSignup, __: Session = Depends(get_db)):
     raise HTTPException(
@@ -183,7 +159,6 @@ def verify_signup_otp(payload: SignupOtpVerify, db: Session = Depends(get_db)):
 
     user = User(
         email=email,
->>>>>>> v2
         hashed_password=get_password_hash(payload.password),
         full_name=f"{payload.first_name} {payload.last_name}".strip(),
         first_name=payload.first_name,
@@ -204,25 +179,18 @@ def verify_signup_otp(payload: SignupOtpVerify, db: Session = Depends(get_db)):
         role=UserRole.admin,
     )
     db.add(user)
-<<<<<<< HEAD
-=======
     db.delete(otp_record)
->>>>>>> v2
     db.commit()
     db.refresh(user)
     token = create_access_token(
         {"sub": str(user.id), "role": user.role.value},
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
-<<<<<<< HEAD
-    return {"access_token": token, "token_type": "bearer", "user": UserResponse.from_orm(user)}
-=======
     return {
         "access_token": token,
         "token_type": "bearer",
         "user": UserResponse.from_orm(user),
     }
->>>>>>> v2
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)

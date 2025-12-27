@@ -10,12 +10,6 @@ class Patient(Base):
     __tablename__ = "patients"
 
     id = Column(Integer, primary_key=True, index=True)
-<<<<<<< HEAD
-    full_name = Column(String, nullable=False)
-    date_of_birth = Column(Date, nullable=True)
-    phone = Column(String, nullable=True)
-    email = Column(String, nullable=True)
-=======
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
     full_name = Column(String, nullable=False)
@@ -24,7 +18,6 @@ class Patient(Base):
     phone = Column(String, nullable=True)
     email = Column(String, nullable=True)
     address = Column(Text, default="", nullable=True)
->>>>>>> v2
     medical_history = Column(Text, default="", nullable=True)
     medications = Column(Text, default="", nullable=True)
     notes = Column(Text, default="", nullable=True)

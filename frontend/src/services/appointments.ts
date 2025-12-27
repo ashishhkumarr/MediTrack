@@ -10,16 +10,11 @@ export interface Appointment {
   doctor_name: string;
   department?: string;
   appointment_datetime: string;
-<<<<<<< HEAD
-=======
   appointment_end_datetime?: string;
->>>>>>> v2
   status: AppointmentStatus;
   notes?: string;
 }
 
-<<<<<<< HEAD
-=======
 export interface AppointmentUpdatePayload {
   doctor_name?: string;
   department?: string;
@@ -29,7 +24,6 @@ export interface AppointmentUpdatePayload {
   status?: AppointmentStatus;
 }
 
->>>>>>> v2
 export const fetchAppointments = async (): Promise<Appointment[]> => {
   const { data } = await apiClient.get<Appointment[]>("/appointments/");
   return data;
@@ -39,8 +33,6 @@ export const createAppointment = async (payload: Partial<Appointment>) => {
   const { data } = await apiClient.post<Appointment>("/appointments/", payload);
   return data;
 };
-<<<<<<< HEAD
-=======
 
 export const updateAppointment = async (
   appointmentId: number,
@@ -66,4 +58,3 @@ export const completeAppointment = async (appointmentId: number): Promise<Appoin
   );
   return data;
 };
->>>>>>> v2

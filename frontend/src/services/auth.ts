@@ -53,8 +53,6 @@ export const signupRequest = async (payload: SignupPayload): Promise<LoginRespon
   const { data } = await apiClient.post<LoginResponse>("/auth/signup", payload);
   return data;
 };
-<<<<<<< HEAD
-=======
 
 export const requestSignupOtp = async (email: string) => {
   const { data } = await apiClient.post("/auth/signup/request-otp", { email });
@@ -69,4 +67,3 @@ export const verifySignupOtp = async (
   const { data } = await apiClient.post<LoginResponse>("/auth/signup/verify-otp", payload);
   return data;
 };
->>>>>>> v2

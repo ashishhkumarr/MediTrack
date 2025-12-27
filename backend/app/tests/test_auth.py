@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-from app.models.user import UserRole
-=======
 from datetime import datetime, timedelta
 
 from app.core.security import get_password_hash
 from app.models.signup_otp import SignupOtp
 from app.models.user import User, UserRole
 from app.api.v1 import auth as auth_routes
->>>>>>> v2
 
 
 def get_admin_headers(client):
@@ -53,11 +49,7 @@ def test_admin_can_register_user(client):
     assert response.json()["role"] == UserRole.admin.value
 
 
-<<<<<<< HEAD
-def _signup_payload(email: str):
-=======
 def _signup_payload(email: str, otp: str | None = None):
->>>>>>> v2
     return {
         "first_name": "Dana",
         "last_name": "Scully",
@@ -77,35 +69,6 @@ def _signup_payload(email: str, otp: str | None = None):
         "clinic_country": "USA",
         "password": "DoctorPass1!",
         "confirm_password": "DoctorPass1!",
-<<<<<<< HEAD
-    }
-
-
-def test_public_signup_creates_admin_and_returns_token(client):
-    response = client.post("/api/v1/auth/signup", json=_signup_payload("newdoc@example.com"))
-    assert response.status_code == 201
-    body = response.json()
-    assert "access_token" in body
-    assert body["user"]["email"] == "newdoc@example.com"
-    assert body["user"]["role"] == UserRole.admin.value
-
-    login_resp = client.post(
-        "/api/v1/auth/login",
-        json={"email": "newdoc@example.com", "password": "DoctorPass1!"},
-    )
-    assert login_resp.status_code == 200
-    assert "access_token" in login_resp.json()
-
-
-def test_signup_rejects_duplicate_email(client):
-    payload = _signup_payload("dupe@example.com")
-    first = client.post("/api/v1/auth/signup", json=payload)
-    assert first.status_code == 201
-
-    duplicate = client.post("/api/v1/auth/signup", json=payload)
-    assert duplicate.status_code == 400
-    assert duplicate.json()["detail"] == "Email already registered"
-=======
         **({"otp": otp} if otp else {}),
     }
 
@@ -218,7 +181,6 @@ def test_signup_request_otp_cooldown_blocks_rapid_resend(client, monkeypatch):
         "/api/v1/auth/signup/request-otp", json={"email": "cooldown@example.com"}
     )
     assert second.status_code == 429
->>>>>>> v2
 
 
 def test_change_password_success(client):
