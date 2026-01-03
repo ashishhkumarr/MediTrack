@@ -26,13 +26,14 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    env_file:
+      - backend/.env
     environment:
       DATABASE_URL: postgresql+psycopg2://meditrack:meditrack@db:5432/meditrack
       SECRET_KEY: supersecret
       ACCESS_TOKEN_EXPIRE_MINUTES: 60
       ADMIN_DEFAULT_EMAIL: admin@meditrack.com
       ADMIN_DEFAULT_PASSWORD: ChangeMe123!
-      EMAIL_ENABLED: "false"
       DEMO_MODE: "true"
     ports:
       - "8000:8000"
@@ -46,7 +47,7 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
     environment:
-      VITE_API_BASE_URL: http://localhost:8000/api/v1
+      VITE_API_BASE_URL: /api/v1
     ports:
       - "5173:80"
     depends_on:

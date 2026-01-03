@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str | None = None
     SMTP_FROM: str | None = None
     SMTP_USE_TLS: bool = True
+    EMAIL_PROVIDER: str = "dev"
+    RESEND_API_KEY: str | None = None
+    EMAIL_FROM: str = "onboarding@resend.dev"
     EMAIL_ENABLED: bool = False
     DEMO_MODE: bool = True
     MAX_LOGIN_ATTEMPTS: int = 5

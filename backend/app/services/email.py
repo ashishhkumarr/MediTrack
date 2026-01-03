@@ -3,9 +3,15 @@ import smtplib
 from datetime import datetime
 from email.message import EmailMessage
 
+import requests
+
 from app.core.config import settings
 
 logger = logging.getLogger("meditrack.email")
+
+
+class EmailSendError(RuntimeError):
+    pass
 
 
 def _format_datetime(value: datetime) -> str:
@@ -198,8 +204,53 @@ def send_email(
     preview_source = text_body or html_body
     preview = " ".join(preview_source.split())[:200]
 
-    if not settings.EMAIL_ENABLED:
+    provider = (settings.EMAIL_PROVIDER or "dev").strip().lower()
+
+    if not settings.EMAIL_ENABLED or provider in {"dev", "disabled"}:
         print(f"EMAIL_DEV_MODE to={to} subject={subject} preview={preview}")
+        return
+
+    if provider == "resend":
+        if not settings.RESEND_API_KEY:
+            message = "Resend API key is missing."
+            print(f"EMAIL_ERROR provider=resend error={message}")
+            raise EmailSendError(message)
+        if not settings.EMAIL_FROM:
+            message = "EMAIL_FROM is not configured."
+            print(f"EMAIL_ERROR provider=resend error={message}")
+            raise EmailSendError(message)
+
+        payload = {
+            "from": settings.EMAIL_FROM,
+            "to": [to],
+            "subject": subject,
+            "html": html_body,
+        }
+        if text_body:
+            payload["text"] = text_body
+
+        try:
+            response = requests.post(
+                "https://api.resend.com/emails",
+                headers={
+                    "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+                timeout=10,
+            )
+        except requests.RequestException as exc:
+            logger.error("Failed to send email via resend to %s: %s", to, exc)
+            return
+
+        if response.status_code >= 400:
+            body_preview = response.text.strip().replace("\n", " ")[:200]
+            print(
+                f"EMAIL_ERROR provider=resend status={response.status_code} body={body_preview}"
+            )
+            return
+
+        print(f"EMAIL_SENT to={to} subject={subject}")
         return
 
     smtp_username = settings.SMTP_USERNAME or settings.SMTP_USER

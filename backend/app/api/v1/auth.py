@@ -13,7 +13,7 @@ from app.schemas.auth import SignupOtpRequest, SignupOtpVerify
 from app.schemas.user import UserCreate, UserLogin, UserResponse, UserSignup
 from app.db.session import get_db
 from app.services.audit_log import log_event
-from app.services.email import build_signup_otp_email, send_email
+from app.services.email import EmailSendError, build_signup_otp_email, send_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -175,7 +175,13 @@ def request_signup_otp(
         otp_code, OTP_EXPIRY_MINUTES
     )
     print(f"EMAIL_TRIGGER event=signup_otp email={email}")
-    send_email(email, subject, html_body, text_body)
+    try:
+        send_email(email, subject, html_body, text_body)
+    except EmailSendError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(exc),
+        ) from exc
     log_user = _get_primary_user(db)
     log_event(
         db,

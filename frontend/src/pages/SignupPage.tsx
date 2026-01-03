@@ -136,6 +136,29 @@ const SignupPage = () => {
     if (typeof detail === "string") {
       return detail;
     }
+    if (Array.isArray(detail) && detail.length > 0) {
+      const first = detail[0];
+      if (typeof first === "string") {
+        return first;
+      }
+      if (typeof first?.msg === "string") {
+        return first.msg;
+      }
+    }
+    const rawData = error?.response?.data;
+    if (typeof rawData === "string" && rawData.trim().length > 0) {
+      return rawData;
+    }
+    const message = error?.response?.data?.message || error?.response?.data?.error;
+    if (typeof message === "string") {
+      return message;
+    }
+    if (!error?.response) {
+      return "Unable to reach the server. Please confirm the backend is running.";
+    }
+    if (error?.response?.status) {
+      return `Signup failed with status ${error.response.status}. Check backend logs for details.`;
+    }
     return "Unable to complete signup. Please try again.";
   };
 

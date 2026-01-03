@@ -252,6 +252,9 @@ Required environment variables:
 
 Optional email variables (only needed when `EMAIL_ENABLED=true`):
 
+- `EMAIL_PROVIDER` (`dev`, `resend`, or `disabled`)
+- `EMAIL_FROM` (default `onboarding@resend.dev`)
+- `RESEND_API_KEY` (when using Resend)
 - `SMTP_HOST`
 - `SMTP_PORT`
 - `SMTP_USERNAME` (or `SMTP_USER`)
@@ -264,12 +267,38 @@ Recommended production settings:
 - Use a strong `SECRET_KEY` and rotate default admin credentials after first login.
 - Point `DATABASE_URL` at a managed Postgres instance.
 - Restrict CORS origins in `backend/app/main.py`.
-- Keep `EMAIL_ENABLED=false` until SMTP is configured.
+- Keep `EMAIL_ENABLED=false` until an email provider is configured.
+- For Resend, set `EMAIL_PROVIDER=resend` with a valid `RESEND_API_KEY` and `EMAIL_FROM`.
 
 Ports and URLs:
 
 - Backend: `http://<host>:8000` (`/api/v1` for API routes)
 - Frontend: `http://<host>:5173` (Dockerized production build via nginx)
+
+## Email Delivery Modes (Dev vs Resend)
+
+MediTrack supports a safe dev logger plus optional real delivery via Resend.
+
+Dev mode (no real email, logs only):
+
+```
+EMAIL_ENABLED=false
+EMAIL_PROVIDER=dev
+```
+
+Resend mode (real delivery):
+
+```
+EMAIL_ENABLED=true
+EMAIL_PROVIDER=resend
+RESEND_API_KEY=<paste key>
+EMAIL_FROM=onboarding@resend.dev
+```
+
+Verification steps:
+
+- Dev mode: request a signup OTP and confirm the backend logs `EMAIL_DEV_MODE`.
+- Resend mode: request a signup OTP and confirm delivery in your inbox (check spam/promotions) and the Resend dashboard.
 
 ## AWS Deployment Guide
 

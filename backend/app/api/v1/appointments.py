@@ -16,6 +16,7 @@ from app.schemas.appointment import (
 )
 from app.services.audit_log import log_event
 from app.services.email import (
+    EmailSendError,
     build_cancellation_email,
     build_confirmation_email,
     build_update_email,
@@ -156,6 +157,16 @@ def _patient_email(patient: Patient) -> str | None:
     return email or None
 
 
+def _dispatch_email(recipient: str, subject: str, html_body: str, text_body: str | None) -> None:
+    try:
+        send_email(recipient, subject, html_body, text_body)
+    except EmailSendError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(exc),
+        ) from exc
+
+
 def _send_confirmation_email(db: Session, appointment: Appointment, patient: Patient) -> None:
     recipient = _patient_email(patient)
     if not recipient or appointment.status != AppointmentStatus.scheduled:
@@ -177,7 +188,7 @@ def _send_confirmation_email(db: Session, appointment: Appointment, patient: Pat
         appointment.department,
         appointment.notes,
     )
-    send_email(recipient, subject, html_body, text_body)
+    _dispatch_email(recipient, subject, html_body, text_body)
 
 
 def _send_update_email(
@@ -209,7 +220,7 @@ def _send_update_email(
         appointment.department,
         appointment.notes,
     )
-    send_email(recipient, subject, html_body, text_body)
+    _dispatch_email(recipient, subject, html_body, text_body)
 
 
 def _send_cancellation_email(
@@ -235,7 +246,7 @@ def _send_cancellation_email(
         snapshot["department"],
         snapshot["notes"],
     )
-    send_email(recipient, subject, html_body, text_body)
+    _dispatch_email(recipient, subject, html_body, text_body)
 
 
 def _apply_appointment_update(appointment: Appointment, update_data: dict) -> Appointment:

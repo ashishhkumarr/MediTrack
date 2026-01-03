@@ -9,7 +9,7 @@ from app.db.session import SessionLocal
 from app.models.appointment import Appointment, AppointmentStatus
 from app.models.patient import Patient
 from app.models.user import User, UserRole
-from app.services.email import build_reminder_email, send_email
+from app.services.email import EmailSendError, build_reminder_email, send_email
 
 logger = logging.getLogger("reminders")
 
@@ -80,7 +80,12 @@ def dispatch_reminders(db: Session, now: datetime | None = None) -> dict:
             appointment.department,
             appointment.notes,
         )
-        send_email(recipient, subject, html_body, text_body)
+        try:
+            send_email(recipient, subject, html_body, text_body)
+        except EmailSendError as exc:
+            logger.error("Reminder email failed: %s", exc)
+            skipped += 1
+            continue
         appointment.reminder_sent_at = current_time
         db.add(appointment)
         sent += 1
