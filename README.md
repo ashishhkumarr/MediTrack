@@ -1,8 +1,10 @@
 # MediTrack
 
-MediTrack is a production-ready patient appointment and medical records system for clinics that now operates as a clean admin-only console. It pairs a FastAPI backend with a modern React + TypeScript frontend, supports JWT authentication for clinic staff, schedules appointment reminder jobs, and ships with Docker assets plus AWS deployment guidance. Patients exist only as records that receive confirmation/reminder emails—there is no patient portal or login.
+MediTrack is a lightweight clinic management app for small practices. Clinic staff can create patient records, schedule appointments, and keep simple medical notes in one place without a full EMR. Patients do not log in; they only receive appointment emails.
 
-Clinic staff can now self-serve onboarding: sign up from the web app to create your admin/doctor account, then log in immediately. A seeded default admin still exists for local/dev but is no longer required for first-run access.
+Under the hood, MediTrack pairs a FastAPI backend with a modern React + TypeScript frontend, supports JWT authentication for clinic staff, schedules reminder jobs, and ships with Docker assets plus deployment guidance.
+
+Clinic staff can self-serve onboarding: sign up from the web app to create an admin account, then log in immediately. A seeded default admin still exists for local/dev but is not required for first-run access.
 
 MediTrack is multi-tenant: each account has isolated data.
 
@@ -23,6 +25,14 @@ MediTrack is multi-tenant: each account has isolated data.
                    |               |
              Reminder Jobs     PostgreSQL
 ```
+
+## Quickstart
+
+```bash
+docker compose up --build
+```
+
+Then visit `http://localhost:5173`.
 
 ## Tech Stack
 
@@ -58,6 +68,38 @@ meditrack/
 
 ## Environment Variables
 
+Required:
+
+- `DATABASE_URL`
+- `SECRET_KEY`
+- `ACCESS_TOKEN_EXPIRE_MINUTES`
+- `ADMIN_DEFAULT_EMAIL`
+- `ADMIN_DEFAULT_PASSWORD`
+
+Optional (email + reminders):
+
+- `EMAIL_ENABLED`
+- `EMAIL_PROVIDER` (`dev`, `resend`, or `disabled`)
+- `EMAIL_FROM`
+- `RESEND_API_KEY`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USERNAME` (or `SMTP_USER`)
+- `SMTP_PASSWORD`
+- `SMTP_FROM`
+- `SMTP_USE_TLS`
+- `REMINDER_WINDOW_HOURS`
+- `REMINDER_LOOKAHEAD_MINUTES`
+- `ENV` (`development` or `production`)
+- `CORS_ALLOWED_ORIGINS` (comma-separated list of allowed origins)
+
+Demo-only (local/dev only — DO NOT USE IN PRODUCTION):
+
+- `ENABLE_DEV_AUTH_BYPASS`
+- `ENABLE_DEMO_RESET`
+- `VITE_ENABLE_DEV_AUTH_BYPASS`
+- `VITE_ENABLE_DEMO_RESET`
+
 **Backend (`backend/.env` based on `.env.example`):**
 
 ```
@@ -77,6 +119,8 @@ REMINDER_HOURS_BEFORE=24
 
 ```
 VITE_API_BASE_URL=http://localhost:8000/api/v1
+VITE_ENABLE_DEV_AUTH_BYPASS=false
+VITE_ENABLE_DEMO_RESET=false
 ```
 
 ## Dev Setup
@@ -117,6 +161,25 @@ Database migrations (optional when not relying on `Base.metadata.create_all`):
 ```bash
 alembic upgrade head
 ```
+
+## Checks
+
+- Backend tests: `cd backend && pytest`
+- Frontend build: `cd frontend && npm run build`
+
+## Demo Flow (3 minutes)
+
+1) Create a staff account (OTP flow, or dev bypass in local only).
+2) Add a patient and create an appointment.
+3) Open the Dashboard to see analytics.
+4) Open the Audit Log to show compliance events.
+5) Use “Reset demo” (local only) to clear and reseed data.
+
+## Troubleshooting
+
+- **No OTP email:** Resend’s testing mode only delivers to a single verified address. Verify your sender domain in Resend for full delivery, or use the dev signup bypass locally.
+- **Unable to load dashboard analytics:** Confirm the backend is running and `VITE_API_BASE_URL` points to `/api/v1` in Docker builds.
+- **No frontend UI:** Check `docker compose ps` and rebuild the frontend container if needed.
 
 ### Frontend
 
@@ -269,11 +332,22 @@ Recommended production settings:
 - Restrict CORS origins in `backend/app/main.py`.
 - Keep `EMAIL_ENABLED=false` until an email provider is configured.
 - For Resend, set `EMAIL_PROVIDER=resend` with a valid `RESEND_API_KEY` and `EMAIL_FROM`.
+- Set `ENV=production` and supply `CORS_ALLOWED_ORIGINS` with explicit origins (no wildcards).
+- Ensure all demo-only flags are disabled before deployment.
 
 Ports and URLs:
 
 - Backend: `http://<host>:8000` (`/api/v1` for API routes)
 - Frontend: `http://<host>:5173` (Dockerized production build via nginx)
+
+## Release Checklist
+
+- `ENABLE_DEV_AUTH_BYPASS=false`
+- `ENABLE_DEMO_RESET=false`
+- `VITE_ENABLE_DEV_AUTH_BYPASS=false`
+- `VITE_ENABLE_DEMO_RESET=false`
+- `ENV=production`
+- `CORS_ALLOWED_ORIGINS` set to your production frontend URL(s)
 
 ## Email Delivery Modes (Dev vs Resend)
 

@@ -8,6 +8,7 @@ import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { InputField, TextAreaField } from "../components/ui/FormField";
 import { SectionHeader } from "../components/ui/SectionHeader";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useCreatePatient, usePatients } from "../hooks/usePatients";
 import { PatientCreatePayload } from "../services/patients";
 
@@ -34,6 +35,7 @@ const initialFormState: PatientFormState = {
 };
 
 const PatientListPage = () => {
+  usePageTitle("Patients");
   const { data, isLoading, error } = usePatients();
   const createPatient = useCreatePatient();
   const navigate = useNavigate();
@@ -187,8 +189,8 @@ const PatientListPage = () => {
   return (
     <Card className="animate-fadeUp space-y-5">
       <SectionHeader
-        title="Patients directory"
-        description="Review every active patient profile and contact detail."
+        title="Patients"
+        description="Review active patient profiles and contact details."
         action={
           <Button onClick={handleOpenModal} className="shadow-card">
             New Patient
@@ -217,9 +219,16 @@ const PatientListPage = () => {
       </div>
 
       {!totalCount && (
-        <p className="rounded-2xl bg-surface-subtle px-4 py-6 text-center text-sm text-text-muted">
-          No patient records yet. Create your first appointment or add a patient to get started.
-        </p>
+        <div className="rounded-2xl bg-surface-subtle px-4 py-6 text-center text-sm text-text-muted">
+          <p>No patient records yet. Add a patient to get started.</p>
+          <Button
+            className="mt-4"
+            variant="secondary"
+            onClick={handleOpenModal}
+          >
+            Add patient
+          </Button>
+        </div>
       )}
 
       {!!totalCount && !filteredPatients.length && (

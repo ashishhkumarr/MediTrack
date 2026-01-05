@@ -1,4 +1,5 @@
-import { Activity, CalendarClock, UserPlus, Users } from "lucide-react";
+import { Activity, CalendarClock, RefreshCcw, Trash2, UserPlus, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { AnalyticsCharts } from "../components/dashboard/AnalyticsCharts";
 import { DashboardEmptyState } from "../components/dashboard/DashboardEmptyState";
@@ -7,14 +8,32 @@ import { ErrorState } from "../components/ErrorState";
 import { Button } from "../components/ui/Button";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { useDashboardAnalytics } from "../hooks/useDashboardAnalytics";
+import { usePageTitle } from "../hooks/usePageTitle";
+import { resetDemoData } from "../services/demo";
 
 const AdminDashboard = () => {
+  usePageTitle("Dashboard");
   const {
     data: analytics,
     isLoading,
     isError,
     refetch
   } = useDashboardAnalytics();
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [reseedAfterReset, setReseedAfterReset] = useState(true);
+  const [resetting, setResetting] = useState(false);
+  const [resetNotice, setResetNotice] = useState<string | null>(null);
+  const [resetError, setResetError] = useState<string | null>(null);
+  const resetEnabled = import.meta.env.VITE_ENABLE_DEMO_RESET === "true";
+
+  useEffect(() => {
+    if (!resetNotice && !resetError) return;
+    const timer = window.setTimeout(() => {
+      setResetNotice(null);
+      setResetError(null);
+    }, 4000);
+    return () => window.clearTimeout(timer);
+  }, [resetNotice, resetError]);
 
   if (isLoading) {
     return (
@@ -46,10 +65,33 @@ const AdminDashboard = () => {
   if (isError || !analytics) {
     return (
       <div className="space-y-4 animate-fadeUp">
+        <SectionHeader
+          title="Dashboard"
+          description="Demo analytics overview"
+          action={
+            <div className="flex items-center gap-2">
+              <Button variant="secondary" onClick={() => refetch()}>
+                Retry
+              </Button>
+              {resetEnabled && (
+              <Button variant="destructive" onClick={() => setShowResetModal(true)}>
+                Reset demo (dev)
+              </Button>
+            )}
+          </div>
+        }
+      />
         <ErrorState message="Unable to load dashboard analytics." />
-        <Button variant="secondary" onClick={() => refetch()}>
-          Retry
-        </Button>
+        {resetNotice && (
+          <div className="rounded-2xl border border-success/30 bg-success-soft/80 px-4 py-3 text-sm text-success shadow-sm animate-toastIn">
+            {resetNotice}
+          </div>
+        )}
+        {resetError && (
+          <div className="rounded-2xl border border-danger/40 bg-danger-soft/70 px-4 py-3 text-sm text-danger shadow-sm animate-toastIn">
+            {resetError}
+          </div>
+        )}
       </div>
     );
   }
@@ -66,8 +108,32 @@ const AdminDashboard = () => {
       <SectionHeader
         title="Dashboard"
         description="Demo analytics overview"
-        action={<Button variant="secondary" onClick={() => refetch()}>Refresh</Button>}
+        action={
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="secondary" onClick={() => refetch()}>
+              <RefreshCcw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
+            {resetEnabled && (
+              <Button variant="destructive" onClick={() => setShowResetModal(true)}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Reset demo (dev)
+              </Button>
+            )}
+          </div>
+        }
       />
+
+      {resetNotice && (
+        <div className="rounded-2xl border border-success/30 bg-success-soft/80 px-4 py-3 text-sm text-success shadow-sm animate-toastIn">
+          {resetNotice}
+        </div>
+      )}
+      {resetError && (
+        <div className="rounded-2xl border border-danger/40 bg-danger-soft/70 px-4 py-3 text-sm text-danger shadow-sm animate-toastIn">
+          {resetError}
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <KpiCard
@@ -100,6 +166,64 @@ const AdminDashboard = () => {
           newPatientsByWeek={trends.newPatientsByWeek12w}
           appointmentsByStatus={breakdowns.appointmentsByStatus30d}
         />
+      )}
+
+      {showResetModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
+          <div className="w-full max-w-lg rounded-3xl border border-border/60 bg-surface shadow-card">
+            <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
+              <div>
+                <h3 className="text-lg font-semibold text-text">Reset demo data?</h3>
+                <p className="text-xs text-text-muted">
+                  This will delete your demo patients and appointments.
+                </p>
+              </div>
+              <Button variant="ghost" type="button" onClick={() => setShowResetModal(false)}>
+                Close
+              </Button>
+            </div>
+            <div className="space-y-4 px-6 py-5 text-sm text-text-muted">
+              <p>This cannot be undone.</p>
+              <label className="flex items-center gap-3 text-sm text-text">
+                <input
+                  type="checkbox"
+                  checked={reseedAfterReset}
+                  onChange={(event) => setReseedAfterReset(event.target.checked)}
+                  className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                />
+                Reseed sample data after reset
+              </label>
+              <p className="text-xs text-text-muted">Dev/demo only. Remove before release.</p>
+            </div>
+            <div className="flex items-center justify-end gap-3 border-t border-border/60 px-6 py-4">
+              <Button variant="secondary" type="button" onClick={() => setShowResetModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                type="button"
+                isLoading={resetting}
+                disabled={resetting}
+                onClick={async () => {
+                  setResetting(true);
+                  setResetError(null);
+                  try {
+                    await resetDemoData(reseedAfterReset);
+                    setShowResetModal(false);
+                    setResetNotice("Demo reset complete");
+                    await refetch();
+                  } catch (error) {
+                    setResetError("Unable to reset demo.");
+                  } finally {
+                    setResetting(false);
+                  }
+                }}
+              >
+                {resetting ? "Resetting..." : "Reset"}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

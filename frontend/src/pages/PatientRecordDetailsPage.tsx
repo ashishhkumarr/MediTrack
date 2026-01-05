@@ -8,6 +8,7 @@ import { TextAreaField } from "../components/ui/FormField";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { useAuth } from "../hooks/useAuth";
 import { usePatient, usePatientAppointments, useUpdatePatientNotes } from "../hooks/usePatients";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { Appointment, AppointmentStatus } from "../services/appointments";
 
 const statusStyles: Record<AppointmentStatus, string> = {
@@ -82,6 +83,7 @@ const DetailSkeleton = () => (
 );
 
 const PatientDetailPage = () => {
+  usePageTitle("Patient Record");
   const { id } = useParams();
   const patientId = Number(id);
   const {

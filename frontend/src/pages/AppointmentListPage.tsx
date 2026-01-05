@@ -14,6 +14,7 @@ import {
   useCompleteAppointment,
   useUpdateAppointment
 } from "../hooks/useAppointments";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { Appointment, AppointmentStatus } from "../services/appointments";
 
 type AppointmentFormState = {
@@ -79,6 +80,7 @@ const getApiErrorMessage = (error: any) => {
 };
 
 const AppointmentListPage = () => {
+  usePageTitle("Appointments");
   const { data, isLoading, error } = useAppointments();
   const updateAppointment = useUpdateAppointment();
   const cancelAppointment = useCancelAppointment();
@@ -246,8 +248,8 @@ const AppointmentListPage = () => {
   return (
     <Card className="animate-fadeUp space-y-5">
       <SectionHeader
-        title="Appointments overview"
-        description="Every scheduled visit across the clinic."
+        title="Appointments"
+        description="Review scheduled visits and recent activity."
         action={
           <div className="flex flex-wrap items-center gap-3">
             <label className="flex items-center gap-2 text-sm text-text-muted">
@@ -352,11 +354,20 @@ const AppointmentListPage = () => {
       )}
 
       {!filteredAppointments.length && (
-        <p className="rounded-2xl bg-surface-subtle px-4 py-6 text-center text-sm text-text-muted">
-          {showCancelled
-            ? "No appointments found yet."
-            : "No active appointments scheduled yet."}
-        </p>
+        <div className="rounded-2xl bg-surface-subtle px-4 py-6 text-center text-sm text-text-muted">
+          <p>
+            {showCancelled
+              ? "No appointments found yet."
+              : "No active appointments scheduled yet."}
+          </p>
+          <Button
+            className="mt-4"
+            variant="secondary"
+            onClick={() => navigate("/appointments/create")}
+          >
+            Create appointment
+          </Button>
+        </div>
       )}
 
       {isViewOpen &&

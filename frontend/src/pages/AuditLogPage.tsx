@@ -5,6 +5,7 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { Card } from "../components/ui/Card";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { useAuditLogs } from "../hooks/useAuditLogs";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const ACTION_OPTIONS = [
   "auth.login",
@@ -27,6 +28,7 @@ const ACTION_OPTIONS = [
 const ENTITY_OPTIONS = ["patient", "appointment", "user", "reminder"];
 
 const AuditLogPage = () => {
+  usePageTitle("Audit Log");
   const [actionFilter, setActionFilter] = useState("");
   const [entityFilter, setEntityFilter] = useState("");
   const [search, setSearch] = useState("");

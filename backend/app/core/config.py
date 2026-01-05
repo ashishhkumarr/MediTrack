@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = "onboarding@resend.dev"
     EMAIL_ENABLED: bool = False
     ENABLE_DEV_AUTH_BYPASS: bool = False
+    ENABLE_DEMO_RESET: bool = False
+    CORS_ALLOWED_ORIGINS: str = ""
     DEMO_MODE: bool = True
     MAX_LOGIN_ATTEMPTS: int = 5
     LOGIN_LOCK_MINUTES: int = 15

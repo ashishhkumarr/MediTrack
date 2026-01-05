@@ -9,8 +9,10 @@ import { Button } from "../components/ui/Button";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { useCreateAppointment } from "../hooks/useAppointments";
 import { usePatients } from "../hooks/usePatients";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const CreateAppointmentPage = () => {
+  usePageTitle("New Appointment");
   const navigate = useNavigate();
   const { data: patients, isLoading, error } = usePatients();
   const mutation = useCreateAppointment();

@@ -16,6 +16,7 @@ from app.api.v1 import (
     audit_logs,
     auth,
     dashboard,
+    demo,
     patients,
     reminders,
     users,
@@ -102,6 +103,10 @@ async def lifespan(app: FastAPI):
         create_default_admin()
     except Exception as exc:  # pragma: no cover - keeps app booting during migrations/tests
         logger.warning("Database bootstrap skipped: %s", exc)
+    if settings.ENABLE_DEV_AUTH_BYPASS or settings.ENABLE_DEMO_RESET:
+        logger.warning(
+            "WARNING: DEMO/DEV BYPASS ENABLED — DO NOT USE IN PRODUCTION"
+        )
     if not scheduler.running:
         scheduler.start()
     yield
@@ -149,9 +154,17 @@ async def add_request_id(request: Request, call_next):
     response.headers["X-Request-ID"] = request.state.request_id
     return response
 
+allowed_origins = ["*"]
+if settings.ENV == "production":
+    allowed_origins = [
+        origin.strip()
+        for origin in settings.CORS_ALLOWED_ORIGINS.split(",")
+        if origin.strip()
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -165,8 +178,14 @@ app.include_router(reminders.router, prefix=settings.API_V1_STR)
 app.include_router(admin.router, prefix=settings.API_V1_STR)
 app.include_router(audit_logs.router, prefix=settings.API_V1_STR)
 app.include_router(dashboard.router, prefix=settings.API_V1_STR)
+app.include_router(demo.router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")
 def health_check():
     return {"status": "ok", "app": settings.PROJECT_NAME}
+
+
+@app.get("/api/health")
+def api_health_check():
+    return {"ok": True}

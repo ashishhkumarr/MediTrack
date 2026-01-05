@@ -5,6 +5,7 @@ import { Button } from "../components/ui/Button";
 import { InputField } from "../components/ui/FormField";
 import { requestSignupOtp, signupBypass, verifySignupOtp } from "../services/auth";
 import { useAuthContext } from "../context/AuthContext";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 type FormState = {
   first_name: string;
@@ -51,6 +52,7 @@ const initialState: FormState = {
 };
 
 const SignupPage = () => {
+  usePageTitle("Sign Up");
   const navigate = useNavigate();
   const { login } = useAuthContext();
   const [formState, setFormState] = useState<FormState>(initialState);

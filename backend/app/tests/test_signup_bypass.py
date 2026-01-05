@@ -29,6 +29,7 @@ def _payload(email: str):
 
 
 def test_signup_bypass_disabled_returns_404(client):
+    settings.ENABLE_DEV_AUTH_BYPASS = False
     response = client.post("/api/v1/auth/signup-bypass", json=_payload("off@example.com"))
     assert response.status_code == 404
 

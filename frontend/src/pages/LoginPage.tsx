@@ -4,8 +4,10 @@ import { Link, useLocation, useNavigate, type Location } from "react-router-dom"
 import { Button } from "../components/ui/Button";
 import { InputField } from "../components/ui/FormField";
 import { useAuth } from "../hooks/useAuth";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const LoginPage = () => {
+  usePageTitle("Login");
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
