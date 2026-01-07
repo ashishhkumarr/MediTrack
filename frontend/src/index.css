@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,48 +6,48 @@
 
 :root {
   color-scheme: light;
-  --color-bg: 245 247 251;
+  --color-bg: 245 247 255;
   --color-surface: 255 255 255;
-  --color-surface-subtle: 241 245 249;
-  --color-surface-muted: 226 232 240;
-  --color-text: 15 23 42;
-  --color-text-muted: 71 85 105;
-  --color-text-subtle: 100 116 139;
-  --color-border: 226 232 240;
-  --color-primary: 15 118 110;
-  --color-primary-strong: 13 74 110;
-  --color-primary-soft: 204 251 241;
-  --color-secondary: 59 130 246;
-  --color-secondary-soft: 219 234 254;
-  --color-success: 16 185 129;
-  --color-success-soft: 209 250 229;
-  --color-warning: 245 158 11;
-  --color-warning-soft: 254 243 199;
-  --color-danger: 239 68 68;
-  --color-danger-soft: 254 226 226;
+  --color-surface-subtle: 247 248 255;
+  --color-surface-muted: 234 238 250;
+  --color-text: 28 34 52;
+  --color-text-muted: 88 98 124;
+  --color-text-subtle: 131 142 170;
+  --color-border: 224 230 244;
+  --color-primary: 34 211 191;
+  --color-primary-strong: 16 176 164;
+  --color-primary-soft: 206 247 242;
+  --color-secondary: 168 154 255;
+  --color-secondary-soft: 230 226 255;
+  --color-success: 70 201 149;
+  --color-success-soft: 214 248 232;
+  --color-warning: 245 182 79;
+  --color-warning-soft: 255 240 212;
+  --color-danger: 244 105 122;
+  --color-danger-soft: 255 224 231;
 }
 
 .dark {
   color-scheme: dark;
-  --color-bg: 12 17 27;
-  --color-surface: 15 23 42;
-  --color-surface-subtle: 30 41 59;
-  --color-surface-muted: 51 65 85;
-  --color-text: 226 232 240;
-  --color-text-muted: 148 163 184;
-  --color-text-subtle: 100 116 139;
-  --color-border: 51 65 85;
-  --color-primary: 45 212 191;
-  --color-primary-strong: 20 184 166;
-  --color-primary-soft: 13 74 110;
-  --color-secondary: 96 165 250;
-  --color-secondary-soft: 30 64 175;
-  --color-success: 52 211 153;
-  --color-success-soft: 6 95 70;
-  --color-warning: 251 191 36;
-  --color-warning-soft: 120 53 15;
-  --color-danger: 248 113 113;
-  --color-danger-soft: 127 29 29;
+  --color-bg: 14 18 30;
+  --color-surface: 20 25 38;
+  --color-surface-subtle: 28 35 53;
+  --color-surface-muted: 38 46 68;
+  --color-text: 236 240 251;
+  --color-text-muted: 164 175 198;
+  --color-text-subtle: 121 134 158;
+  --color-border: 52 61 86;
+  --color-primary: 68 225 205;
+  --color-primary-strong: 43 200 182;
+  --color-primary-soft: 17 62 73;
+  --color-secondary: 137 173 255;
+  --color-secondary-soft: 38 52 97;
+  --color-success: 103 234 181;
+  --color-success-soft: 22 64 49;
+  --color-warning: 255 204 114;
+  --color-warning-soft: 85 57 24;
+  --color-danger: 255 135 150;
+  --color-danger-soft: 85 32 41;
 }
 
 html {
@@ -57,11 +57,11 @@ html {
 body {
   background-color: rgb(var(--color-bg));
   color: rgb(var(--color-text));
-  font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 18px;
+  line-height: 1.65;
   min-height: 100vh;
 }
 
@@ -69,10 +69,64 @@ body {
   min-height: 100vh;
 }
 
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+  background: radial-gradient(circle at 20% 10%, rgba(208, 225, 255, 0.7), transparent 40%),
+    radial-gradient(circle at 80% 0%, rgba(255, 213, 236, 0.7), transparent 45%),
+    radial-gradient(circle at 35% 35%, rgba(210, 255, 246, 0.6), transparent 50%),
+    radial-gradient(circle at 85% 65%, rgba(234, 225, 255, 0.55), transparent 45%),
+    linear-gradient(135deg, rgba(248, 249, 255, 0.95), rgba(255, 246, 252, 0.9));
+  overflow: hidden;
+}
+
+.app-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+  background-size: 120px 120px;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 999px;
+  opacity: 0.7;
+  mix-blend-mode: soft-light;
+  animation: float 12s ease-in-out infinite;
+}
+
 .glass-card {
-  @apply rounded-3xl border border-border/60 bg-surface shadow-card transition-all duration-200;
+  @apply rounded-[28px] border border-white/60 bg-white/65 shadow-card backdrop-blur-xl transition-all duration-300;
 }
 
 .section-heading {
-  @apply text-lg font-semibold text-text;
+  @apply text-2xl font-semibold text-text;
+}
+
+.glass-panel {
+  @apply rounded-[26px] border border-white/50 bg-white/55 shadow-card backdrop-blur-xl;
+}
+
+.glass-input {
+  @apply rounded-2xl border border-white/60 bg-white/70 px-4 py-3 text-base text-text shadow-sm backdrop-blur transition-all duration-200 placeholder:text-text-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

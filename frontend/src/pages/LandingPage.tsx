@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import {
-  Activity,
   ArrowRight,
   CalendarClock,
   CheckCircle2,
@@ -11,6 +10,8 @@ import {
   Users
 } from "lucide-react";
 
+import brainHero from "../assets/hero/brain-hero.png";
+import doctorHero from "../assets/hero/doctor-hero.png";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { useAuth } from "../hooks/useAuth";
@@ -31,8 +32,7 @@ const features = [
   {
     icon: Mail,
     title: "Automated confirmations and reminders",
-    description:
-      "Patients never log in. They receive clear appointment emails and reminders."
+    description: "Patients never log in. They receive clear appointment emails and reminders."
   },
   {
     icon: ClipboardList,
@@ -43,8 +43,7 @@ const features = [
   {
     icon: ShieldCheck,
     title: "Admin-only access",
-    description:
-      "Only clinic staff sign in. Patient data stays internal and controlled."
+    description: "Only clinic staff sign in. Patient data stays internal and controlled."
   },
   {
     icon: Sparkles,
@@ -86,183 +85,170 @@ const LandingPage = () => {
     : { label: "Sign in to MediTrack", to: "/login" };
 
   return (
-    <div className="mx-auto w-full max-w-none space-y-20 pb-16">
-      <section className="relative overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 p-8 shadow-card">
-        <div className="pointer-events-none absolute -top-32 right-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 left-0 h-64 w-64 rounded-full bg-secondary/10 blur-3xl" />
-        <div className="relative grid items-center gap-10 lg:grid-cols-[1.05fr,0.95fr]">
-          <div className="space-y-6 animate-fadeUp lg:max-w-[560px]">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft/80 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-primary">
-              <Activity className="h-4 w-4" />
-              Built for modern clinics
-            </span>
-            <div className="space-y-4">
-              <h1 className="text-4xl font-semibold text-text sm:text-5xl">
-                Run a small clinic with clarity, speed, and confidence.
-              </h1>
-              <p className="text-base text-text-muted sm:text-lg">
-                MediTrack is a lightweight clinic management hub for staff. It unifies patient
-                profiles and appointment scheduling without the overhead of a full EMR system.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-4">
-              <Link to={primaryAction.to}>
-                <Button className="gap-2 px-5 py-3 text-base">
-                  {primaryAction.label}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <a href="#workflow">
-                <Button variant="secondary" className="px-5 py-3 text-base">
-                  See how it works
-                </Button>
-              </a>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {highlights.map((item, index) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-2 rounded-2xl border border-border/70 bg-surface px-4 py-3 text-sm text-text-muted shadow-sm"
-                  style={{ animationDelay: `${index * 120}ms` }}
-                >
-                  <CheckCircle2 className="h-4 w-4 text-success" />
-                  {item}
-                </div>
-              ))}
+    <div className="space-y-24 pb-20">
+      <section className="relative overflow-hidden rounded-[40px] border border-white/60 bg-white/60 p-8 shadow-card sm:p-12 lg:p-16">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(112,144,255,0.16),_transparent_55%)]" />
+        <div className="pointer-events-none absolute -left-16 top-12 h-52 w-52 animate-float rounded-full bg-gradient-to-br from-secondary/40 to-white/50 blur-2xl" />
+        <div className="pointer-events-none absolute -right-10 top-10 h-40 w-40 animate-float rounded-full bg-gradient-to-br from-primary/40 to-white/50 blur-2xl" />
+
+        <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center text-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm">
+            <Sparkles className="h-4 w-4" />
+            Your everyday clinic protection
+          </span>
+          <h1 className="mt-6 text-4xl font-semibold text-text sm:text-5xl lg:text-6xl">
+            Run your clinic with clarity and confidence
+          </h1>
+          <p className="mt-4 max-w-2xl text-base text-text-muted sm:text-lg">
+            MediTrack keeps patient profiles, scheduling, and audit history in one lightweight
+            workspace — built for demo safety and small-clinic speed.
+          </p>
+          <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
+            <Link to={primaryAction.to}>
+              <Button size="lg" className="gap-2">
+                Get started
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <a href="#workflow" className="text-sm font-semibold text-text-muted hover:text-text">
+              See how it works
+            </a>
+          </div>
+        </div>
+
+        <div className="relative mt-16 flex min-h-[400px] items-end justify-center lg:min-h-[480px]">
+          <div className="pointer-events-none absolute left-16 top-12 h-16 w-16 animate-float rounded-full bg-gradient-to-br from-primary/50 to-white/70 blur-sm" />
+          <div className="pointer-events-none absolute right-24 top-6 h-12 w-12 animate-float rounded-full bg-gradient-to-br from-secondary/50 to-white/70 blur-sm" />
+          <div className="pointer-events-none absolute left-10 bottom-20 h-20 w-20 animate-float rounded-full bg-gradient-to-br from-primary-soft/80 to-white/70 blur-sm" />
+
+          <img
+            src={brainHero}
+            alt="MediTrack analytics"
+            className="absolute bottom-0 left-1/2 z-0 w-[620px] -translate-x-1/2 drop-shadow-[0_40px_80px_rgba(126,142,200,0.35)] sm:w-[700px] lg:w-[780px]"
+          />
+
+          <div
+            className="absolute left-6 bottom-48 z-20 hidden w-60 rounded-3xl border border-white/60 bg-white/70 p-5 text-xs text-text-muted shadow-card backdrop-blur sm:block animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(120,140,190,0.2)]"
+            style={{ animationDuration: "9s", animationDelay: "0.2s" }}
+          >
+            <p className="text-[11px] uppercase tracking-wide text-text-subtle">Clinic rating</p>
+            <p className="mt-1 text-2xl font-semibold text-text">9.6</p>
+            <p className="text-xs text-text-subtle">Based on 100+ reviews</p>
+          </div>
+
+          <div
+            className="absolute left-14 bottom-12 z-20 hidden h-32 w-32 items-center justify-center rounded-3xl border border-white/60 bg-white/70 text-center text-xs text-text-muted shadow-card backdrop-blur sm:flex animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(120,140,190,0.2)]"
+            style={{ animationDuration: "11s", animationDelay: "0.6s" }}
+          >
+            <div>
+              <p className="text-2xl font-semibold text-text">2h</p>
+              <p className="text-[11px] text-text-subtle">Sports</p>
             </div>
           </div>
 
-          <div className="relative animate-fadeUp" style={{ animationDelay: "120ms" }}>
-            <div className="mb-4 hidden gap-3 lg:grid lg:grid-cols-2">
-              <div className="rounded-2xl border border-border/60 bg-surface px-4 py-3 text-sm shadow-card">
-                <p className="text-xs uppercase tracking-wide text-text-subtle">Today</p>
-                <p className="mt-1 text-lg font-semibold text-text">18 visits</p>
-                <p className="text-xs text-text-muted">4 new reminders sent</p>
-              </div>
-              <div className="rounded-2xl border border-border/60 bg-surface px-4 py-3 text-sm shadow-card">
-                <p className="text-xs uppercase tracking-wide text-text-subtle">Next patient</p>
-                <p className="mt-1 text-sm font-semibold text-text">Maria Santos</p>
-                <p className="text-xs text-text-muted">11:30 AM · Cardiology</p>
-              </div>
-            </div>
-
-            <div className="relative rounded-3xl border border-border/70 bg-surface shadow-card">
-              <div className="border-b border-border/70 px-5 py-4">
-                <p className="text-xs uppercase tracking-wide text-text-subtle">MediTrack dashboard</p>
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-text">Clinic overview</h3>
-                  <span className="rounded-full bg-success-soft/80 px-3 py-1 text-xs font-semibold text-success">
-                    Live
+          <div
+            className="absolute bottom-10 left-1/2 z-20 hidden w-[620px] -translate-x-1/2 rounded-[36px] border border-white/70 bg-white/80 p-7 shadow-card backdrop-blur lg:block animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_28px_60px_rgba(120,140,190,0.2)]"
+            style={{ animationDuration: "10s", animationDelay: "0.4s" }}
+          >
+            <div className="relative pr-[150px]">
+              <p className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
+                Variety of tools
+              </p>
+              <p className="mt-1 text-base font-semibold text-text">Clinic workflows</p>
+              <div className="mt-4 flex flex-wrap gap-2 text-xs text-text-muted">
+                {["Brain", "Heart", "Scheduling", "Reminders", "Analytics"].map((pill) => (
+                  <span
+                    key={pill}
+                    className="rounded-full border border-white/70 bg-white/70 px-4 py-1.5 text-[11px] shadow-sm"
+                  >
+                    {pill}
                   </span>
-                </div>
+                ))}
               </div>
-              <div className="space-y-4 px-5 py-5">
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-border bg-surface-subtle p-4">
-                    <p className="text-xs uppercase tracking-wide text-text-subtle">
-                      Appointments today
-                    </p>
-                    <div className="mt-2 flex items-end justify-between">
-                      <p className="text-2xl font-semibold text-text">18</p>
-                      <p className="text-xs font-semibold text-success">+4</p>
-                    </div>
-                    <div className="mt-3 h-2 w-full rounded-full bg-surface-muted">
-                      <div className="h-full w-3/5 rounded-full bg-primary" />
-                    </div>
-                  </div>
-                  <div className="rounded-2xl border border-border bg-surface-subtle p-4">
-                    <p className="text-xs uppercase tracking-wide text-text-subtle">
-                      Reminders sent
-                    </p>
-                    <div className="mt-2 flex items-end justify-between">
-                      <p className="text-2xl font-semibold text-text">32</p>
-                      <p className="text-xs font-semibold text-secondary">+11</p>
-                    </div>
-                    <div className="mt-3 h-2 w-full rounded-full bg-surface-muted">
-                      <div className="h-full w-4/5 rounded-full bg-secondary" />
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-border bg-surface-subtle p-4">
-                  <p className="text-xs uppercase tracking-wide text-text-subtle">Next up</p>
-                  <div className="mt-3 space-y-3 text-sm text-text-muted">
-                    <div className="flex items-center justify-between">
-                      <span>09:00 AM · Dr. Howard</span>
-                      <span className="rounded-full bg-secondary-soft/80 px-3 py-1 text-xs font-semibold text-secondary">
-                        Scheduled
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>10:30 AM · Pediatrics</span>
-                      <span className="rounded-full bg-secondary-soft/80 px-3 py-1 text-xs font-semibold text-secondary">
-                        Scheduled
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>11:45 AM · Follow-up</span>
-                      <span className="rounded-full bg-success-soft/80 px-3 py-1 text-xs font-semibold text-success">
-                        Confirmed
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-2xl border border-border bg-surface-subtle p-4 text-sm text-text-muted">
-                    <p className="text-xs uppercase tracking-wide text-text-subtle">
-                      Patient notes
-                    </p>
-                    <p className="mt-2">
-                      "Follow up on lab results and ensure updated contact details."
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-border bg-surface-subtle p-4 text-sm text-text-muted">
-                    <p className="text-xs uppercase tracking-wide text-text-subtle">
-                      Email status
-                    </p>
-                    <p className="mt-2">Reminders scheduled for the next 24 hours.</p>
-                  </div>
-                </div>
-              </div>
+              <img
+                src={doctorHero}
+                alt="Doctor"
+                className="absolute -bottom-6 right-0 w-[140px] drop-shadow-[0_20px_40px_rgba(120,140,200,0.3)]"
+              />
+            </div>
+          </div>
+
+          <div
+            className="absolute right-8 bottom-44 z-20 hidden w-72 rounded-[34px] border border-white/70 bg-white/80 p-6 text-xs text-text-muted shadow-card backdrop-blur lg:block animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(120,140,190,0.2)]"
+            style={{ animationDuration: "8.5s", animationDelay: "0.8s" }}
+          >
+            <p className="text-xs font-semibold text-text">Monitor heart trends</p>
+            <svg
+              viewBox="0 0 200 80"
+              className="mt-4 h-16 w-full"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="heroLine" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgba(34,211,191,0.7)" />
+                  <stop offset="100%" stopColor="rgba(168,154,255,0.4)" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M0 55 L40 50 L80 58 L120 32 L160 40 L200 22"
+                fill="none"
+                stroke="url(#heroLine)"
+                strokeWidth="4"
+                strokeLinecap="round"
+              />
+              <circle cx="120" cy="32" r="4" fill="rgb(34,211,191)" />
+              <circle cx="200" cy="22" r="4" fill="rgb(168,154,255)" />
+            </svg>
+            <p className="mt-2 text-[11px] text-text-subtle">Stable in the last week</p>
+          </div>
+
+          <div className="relative z-20 mt-8 grid w-full max-w-xl gap-4 sm:grid-cols-2 lg:hidden">
+            <div className="rounded-3xl border border-white/60 bg-white/70 p-4 text-xs text-text-muted shadow-card backdrop-blur">
+              <p className="text-[11px] uppercase tracking-wide text-text-subtle">Clinic rating</p>
+              <p className="mt-1 text-2xl font-semibold text-text">9.6</p>
+              <p className="text-xs text-text-subtle">Based on 100+ reviews</p>
+            </div>
+            <div className="rounded-3xl border border-white/60 bg-white/70 p-4 text-xs text-text-muted shadow-card backdrop-blur">
+              <p className="text-xs font-semibold text-text">Monitor heart trends</p>
+              <svg viewBox="0 0 200 80" className="mt-3 h-16 w-full" aria-hidden="true">
+                <path
+                  d="M0 55 L40 50 L80 58 L120 32 L160 40 L200 22"
+                  fill="none"
+                  stroke="rgba(34,211,191,0.7)"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+              </svg>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="features" className="space-y-8">
+      <section id="features" className="space-y-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-2">
-            <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-              Core capabilities
-            </p>
-            <h2 className="text-3xl font-semibold text-text">
+            <p className="text-sm font-semibold uppercase tracking-wide text-primary">Core capabilities</p>
+            <h2 className="text-3xl font-semibold text-text sm:text-4xl">
               Everything a small clinic needs, nothing it does not.
             </h2>
           </div>
           <Link to="/login">
-            <Button variant="secondary" className="px-5 py-3 text-base">
-              Launch the portal
-            </Button>
+            <Button variant="secondary">Launch the portal</Button>
           </Link>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {features.map((feature, index) => {
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {features.map((feature) => {
             const Icon = feature.icon;
             return (
-              <Card
-                key={feature.title}
-                className="group relative overflow-hidden border-border/70 bg-surface/90 transition hover:-translate-y-1"
-              >
-                <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/10 blur-2xl transition group-hover:bg-primary/20" />
+              <Card key={feature.title} className="group relative overflow-hidden">
+                <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br from-primary/20 to-secondary/10 blur-2xl transition group-hover:from-primary/30" />
                 <div className="relative space-y-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft/80 text-primary">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-soft/80 text-primary">
                     <Icon className="h-5 w-5" />
                   </div>
                   <h3 className="text-lg font-semibold text-text">{feature.title}</h3>
                   <p className="text-sm text-text-muted">{feature.description}</p>
-                  <div
-                    className="text-xs font-semibold uppercase tracking-wide text-text-subtle"
-                    style={{ animationDelay: `${index * 80}ms` }}
-                  >
+                  <div className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
                     Clinic ready
                   </div>
                 </div>
@@ -272,19 +258,17 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section id="workflow" className="grid gap-8 lg:grid-cols-[1fr,1.1fr]">
+      <section id="workflow" className="grid gap-10 lg:grid-cols-[1fr,1.05fr]">
         <div className="space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-            Daily workflow
-          </p>
-          <h2 className="text-3xl font-semibold text-text">
+          <p className="text-sm font-semibold uppercase tracking-wide text-primary">Daily workflow</p>
+          <h2 className="text-3xl font-semibold text-text sm:text-4xl">
             A clear clinic flow from intake to follow-up.
           </h2>
           <p className="text-base text-text-muted">
             MediTrack keeps staff aligned with a single view of patient profiles and appointments.
             Keep the day organized, prevent schedule conflicts, and maintain continuity of care.
           </p>
-          <div className="rounded-3xl border border-border/70 bg-surface-subtle p-6">
+          <div className="rounded-3xl border border-white/60 bg-white/65 p-6 text-sm text-text-muted shadow-card backdrop-blur">
             <p className="text-sm font-semibold text-text">What MediTrack does not do</p>
             <p className="mt-2 text-sm text-text-muted">
               No billing, insurance claims, prescriptions, or advanced EMR charting. MediTrack
@@ -294,7 +278,7 @@ const LandingPage = () => {
         </div>
         <div className="space-y-4">
           {workflow.map((item) => (
-            <div key={item.step} className="rounded-3xl border border-border/70 bg-surface p-5 shadow-sm">
+            <div key={item.step} className="rounded-3xl border border-white/60 bg-white/70 p-5 shadow-card backdrop-blur">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
@@ -312,12 +296,12 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
-        <Card className="space-y-4 border-border/70 bg-surface/90">
+      <section id="communication" className="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
+        <Card className="space-y-4">
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">
             Patient communication
           </p>
-          <h2 className="text-3xl font-semibold text-text">
+          <h2 className="text-3xl font-semibold text-text sm:text-4xl">
             Email reminders keep patients on time without extra work.
           </h2>
           <p className="text-base text-text-muted">
@@ -325,13 +309,13 @@ const LandingPage = () => {
             automatically when patients have an email on file.
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-border/70 bg-surface-subtle p-4 text-sm text-text-muted">
+            <div className="rounded-2xl border border-white/60 bg-white/70 p-4 text-sm text-text-muted">
               <p className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
                 Confirmations
               </p>
               <p className="mt-2">Immediate email after scheduling.</p>
             </div>
-            <div className="rounded-2xl border border-border/70 bg-surface-subtle p-4 text-sm text-text-muted">
+            <div className="rounded-2xl border border-white/60 bg-white/70 p-4 text-sm text-text-muted">
               <p className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
                 Reminders
               </p>
@@ -339,7 +323,7 @@ const LandingPage = () => {
             </div>
           </div>
         </Card>
-        <div className="rounded-3xl border border-border/70 bg-surface-subtle p-6">
+        <div className="rounded-3xl border border-white/60 bg-white/70 p-6 text-sm text-text-muted shadow-card backdrop-blur">
           <h3 className="text-lg font-semibold text-text">Why clinics choose MediTrack</h3>
           <ul className="mt-4 space-y-3 text-sm text-text-muted">
             <li className="flex items-start gap-2">
@@ -362,14 +346,12 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="relative overflow-hidden rounded-[32px] border border-border/60 bg-surface px-8 py-10 shadow-card">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,118,110,0.12),_transparent_55%)]" />
+      <section className="relative overflow-hidden rounded-[36px] border border-white/60 bg-white/65 px-8 py-10 shadow-card">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(94,234,212,0.16),_transparent_55%)]" />
         <div className="relative grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
           <div className="space-y-3">
-            <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-              Start in minutes
-            </p>
-            <h2 className="text-3xl font-semibold text-text">
+            <p className="text-sm font-semibold uppercase tracking-wide text-primary">Start in minutes</p>
+            <h2 className="text-3xl font-semibold text-text sm:text-4xl">
               A calm, reliable clinic operations platform.
             </h2>
             <p className="text-base text-text-muted">
@@ -379,13 +361,13 @@ const LandingPage = () => {
           </div>
           <div className="flex flex-col items-start gap-3">
             <Link to={primaryAction.to} className="w-full">
-              <Button className="w-full justify-center gap-2 px-5 py-3 text-base">
+              <Button size="lg" className="w-full justify-center gap-2">
                 {primaryAction.label}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link to="/login" className="w-full">
-              <Button variant="secondary" className="w-full justify-center px-5 py-3 text-base">
+              <Button size="lg" variant="secondary" className="w-full justify-center">
                 Staff login
               </Button>
             </Link>

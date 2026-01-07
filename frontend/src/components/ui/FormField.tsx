@@ -22,7 +22,7 @@ export const InputField = ({
       {label}
       <input
         className={clsx(
-          "rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-text shadow-sm transition-all duration-200 placeholder:text-text-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30",
+          "glass-input",
           error && "border-danger focus:ring-danger/40",
           className
         )}
@@ -48,7 +48,7 @@ export const TextAreaField = ({
       {label}
       <textarea
         className={clsx(
-          "min-h-[120px] rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-text shadow-sm transition-all duration-200 placeholder:text-text-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30",
+          "glass-input min-h-[120px]",
           error && "border-danger focus:ring-danger/40",
           className
         )}

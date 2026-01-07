@@ -33,31 +33,33 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden rounded-[32px] border border-border/40 bg-gradient-to-br from-surface-subtle via-surface to-secondary-soft/60 px-6 py-10 shadow-card">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,118,110,0.16),_transparent_45%)]" />
-      <div className="relative z-10 grid w-full max-w-none gap-10 rounded-[32px] border border-border/60 bg-surface/50 p-6 shadow-card backdrop-blur-md sm:p-10 lg:p-12 xl:grid-cols-2">
-        <div className="rounded-3xl border border-border/40 bg-surface/70 p-8 shadow-card backdrop-blur animate-fadeUp">
+    <div className="relative flex min-h-[70vh] items-center justify-center overflow-hidden px-4 py-10">
+      <div className="pointer-events-none absolute left-12 top-10 h-32 w-32 rounded-full bg-gradient-to-br from-secondary/40 to-white/60 blur-2xl" />
+      <div className="pointer-events-none absolute right-10 top-24 h-24 w-24 rounded-full bg-gradient-to-br from-primary/40 to-white/60 blur-2xl" />
+      <div className="pointer-events-none absolute bottom-10 left-10 h-28 w-28 rounded-full bg-gradient-to-br from-danger-soft/60 to-white/60 blur-2xl" />
+      <div className="relative z-10 grid w-full max-w-6xl gap-10 rounded-[36px] border border-white/60 bg-white/70 p-6 shadow-card backdrop-blur-xl sm:p-10 lg:p-12 xl:grid-cols-2">
+        <div className="rounded-3xl border border-white/60 bg-white/70 p-8 shadow-card backdrop-blur animate-fadeUp">
           <p className="text-sm font-medium uppercase tracking-wide text-primary">Clinic Portal</p>
           <h1 className="mt-3 text-3xl font-semibold text-text">MediTrack Admin Portal</h1>
           <p className="mt-3 text-base text-text-muted">
             Only clinic staff can access orchestration tools for patient journeys, schedules, and communications.
           </p>
           <div className="mt-8 grid gap-4 text-sm text-text-muted">
-            <div className="flex items-center gap-3 rounded-2xl bg-surface-subtle p-3">
+            <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/70 p-3 shadow-sm backdrop-blur">
               <div className="rounded-full bg-primary-soft/80 p-2 text-primary">1</div>
               Advanced scheduling intelligence
             </div>
-            <div className="flex items-center gap-3 rounded-2xl bg-surface-subtle p-3">
+            <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/70 p-3 shadow-sm backdrop-blur">
               <div className="rounded-full bg-primary-soft/80 p-2 text-primary">2</div>
               Unified patient insights
             </div>
-            <div className="flex items-center gap-3 rounded-2xl bg-surface-subtle p-3">
+            <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/70 p-3 shadow-sm backdrop-blur">
               <div className="rounded-full bg-primary-soft/80 p-2 text-primary">3</div>
               Secure medical-grade access
             </div>
           </div>
         </div>
-        <div className="glass-card animate-fadeUp border border-border/60 p-8 shadow-card">
+        <div className="glass-card animate-fadeUp border border-white/60 p-8 shadow-card">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <h2 className="text-2xl font-semibold text-text">Welcome Back</h2>
@@ -83,11 +85,11 @@ const LoginPage = () => {
               hint="Use the admin credentials from setup documentation."
             />
             {error && (
-              <div className="rounded-2xl bg-danger-soft/80 px-4 py-3 text-sm text-danger">
+              <div className="rounded-2xl border border-danger/40 bg-danger-soft/80 px-4 py-3 text-sm text-danger shadow-sm">
                 {error}
               </div>
             )}
-            <Button type="submit" isLoading={loading} className="w-full py-3 text-base">
+            <Button type="submit" size="lg" isLoading={loading} className="w-full">
               Sign In Securely
             </Button>
             <p className="text-center text-sm text-text-muted">

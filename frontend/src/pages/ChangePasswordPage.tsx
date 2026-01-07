@@ -104,7 +104,7 @@ const ChangePasswordPage = () => {
           name={name}
           value={value}
           onChange={handleChange}
-          className="w-full rounded-2xl border border-border bg-surface px-4 py-3 pr-12 text-sm text-text shadow-sm transition-all duration-200 placeholder:text-text-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="glass-input w-full pr-12 text-sm"
         />
         <button
           type="button"
@@ -139,7 +139,7 @@ const ChangePasswordPage = () => {
         {success && (
           <div className="rounded-2xl bg-success-soft/80 px-4 py-3 text-sm text-success">{success}</div>
         )}
-        <Button type="submit" className="w-full justify-center py-3" isLoading={submitting}>
+        <Button type="submit" size="lg" className="w-full justify-center" isLoading={submitting}>
           {submitting ? "Updating..." : "Change Password"}
         </Button>
       </form>

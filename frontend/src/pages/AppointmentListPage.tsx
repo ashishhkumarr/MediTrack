@@ -257,7 +257,7 @@ const AppointmentListPage = () => {
                 type="checkbox"
                 checked={showCancelled}
                 onChange={(event) => setShowCancelled(event.target.checked)}
-                className="h-4 w-4 rounded border-border text-primary focus:ring-primary/40"
+                className="h-4 w-4 rounded border-white/60 bg-white/70 text-primary focus:ring-primary/40"
               />
               Show cancelled
             </label>
@@ -279,9 +279,9 @@ const AppointmentListPage = () => {
       )}
 
       {!!filteredAppointments.length && (
-        <div className="overflow-x-auto rounded-2xl border border-border">
+        <div className="overflow-x-auto rounded-2xl border border-white/60 bg-white/60 shadow-sm backdrop-blur">
           <table className="min-w-full text-left text-sm text-text-muted">
-            <thead className="bg-surface-subtle text-xs uppercase tracking-wide text-text-subtle">
+            <thead className="bg-white/75 text-xs uppercase tracking-wide text-text-subtle backdrop-blur">
               <tr>
                 <th className="px-4 py-3 font-medium">Patient</th>
                 <th className="px-4 py-3 font-medium">Date & Time</th>
@@ -291,13 +291,13 @@ const AppointmentListPage = () => {
                 <th className="px-4 py-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border bg-surface">
+            <tbody className="divide-y divide-white/40 bg-white/60">
               {filteredAppointments.map((appointment) => {
                 const { dateLabel, timeRange } = formatDateTimeCell(appointment);
                 const patientName =
                   appointment.patient?.full_name ?? `Patient #${appointment.patient_id}`;
                 return (
-                  <tr key={appointment.id} className="transition hover:bg-surface-subtle/80">
+                  <tr key={appointment.id} className="transition hover:bg-white/80">
                     <td className="px-4 py-3">
                       <p className="text-sm font-semibold text-text">{patientName}</p>
                     </td>
@@ -316,11 +316,12 @@ const AppointmentListPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap justify-end gap-2">
-                        <Button variant="ghost" onClick={() => handleView(appointment)}>
+                        <Button variant="ghost" size="sm" onClick={() => handleView(appointment)}>
                           View
                         </Button>
                         <Button
                           variant="ghost"
+                          size="sm"
                           onClick={() => handleEdit(appointment)}
                           disabled={appointment.status === "Cancelled"}
                         >
@@ -328,6 +329,7 @@ const AppointmentListPage = () => {
                         </Button>
                         <Button
                           variant="ghost"
+                          size="sm"
                           onClick={() => handleComplete(appointment.id)}
                           disabled={
                             appointment.status === "Completed" ||
@@ -338,6 +340,7 @@ const AppointmentListPage = () => {
                         </Button>
                         <Button
                           variant="ghost"
+                          size="sm"
                           onClick={() => handleCancelPrompt(appointment)}
                           disabled={appointment.status === "Cancelled"}
                         >
@@ -354,7 +357,7 @@ const AppointmentListPage = () => {
       )}
 
       {!filteredAppointments.length && (
-        <div className="rounded-2xl bg-surface-subtle px-4 py-6 text-center text-sm text-text-muted">
+        <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
           <p>
             {showCancelled
               ? "No appointments found yet."
@@ -373,10 +376,10 @@ const AppointmentListPage = () => {
       {isViewOpen &&
         selectedAppointment &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 sm:p-6 animate-fadeIn">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={closeModals} />
-            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-card max-h-[90vh] animate-modalIn">
-              <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-border bg-surface/95 px-6 pb-4 pt-5 backdrop-blur">
+            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-white/60 bg-white/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
+              <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-white/60 bg-white/85 px-6 pb-4 pt-5 backdrop-blur">
                 <div>
                   <h3 className="text-lg font-semibold text-text">Appointment details</h3>
                   <p className="text-sm text-text-muted">
@@ -389,18 +392,18 @@ const AppointmentListPage = () => {
               </div>
               <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-border/70 bg-surface-subtle px-4 py-3">
+                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Patient</p>
                     <p className="mt-1 text-sm text-text-muted">
                       {selectedAppointment.patient?.full_name ??
                         `Patient #${selectedAppointment.patient_id}`}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-border/70 bg-surface-subtle px-4 py-3">
+                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Status</p>
                     <p className="mt-1 text-sm text-text-muted">{selectedAppointment.status}</p>
                   </div>
-                  <div className="rounded-2xl border border-border/70 bg-surface-subtle px-4 py-3">
+                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Date & Time</p>
                     <p className="mt-1 text-sm text-text-muted">
                       {formatDateTimeCell(selectedAppointment).dateLabel}
@@ -409,19 +412,19 @@ const AppointmentListPage = () => {
                       {formatDateTimeCell(selectedAppointment).timeRange}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-border/70 bg-surface-subtle px-4 py-3">
+                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Doctor</p>
                     <p className="mt-1 text-sm text-text-muted">
                       {selectedAppointment.doctor_name}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-border/70 bg-surface-subtle px-4 py-3">
+                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Department</p>
                     <p className="mt-1 text-sm text-text-muted">
                       {selectedAppointment.department || "—"}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-border/70 bg-surface-subtle px-4 py-3">
+                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Notes</p>
                     <p className="mt-1 text-sm text-text-muted">
                       {selectedAppointment.notes || "—"}
@@ -429,7 +432,7 @@ const AppointmentListPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-border bg-surface/95 px-6 py-4 backdrop-blur">
+              <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-white/60 bg-white/85 px-6 py-4 backdrop-blur">
                 <Button variant="secondary" type="button" onClick={closeModals}>
                   Close
                 </Button>
@@ -442,10 +445,10 @@ const AppointmentListPage = () => {
       {isEditOpen &&
         selectedAppointment &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 sm:p-6 animate-fadeIn">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={closeModals} />
-            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-card max-h-[90vh] animate-modalIn">
-              <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-border bg-surface/95 px-6 pb-4 pt-5 backdrop-blur">
+            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-white/60 bg-white/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
+              <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-white/60 bg-white/85 px-6 pb-4 pt-5 backdrop-blur">
                 <div>
                   <h3 className="text-lg font-semibold text-text">Reschedule appointment</h3>
                   <p className="text-sm text-text-muted">
@@ -498,7 +501,7 @@ const AppointmentListPage = () => {
                   />
                   {actionError && <ErrorState message={actionError} />}
                 </div>
-                <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-border bg-surface/95 px-6 py-4 backdrop-blur">
+                <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-white/60 bg-white/85 px-6 py-4 backdrop-blur">
                   <Button variant="secondary" type="button" onClick={closeModals}>
                     Cancel
                   </Button>
@@ -519,10 +522,10 @@ const AppointmentListPage = () => {
       {isCancelOpen &&
         selectedAppointment &&
         createPortal(
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 sm:p-6 animate-fadeIn">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={closeModals} />
-            <div className="relative z-10 w-full max-w-md overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-card animate-modalIn">
-              <div className="border-b border-border px-6 pb-4 pt-5">
+            <div className="relative z-10 w-full max-w-md overflow-hidden rounded-[32px] border border-white/60 bg-white/80 shadow-card backdrop-blur-xl animate-modalIn">
+              <div className="border-b border-white/60 px-6 pb-4 pt-5">
                 <h3 className="text-lg font-semibold text-text">Cancel appointment</h3>
                 <p className="text-sm text-text-muted">
                   Are you sure you want to cancel this appointment? This will mark it as cancelled.
@@ -540,7 +543,7 @@ const AppointmentListPage = () => {
                 </p>
                 {actionError && <ErrorState message={actionError} />}
               </div>
-              <div className="flex flex-wrap justify-end gap-3 border-t border-border px-6 py-4">
+              <div className="flex flex-wrap justify-end gap-3 border-t border-white/60 px-6 py-4">
                 <Button variant="secondary" type="button" onClick={closeModals}>
                   Keep appointment
                 </Button>

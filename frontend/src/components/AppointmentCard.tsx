@@ -16,7 +16,7 @@ export const AppointmentCard = ({ appointment }: Props) => {
   const statusStyle = statusColors[appointment.status] ?? "bg-surface-muted text-text-muted";
 
   return (
-    <div className="glass-card flex flex-col gap-3 border border-border/70 p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+    <div className="glass-card flex flex-col gap-3 border border-white/60 p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs uppercase tracking-wide text-text-subtle">{appointment.department || "General"}</p>
@@ -37,7 +37,7 @@ export const AppointmentCard = ({ appointment }: Props) => {
         {new Date(appointment.appointment_datetime).toLocaleString()}
       </div>
       {appointment.notes && (
-        <div className="flex items-start gap-2 rounded-2xl bg-surface-subtle px-3 py-2 text-sm text-text-muted">
+        <div className="flex items-start gap-2 rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-sm text-text-muted shadow-sm backdrop-blur">
           <FileText className="h-4 w-4" />
           {appointment.notes}
         </div>

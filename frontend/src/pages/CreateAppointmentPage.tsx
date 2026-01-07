@@ -76,7 +76,7 @@ const CreateAppointmentPage = () => {
           )}
         </div>
       ) : (
-        <div className="mt-4 rounded-2xl bg-surface-subtle px-4 py-6 text-sm text-text-muted">
+        <div className="mt-4 rounded-2xl border border-white/60 bg-white/70 px-4 py-6 text-sm text-text-muted shadow-sm backdrop-blur">
           <p>Add a patient profile before scheduling appointments.</p>
           <Button
             variant="secondary"

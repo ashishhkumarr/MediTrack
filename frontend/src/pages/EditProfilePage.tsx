@@ -293,15 +293,17 @@ const EditProfilePage = () => {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Button
             type="submit"
+            size="lg"
             disabled={!hasChanges || hasErrors || mutation.isPending}
-            className="w-full justify-center py-3 sm:w-auto"
+            className="w-full justify-center sm:w-auto"
           >
             {mutation.isPending ? "Saving..." : "Save changes"}
           </Button>
           <Button
             type="button"
             variant="secondary"
-            className="w-full justify-center py-3 sm:w-auto"
+            size="lg"
+            className="w-full justify-center sm:w-auto"
             onClick={() => navigate("/change-password")}
           >
             Change Password

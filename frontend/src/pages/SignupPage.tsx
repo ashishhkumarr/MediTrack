@@ -219,10 +219,12 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-surface-subtle via-surface to-secondary-soft/60 px-4 py-10">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,118,110,0.16),_transparent_45%)]" />
-      <div className="relative z-10 mx-auto max-w-5xl space-y-6 rounded-3xl border border-border/40 bg-surface/85 p-6 shadow-card backdrop-blur animate-fadeUp">
-        <div className="flex flex-col gap-3 border-b border-border/70 pb-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="relative flex min-h-[70vh] items-center justify-center px-4 py-10">
+      <div className="pointer-events-none absolute left-10 top-10 h-32 w-32 rounded-full bg-gradient-to-br from-secondary/40 to-white/60 blur-2xl" />
+      <div className="pointer-events-none absolute right-10 top-16 h-24 w-24 rounded-full bg-gradient-to-br from-primary/40 to-white/60 blur-2xl" />
+      <div className="pointer-events-none absolute bottom-10 right-12 h-28 w-28 rounded-full bg-gradient-to-br from-warning-soft/70 to-white/60 blur-2xl" />
+      <div className="relative z-10 mx-auto w-full max-w-6xl space-y-6 rounded-[36px] border border-white/60 bg-white/75 p-6 shadow-card backdrop-blur-xl animate-fadeUp">
+        <div className="flex flex-col gap-3 border-b border-white/60 pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-primary">Clinic onboarding</p>
             <h1 className="mt-1 text-3xl font-semibold text-text">Create your MediTrack account</h1>
@@ -383,14 +385,14 @@ const SignupPage = () => {
                   error={errors.confirm_password}
                 />
               </div>
-              <div className="rounded-2xl border border-border/60 bg-surface-subtle p-4">
+              <div className="rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm backdrop-blur">
                 <label className="flex items-start gap-3 text-sm text-text">
                   <input
                     type="checkbox"
                     name="acknowledgeDemo"
                     checked={formState.acknowledgeDemo}
                     onChange={handleChange}
-                    className="mt-1 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    className="mt-1 h-4 w-4 rounded border-white/60 bg-white/70 text-primary focus:ring-primary"
                   />
                   <span>
                     I understand this is a demo and I will not enter real patient data.
@@ -404,7 +406,7 @@ const SignupPage = () => {
           )}
 
           {step === "otp" && (
-            <div className="space-y-4 rounded-2xl border border-border/70 bg-surface-subtle p-4">
+            <div className="space-y-4 rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm backdrop-blur">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-text">Verify your email</p>
@@ -463,20 +465,20 @@ const SignupPage = () => {
           )}
 
           {otpMessage && (
-            <div className="rounded-2xl bg-success-soft/80 px-4 py-3 text-sm text-success">
+            <div className="rounded-2xl border border-success/30 bg-success-soft/80 px-4 py-3 text-sm text-success shadow-sm">
               {otpMessage}
             </div>
           )}
 
           {apiError && (
-            <div className="rounded-2xl bg-danger-soft/80 px-4 py-3 text-sm text-danger">
+            <div className="rounded-2xl border border-danger/40 bg-danger-soft/80 px-4 py-3 text-sm text-danger shadow-sm">
               {apiError}
             </div>
           )}
 
           {step === "details" ? (
             <div className="space-y-3">
-              <Button type="submit" className="w-full py-3 text-base" isLoading={sendingOtp}>
+              <Button type="submit" size="lg" className="w-full" isLoading={sendingOtp}>
                 {sendingOtp ? "Sending code..." : "Send OTP"}
               </Button>
               {bypassEnabled && (
@@ -484,7 +486,8 @@ const SignupPage = () => {
                   <Button
                     type="button"
                     variant="secondary"
-                    className="w-full py-3 text-base"
+                    size="lg"
+                    className="w-full"
                     onClick={handleBypassSignup}
                     disabled={sendingOtp}
                   >
@@ -497,7 +500,8 @@ const SignupPage = () => {
           ) : (
             <Button
               type="submit"
-              className="w-full py-3 text-base"
+              size="lg"
+              className="w-full"
               isLoading={verifyingOtp}
               disabled={otp.length !== 6 || verifyingOtp}
             >

@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { DemoBanner } from "./components/DemoBanner";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Navbar } from "./components/Navbar";
+import { PageShell } from "./components/ui/PageShell";
 import { useAuth } from "./hooks/useAuth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AuditLogPage from "./pages/AuditLogPage";
@@ -32,10 +33,10 @@ const App = () => {
       location.pathname.startsWith(path)
     );
   return (
-    <div className="min-h-screen">
+    <PageShell>
       {showDemoBanner && <DemoBanner />}
       <Navbar />
-      <main className="w-full max-w-none px-6 py-8 sm:px-8 lg:px-12 2xl:px-16">
+      <main className="mx-auto w-full max-w-[1400px] px-4 py-10 sm:px-6 lg:px-10">
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -108,7 +109,7 @@ const App = () => {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
-    </div>
+    </PageShell>
   );
 };
 

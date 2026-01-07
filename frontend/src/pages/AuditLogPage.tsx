@@ -53,7 +53,7 @@ const AuditLogPage = () => {
         description="Track who did what and when across your clinic workspace."
       />
 
-      <Card className="p-4">
+      <Card className="p-5">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold uppercase tracking-wide text-text-muted">
@@ -62,7 +62,7 @@ const AuditLogPage = () => {
             <select
               value={actionFilter}
               onChange={(event) => setActionFilter(event.target.value)}
-              className="rounded-xl border border-border bg-surface px-3 py-2 text-sm text-text shadow-sm focus:border-primary focus:outline-none"
+              className="glass-input text-sm"
             >
               <option value="">All actions</option>
               {ACTION_OPTIONS.map((action) => (
@@ -79,7 +79,7 @@ const AuditLogPage = () => {
             <select
               value={entityFilter}
               onChange={(event) => setEntityFilter(event.target.value)}
-              className="rounded-xl border border-border bg-surface px-3 py-2 text-sm text-text shadow-sm focus:border-primary focus:outline-none"
+              className="glass-input text-sm"
             >
               <option value="">All entities</option>
               {ENTITY_OPTIONS.map((entity) => (
@@ -97,7 +97,7 @@ const AuditLogPage = () => {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search by summary..."
-              className="rounded-xl border border-border bg-surface px-3 py-2 text-sm text-text shadow-sm focus:border-primary focus:outline-none"
+              className="glass-input text-sm"
             />
           </div>
         </div>
@@ -110,7 +110,7 @@ const AuditLogPage = () => {
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
-              <thead className="bg-surface-muted text-xs uppercase text-text-muted">
+              <thead className="bg-white/70 text-xs uppercase text-text-muted backdrop-blur">
                 <tr>
                   <th className="px-4 py-3">Time</th>
                   <th className="px-4 py-3">Action</th>
@@ -129,7 +129,7 @@ const AuditLogPage = () => {
                   filtered.map((log) => (
                     <tr
                       key={log.id}
-                      className="border-b border-border/60 bg-surface/70 hover:bg-surface-subtle"
+                      className="border-b border-white/40 bg-white/60 hover:bg-white/80"
                     >
                       <td className="px-4 py-3 text-text-muted">
                         {new Date(log.created_at).toLocaleString()}

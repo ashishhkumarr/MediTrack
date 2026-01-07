@@ -206,6 +206,7 @@ const PatientDetailPage = () => {
         </Link>
         <Button
           variant="secondary"
+          size="sm"
           onClick={handleExport}
           isLoading={exporting}
           disabled={exporting}
@@ -221,27 +222,27 @@ const PatientDetailPage = () => {
           description="Core contact and profile details."
         />
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-surface-subtle px-4 py-3">
+          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Full name</p>
             <p className="mt-1 text-sm text-text-muted">{patient.full_name}</p>
           </div>
-          <div className="rounded-2xl border border-border bg-surface-subtle px-4 py-3">
+          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Date of birth</p>
             <p className="mt-1 text-sm text-text-muted">{formatDate(patient.date_of_birth)}</p>
           </div>
-          <div className="rounded-2xl border border-border bg-surface-subtle px-4 py-3">
+          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Sex</p>
             <p className="mt-1 text-sm text-text-muted">{patient.sex || "—"}</p>
           </div>
-          <div className="rounded-2xl border border-border bg-surface-subtle px-4 py-3">
+          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Email</p>
             <p className="mt-1 text-sm text-text-muted">{patient.email || "—"}</p>
           </div>
-          <div className="rounded-2xl border border-border bg-surface-subtle px-4 py-3">
+          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Phone</p>
             <p className="mt-1 text-sm text-text-muted">{patient.phone || "—"}</p>
           </div>
-          <div className="rounded-2xl border border-border bg-surface-subtle px-4 py-3">
+          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Address</p>
             <p className="mt-1 text-sm text-text-muted">{patient.address || "—"}</p>
           </div>
@@ -296,7 +297,7 @@ const PatientDetailPage = () => {
         {!appointmentsLoading && !appointmentsError && (
           <div className="space-y-6">
             {!appointments?.length && (
-              <p className="rounded-2xl bg-surface-subtle px-4 py-6 text-center text-sm text-text-muted">
+              <p className="rounded-2xl border border-white/60 bg-white/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
                 No appointments yet. Schedule the first visit when the patient is ready.
               </p>
             )}
@@ -308,7 +309,7 @@ const PatientDetailPage = () => {
                     upcoming.map((appointment) => (
                       <div
                         key={`upcoming-${appointment.id}`}
-                        className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface px-4 py-3"
+                        className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/60 bg-white/70 px-4 py-3 shadow-sm backdrop-blur"
                       >
                         <div>
                           <p className="text-sm font-semibold text-text">
@@ -326,7 +327,7 @@ const PatientDetailPage = () => {
                       </div>
                     ))
                   ) : (
-                    <p className="rounded-2xl bg-surface-subtle px-4 py-4 text-sm text-text-muted">
+                    <p className="rounded-2xl border border-white/60 bg-white/70 px-4 py-4 text-sm text-text-muted shadow-sm backdrop-blur">
                       No upcoming appointments scheduled.
                     </p>
                   )}
@@ -337,7 +338,7 @@ const PatientDetailPage = () => {
                     past.map((appointment) => (
                       <div
                         key={`past-${appointment.id}`}
-                        className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface px-4 py-3"
+                        className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/60 bg-white/70 px-4 py-3 shadow-sm backdrop-blur"
                       >
                         <div>
                           <p className="text-sm font-semibold text-text">
@@ -355,7 +356,7 @@ const PatientDetailPage = () => {
                       </div>
                     ))
                   ) : (
-                    <p className="rounded-2xl bg-surface-subtle px-4 py-4 text-sm text-text-muted">
+                    <p className="rounded-2xl border border-white/60 bg-white/70 px-4 py-4 text-sm text-text-muted shadow-sm backdrop-blur">
                       No past appointments to show.
                     </p>
                   )}

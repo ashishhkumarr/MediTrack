@@ -93,7 +93,7 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
             name="patient_id"
             value={formState.patient_id}
             onChange={handleChange}
-            className="mt-2 w-full rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-text shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="glass-input mt-2 w-full text-sm"
           >
             {filteredPatients.map((patient) => (
               <option key={patient.id} value={patient.id}>
@@ -104,7 +104,7 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
           {errors.patient_id && <span className="mt-1 block text-xs text-danger">{errors.patient_id}</span>}
         </label>
         {!filteredPatients.length && (
-          <p className="rounded-2xl bg-surface-subtle px-4 py-3 text-sm text-text-muted">
+          <p className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3 text-sm text-text-muted shadow-sm backdrop-blur">
             No patients match your search.
           </p>
         )}
@@ -149,7 +149,7 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
         onChange={handleChange}
         placeholder="Add patient prep instructions or key reminders…"
       />
-      <Button type="submit" className="w-full justify-center py-3" isLoading={isSubmitting}>
+      <Button type="submit" size="lg" className="w-full justify-center" isLoading={isSubmitting}>
         {isSubmitting ? "Scheduling..." : "Schedule appointment"}
       </Button>
     </form>

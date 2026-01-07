@@ -56,15 +56,15 @@ const LineChart = ({ data }: { data: DayPoint[] }) => {
       >
         <defs>
           <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(34,197,94,0.35)" />
-            <stop offset="100%" stopColor="rgba(34,197,94,0.04)" />
+            <stop offset="0%" stopColor="rgba(34,211,191,0.35)" />
+            <stop offset="100%" stopColor="rgba(34,211,191,0.05)" />
           </linearGradient>
         </defs>
         <path d={areaPath} fill="url(#areaFill)" />
         <path
           d={path}
           fill="none"
-          stroke="rgb(34,197,94)"
+          stroke="rgb(34,211,191)"
           strokeWidth="3"
         />
         {points.map((point, index) => (
@@ -73,7 +73,7 @@ const LineChart = ({ data }: { data: DayPoint[] }) => {
             cx={point.x}
             cy={point.y}
             r="3.5"
-            fill="rgb(34,197,94)"
+            fill="rgb(34,211,191)"
           >
             <title>
               {point.date}: {point.count}
@@ -139,7 +139,7 @@ const StatusBars = ({ data }: { data: StatusPoint[] }) => {
                 {point.count} ({percentage}%)
               </span>
             </div>
-            <div className="h-2 w-full rounded-full bg-surface-subtle">
+            <div className="h-2 w-full rounded-full bg-white/60">
               <div
                 className={`h-2 rounded-full ${colors[point.status] || colors.other}`}
                 style={{ width: `${percentage}%` }}

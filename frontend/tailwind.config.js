@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Manrope", "ui-sans-serif", "system-ui", "sans-serif"]
+        sans: ["Plus Jakarta Sans", "ui-sans-serif", "system-ui", "sans-serif"]
       },
       colors: {
         surface: {
@@ -42,7 +42,7 @@ export default {
         }
       },
       boxShadow: {
-        card: "0 18px 45px rgba(15, 23, 42, 0.12)"
+        card: "0 25px 60px rgba(120, 140, 190, 0.18)"
       },
       animation: {
         fadeIn: "fadeIn 0.25s ease-out both",
