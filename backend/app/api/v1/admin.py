@@ -47,7 +47,7 @@ DEMO_APPOINTMENTS = [
         "end": datetime(2025, 1, 15, 9, 30),
         "doctor": "Dr. Rivera",
         "department": "Primary Care",
-        "status": AppointmentStatus.scheduled,
+        "status": AppointmentStatus.confirmed,
         "notes": "Routine check-in.",
     },
     {

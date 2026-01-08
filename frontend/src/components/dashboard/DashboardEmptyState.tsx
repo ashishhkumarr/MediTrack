@@ -9,7 +9,7 @@ export const DashboardEmptyState = () => {
 
   return (
     <Card className="flex flex-col items-center gap-4 px-6 py-10 text-center">
-      <div className="rounded-full bg-white/70 p-3 text-secondary shadow-sm backdrop-blur">
+      <div className="rounded-full bg-surface/70 p-3 text-secondary shadow-sm backdrop-blur">
         <Activity className="h-6 w-6" />
       </div>
       <div>

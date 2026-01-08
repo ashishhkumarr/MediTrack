@@ -17,9 +17,9 @@ const variantStyles: Record<Variant, string> = {
   primary:
     "bg-gradient-to-r from-primary to-secondary text-white shadow-[0_14px_36px_rgba(102,128,255,0.28)] hover:shadow-[0_18px_40px_rgba(42,203,184,0.32)] focus-visible:ring-primary/40",
   secondary:
-    "border border-white/60 bg-white/70 text-text shadow-sm backdrop-blur hover:border-primary/30 hover:bg-white/90 focus-visible:ring-primary/30",
+    "border border-border/60 bg-surface/70 text-text shadow-sm backdrop-blur hover:border-primary/30 hover:bg-surface/90 focus-visible:ring-primary/30",
   ghost:
-    "text-text-muted hover:text-text hover:bg-white/60 focus-visible:ring-primary/20",
+    "text-text-muted hover:text-text hover:bg-surface/60 focus-visible:ring-primary/20",
   destructive:
     "bg-gradient-to-r from-danger to-warning text-white shadow-[0_14px_36px_rgba(244,105,122,0.25)] hover:shadow-[0_18px_40px_rgba(244,105,122,0.3)] focus-visible:ring-danger/40"
 };

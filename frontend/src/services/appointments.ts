@@ -1,7 +1,12 @@
 import { apiClient } from "./api";
 import type { Patient } from "./patients";
 
-export type AppointmentStatus = "Scheduled" | "Completed" | "Cancelled";
+export type AppointmentStatus =
+  | "Unconfirmed"
+  | "Confirmed"
+  | "Scheduled"
+  | "Completed"
+  | "Cancelled";
 
 export interface Appointment {
   id: number;

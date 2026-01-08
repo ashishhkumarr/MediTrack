@@ -86,13 +86,13 @@ const LandingPage = () => {
 
   return (
     <div className="space-y-24 pb-20">
-      <section className="relative overflow-hidden rounded-[40px] border border-white/60 bg-white/60 p-8 shadow-card sm:p-12 lg:p-16">
+      <section className="relative overflow-hidden rounded-[40px] border border-border/60 bg-surface/60 p-8 shadow-card sm:p-12 lg:p-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(112,144,255,0.16),_transparent_55%)]" />
-        <div className="pointer-events-none absolute -left-16 top-12 h-52 w-52 animate-float rounded-full bg-gradient-to-br from-secondary/40 to-white/50 blur-2xl" />
-        <div className="pointer-events-none absolute -right-10 top-10 h-40 w-40 animate-float rounded-full bg-gradient-to-br from-primary/40 to-white/50 blur-2xl" />
+        <div className="pointer-events-none absolute -left-16 top-12 h-52 w-52 animate-float rounded-full bg-gradient-to-br from-secondary/40 to-surface/50 blur-2xl" />
+        <div className="pointer-events-none absolute -right-10 top-10 h-40 w-40 animate-float rounded-full bg-gradient-to-br from-primary/40 to-surface/50 blur-2xl" />
 
         <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm">
+          <span className="inline-flex items-center gap-2 rounded-full bg-surface/80 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm">
             <Sparkles className="h-4 w-4" />
             Your everyday clinic protection
           </span>
@@ -117,9 +117,9 @@ const LandingPage = () => {
         </div>
 
         <div className="relative mt-16 flex min-h-[400px] items-end justify-center lg:min-h-[480px]">
-          <div className="pointer-events-none absolute left-16 top-12 h-16 w-16 animate-float rounded-full bg-gradient-to-br from-primary/50 to-white/70 blur-sm" />
-          <div className="pointer-events-none absolute right-24 top-6 h-12 w-12 animate-float rounded-full bg-gradient-to-br from-secondary/50 to-white/70 blur-sm" />
-          <div className="pointer-events-none absolute left-10 bottom-20 h-20 w-20 animate-float rounded-full bg-gradient-to-br from-primary-soft/80 to-white/70 blur-sm" />
+          <div className="pointer-events-none absolute left-16 top-12 h-16 w-16 animate-float rounded-full bg-gradient-to-br from-primary/50 to-surface/70 blur-sm" />
+          <div className="pointer-events-none absolute right-24 top-6 h-12 w-12 animate-float rounded-full bg-gradient-to-br from-secondary/50 to-surface/70 blur-sm" />
+          <div className="pointer-events-none absolute left-10 bottom-20 h-20 w-20 animate-float rounded-full bg-gradient-to-br from-primary-soft/80 to-surface/70 blur-sm" />
 
           <img
             src={brainHero}
@@ -128,7 +128,7 @@ const LandingPage = () => {
           />
 
           <div
-            className="absolute left-6 bottom-48 z-20 hidden w-60 rounded-3xl border border-white/60 bg-white/70 p-5 text-xs text-text-muted shadow-card backdrop-blur sm:block animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(120,140,190,0.2)]"
+            className="absolute left-6 bottom-48 z-20 hidden w-60 rounded-3xl border border-border/60 bg-surface/70 p-5 text-xs text-text-muted shadow-card backdrop-blur sm:block animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(120,140,190,0.2)]"
             style={{ animationDuration: "9s", animationDelay: "0.2s" }}
           >
             <p className="text-[11px] uppercase tracking-wide text-text-subtle">Clinic rating</p>
@@ -137,7 +137,7 @@ const LandingPage = () => {
           </div>
 
           <div
-            className="absolute left-14 bottom-12 z-20 hidden h-32 w-32 items-center justify-center rounded-3xl border border-white/60 bg-white/70 text-center text-xs text-text-muted shadow-card backdrop-blur sm:flex animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(120,140,190,0.2)]"
+            className="absolute left-14 bottom-12 z-20 hidden h-32 w-32 items-center justify-center rounded-3xl border border-border/60 bg-surface/70 text-center text-xs text-text-muted shadow-card backdrop-blur sm:flex animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(120,140,190,0.2)]"
             style={{ animationDuration: "11s", animationDelay: "0.6s" }}
           >
             <div>
@@ -147,7 +147,7 @@ const LandingPage = () => {
           </div>
 
           <div
-            className="absolute bottom-10 left-1/2 z-20 hidden w-[620px] -translate-x-1/2 rounded-[36px] border border-white/70 bg-white/80 p-7 shadow-card backdrop-blur lg:block animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_28px_60px_rgba(120,140,190,0.2)]"
+            className="absolute bottom-10 left-1/2 z-20 hidden w-[620px] -translate-x-1/2 rounded-[36px] border border-border/70 bg-surface/80 p-7 shadow-card backdrop-blur lg:block animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_28px_60px_rgba(120,140,190,0.2)]"
             style={{ animationDuration: "10s", animationDelay: "0.4s" }}
           >
             <div className="relative pr-[150px]">
@@ -159,7 +159,7 @@ const LandingPage = () => {
                 {["Brain", "Heart", "Scheduling", "Reminders", "Analytics"].map((pill) => (
                   <span
                     key={pill}
-                    className="rounded-full border border-white/70 bg-white/70 px-4 py-1.5 text-[11px] shadow-sm"
+                    className="rounded-full border border-border/70 bg-surface/70 px-4 py-1.5 text-[11px] shadow-sm"
                   >
                     {pill}
                   </span>
@@ -174,7 +174,7 @@ const LandingPage = () => {
           </div>
 
           <div
-            className="absolute right-8 bottom-44 z-20 hidden w-72 rounded-[34px] border border-white/70 bg-white/80 p-6 text-xs text-text-muted shadow-card backdrop-blur lg:block animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(120,140,190,0.2)]"
+            className="absolute right-8 bottom-44 z-20 hidden w-72 rounded-[34px] border border-border/70 bg-surface/80 p-6 text-xs text-text-muted shadow-card backdrop-blur lg:block animate-float transition-transform hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(120,140,190,0.2)]"
             style={{ animationDuration: "8.5s", animationDelay: "0.8s" }}
           >
             <p className="text-xs font-semibold text-text">Monitor heart trends</p>
@@ -203,12 +203,12 @@ const LandingPage = () => {
           </div>
 
           <div className="relative z-20 mt-8 grid w-full max-w-xl gap-4 sm:grid-cols-2 lg:hidden">
-            <div className="rounded-3xl border border-white/60 bg-white/70 p-4 text-xs text-text-muted shadow-card backdrop-blur">
+            <div className="rounded-3xl border border-border/60 bg-surface/70 p-4 text-xs text-text-muted shadow-card backdrop-blur">
               <p className="text-[11px] uppercase tracking-wide text-text-subtle">Clinic rating</p>
               <p className="mt-1 text-2xl font-semibold text-text">9.6</p>
               <p className="text-xs text-text-subtle">Based on 100+ reviews</p>
             </div>
-            <div className="rounded-3xl border border-white/60 bg-white/70 p-4 text-xs text-text-muted shadow-card backdrop-blur">
+            <div className="rounded-3xl border border-border/60 bg-surface/70 p-4 text-xs text-text-muted shadow-card backdrop-blur">
               <p className="text-xs font-semibold text-text">Monitor heart trends</p>
               <svg viewBox="0 0 200 80" className="mt-3 h-16 w-full" aria-hidden="true">
                 <path
@@ -268,7 +268,7 @@ const LandingPage = () => {
             MediTrack keeps staff aligned with a single view of patient profiles and appointments.
             Keep the day organized, prevent schedule conflicts, and maintain continuity of care.
           </p>
-          <div className="rounded-3xl border border-white/60 bg-white/65 p-6 text-sm text-text-muted shadow-card backdrop-blur">
+          <div className="rounded-3xl border border-border/60 bg-surface/65 p-6 text-sm text-text-muted shadow-card backdrop-blur">
             <p className="text-sm font-semibold text-text">What MediTrack does not do</p>
             <p className="mt-2 text-sm text-text-muted">
               No billing, insurance claims, prescriptions, or advanced EMR charting. MediTrack
@@ -278,7 +278,7 @@ const LandingPage = () => {
         </div>
         <div className="space-y-4">
           {workflow.map((item) => (
-            <div key={item.step} className="rounded-3xl border border-white/60 bg-white/70 p-5 shadow-card backdrop-blur">
+            <div key={item.step} className="rounded-3xl border border-border/60 bg-surface/70 p-5 shadow-card backdrop-blur">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
@@ -309,13 +309,13 @@ const LandingPage = () => {
             automatically when patients have an email on file.
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/60 bg-white/70 p-4 text-sm text-text-muted">
+            <div className="rounded-2xl border border-border/60 bg-surface/70 p-4 text-sm text-text-muted">
               <p className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
                 Confirmations
               </p>
               <p className="mt-2">Immediate email after scheduling.</p>
             </div>
-            <div className="rounded-2xl border border-white/60 bg-white/70 p-4 text-sm text-text-muted">
+            <div className="rounded-2xl border border-border/60 bg-surface/70 p-4 text-sm text-text-muted">
               <p className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
                 Reminders
               </p>
@@ -323,7 +323,7 @@ const LandingPage = () => {
             </div>
           </div>
         </Card>
-        <div className="rounded-3xl border border-white/60 bg-white/70 p-6 text-sm text-text-muted shadow-card backdrop-blur">
+        <div className="rounded-3xl border border-border/60 bg-surface/70 p-6 text-sm text-text-muted shadow-card backdrop-blur">
           <h3 className="text-lg font-semibold text-text">Why clinics choose MediTrack</h3>
           <ul className="mt-4 space-y-3 text-sm text-text-muted">
             <li className="flex items-start gap-2">
@@ -346,7 +346,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="relative overflow-hidden rounded-[36px] border border-white/60 bg-white/65 px-8 py-10 shadow-card">
+      <section className="relative overflow-hidden rounded-[36px] border border-border/60 bg-surface/65 px-8 py-10 shadow-card">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(94,234,212,0.16),_transparent_55%)]" />
         <div className="relative grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
           <div className="space-y-3">

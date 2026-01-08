@@ -78,7 +78,7 @@ def test_user2_cannot_access_user1_appointments(client, db_session):
             "patient_id": patient_id,
             "doctor_name": "Dr. Tenant",
             "appointment_datetime": (datetime.utcnow() + timedelta(days=1)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert create_response.status_code == 201
@@ -127,7 +127,7 @@ def test_cannot_create_appointment_with_other_users_patient(client, db_session):
             "patient_id": patient_id,
             "doctor_name": "Dr. Tenant",
             "appointment_datetime": (datetime.utcnow() + timedelta(days=1)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert response.status_code == 404

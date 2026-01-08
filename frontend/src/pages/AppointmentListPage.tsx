@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Search, SlidersHorizontal } from "lucide-react";
 
 import { ErrorState } from "../components/ErrorState";
 import { LoadingSpinner } from "../components/LoadingSpinner";
@@ -14,6 +15,7 @@ import {
   useCompleteAppointment,
   useUpdateAppointment
 } from "../hooks/useAppointments";
+import { usePatients } from "../hooks/usePatients";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { Appointment, AppointmentStatus } from "../services/appointments";
 
@@ -25,11 +27,25 @@ type AppointmentFormState = {
   notes: string;
 };
 
-const statusStyles: Record<AppointmentStatus, string> = {
-  Scheduled: "bg-secondary-soft/80 text-secondary",
+const statusStyles: Record<string, string> = {
+  Confirmed: "bg-secondary-soft/80 text-secondary",
+  Unconfirmed: "bg-warning-soft/80 text-warning",
+  Scheduled: "bg-warning-soft/80 text-warning",
   Completed: "bg-success-soft/80 text-success",
   Cancelled: "bg-danger-soft/80 text-danger"
 };
+
+type StatusTab = "all" | "completed" | "confirmed" | "unconfirmed" | "cancelled";
+type DateRangeFilter = "any" | "today" | "next7" | "next30" | "custom";
+type SortOption = "date_asc" | "date_desc" | "patient_asc";
+
+const STATUS_TABS: { key: StatusTab; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "completed", label: "Completed" },
+  { key: "confirmed", label: "Confirmed" },
+  { key: "unconfirmed", label: "Unconfirmed" },
+  { key: "cancelled", label: "Cancelled" }
+];
 
 const toInputValue = (value?: string) => {
   if (!value) return "";
@@ -82,17 +98,32 @@ const getApiErrorMessage = (error: any) => {
 const AppointmentListPage = () => {
   usePageTitle("Appointments");
   const { data, isLoading, error } = useAppointments();
+  const { data: patients } = usePatients();
   const updateAppointment = useUpdateAppointment();
   const cancelAppointment = useCancelAppointment();
   const completeAppointment = useCompleteAppointment();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [showCancelled, setShowCancelled] = useState(false);
+  const [statusTab, setStatusTab] = useState<StatusTab>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRangeFilter>("any");
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [doctorFilter, setDoctorFilter] = useState("all");
+  const [sortOption, setSortOption] = useState<SortOption>("date_asc");
+  const filterRef = useRef<HTMLDivElement | null>(null);
+  const filterPanelRef = useRef<HTMLDivElement | null>(null);
+  const filterControlClass =
+    "glass-input mt-2 w-full text-sm hover:border-primary/30 hover:bg-surface/90 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/40";
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
+  const [isCompleteOpen, setIsCompleteOpen] = useState(false);
+  const [completeTarget, setCompleteTarget] = useState<Appointment | null>(null);
   const [formState, setFormState] = useState<AppointmentFormState>({
     appointment_datetime: "",
     appointment_end_datetime: "",
@@ -105,14 +136,57 @@ const AppointmentListPage = () => {
   );
   const [actionError, setActionError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [undoState, setUndoState] = useState<{
+    appointmentId: number;
+    previousStatus: AppointmentStatus;
+  } | null>(null);
+  const undoTimerRef = useRef<number | null>(null);
 
-  const isModalOpen = isViewOpen || isEditOpen || isCancelOpen;
+  const isModalOpen = isViewOpen || isEditOpen || isCancelOpen || isCompleteOpen;
+
+  useEffect(() => {
+    if (!filterOpen) return;
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (filterPanelRef.current?.contains(target)) return;
+      if (filterRef.current?.contains(target)) return;
+      setFilterOpen(false);
+    };
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setFilterOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [filterOpen]);
 
   useEffect(() => {
     if (!successMessage) return;
     const timer = window.setTimeout(() => setSuccessMessage(null), 3500);
     return () => window.clearTimeout(timer);
   }, [successMessage]);
+
+  useEffect(() => {
+    if (!undoState) return;
+    if (undoTimerRef.current) {
+      window.clearTimeout(undoTimerRef.current);
+    }
+    undoTimerRef.current = window.setTimeout(() => {
+      setUndoState(null);
+      undoTimerRef.current = null;
+    }, 30000);
+    return () => {
+      if (undoTimerRef.current) {
+        window.clearTimeout(undoTimerRef.current);
+        undoTimerRef.current = null;
+      }
+    };
+  }, [undoState]);
 
   useEffect(() => {
     const locationState = location.state as { successMessage?: string } | null;
@@ -130,16 +204,157 @@ const AppointmentListPage = () => {
     };
   }, [isModalOpen]);
 
+  const patientById = useMemo(() => {
+    const map = new Map<number, { phone?: string; email?: string; full_name?: string }>();
+    (patients ?? []).forEach((patient) => {
+      map.set(patient.id, {
+        phone: patient.phone ?? undefined,
+        email: patient.email ?? undefined,
+        full_name: patient.full_name ?? undefined
+      });
+    });
+    return map;
+  }, [patients]);
+
+  const normalizeStatus = (status: AppointmentStatus) => {
+    if (status === "Scheduled") return "Unconfirmed";
+    return status;
+  };
+
+  const getDerivedStatus = (appointment: Appointment) => normalizeStatus(appointment.status);
+
+  const statusCounts = useMemo(() => {
+    const counts = {
+      all: 0,
+      completed: 0,
+      confirmed: 0,
+      unconfirmed: 0,
+      cancelled: 0
+    };
+    (data ?? []).forEach((appointment) => {
+      const derived = getDerivedStatus(appointment);
+      counts.all += 1;
+      if (derived === "Cancelled") {
+        counts.cancelled += 1;
+      }
+      if (derived === "Completed") counts.completed += 1;
+      if (derived === "Confirmed") counts.confirmed += 1;
+      if (derived === "Unconfirmed") counts.unconfirmed += 1;
+    });
+    return counts;
+  }, [data]);
+
+  const departments = useMemo(() => {
+    const values = new Set<string>();
+    (data ?? []).forEach((appointment) => {
+      if (appointment.department) values.add(appointment.department);
+    });
+    return Array.from(values).sort();
+  }, [data]);
+
+  const doctors = useMemo(() => {
+    const values = new Set<string>();
+    (data ?? []).forEach((appointment) => {
+      if (appointment.doctor_name) values.add(appointment.doctor_name);
+    });
+    return Array.from(values).sort();
+  }, [data]);
+
   const filteredAppointments = useMemo(() => {
     const appointments = data ?? [];
-    const filtered = showCancelled
-      ? appointments
-      : appointments.filter((appointment) => appointment.status !== "Cancelled");
-    return filtered.sort(
-      (a, b) =>
-        new Date(a.appointment_datetime).getTime() - new Date(b.appointment_datetime).getTime()
-    );
-  }, [data, showCancelled]);
+    const term = searchTerm.trim().toLowerCase();
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const next7 = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
+    const next30 = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 30);
+
+    const filtered = appointments.filter((appointment) => {
+      const derivedStatus = getDerivedStatus(appointment);
+      if (statusTab !== "all" && derivedStatus.toLowerCase() !== statusTab) return false;
+
+      const patientInfo = appointment.patient ?? patientById.get(appointment.patient_id);
+      const patientName = patientInfo?.full_name?.toLowerCase() ?? "";
+      const email = patientInfo?.email?.toLowerCase() ?? "";
+      const phone = patientInfo?.phone?.toLowerCase() ?? "";
+      const doctor = appointment.doctor_name?.toLowerCase() ?? "";
+      const department = appointment.department?.toLowerCase() ?? "";
+
+      if (term) {
+        const matches =
+          patientName.includes(term) ||
+          doctor.includes(term) ||
+          department.includes(term) ||
+          email.includes(term) ||
+          phone.includes(term);
+        if (!matches) return false;
+      }
+
+      if (departmentFilter !== "all" && appointment.department !== departmentFilter) {
+        return false;
+      }
+      if (doctorFilter !== "all" && appointment.doctor_name !== doctorFilter) {
+        return false;
+      }
+
+      const appointmentDate = new Date(appointment.appointment_datetime);
+      if (Number.isNaN(appointmentDate.getTime())) return false;
+
+      if (dateRange === "today") {
+        if (appointmentDate < startOfToday || appointmentDate >= endOfToday) return false;
+      }
+      if (dateRange === "next7") {
+        if (appointmentDate < startOfToday || appointmentDate > next7) return false;
+      }
+      if (dateRange === "next30") {
+        if (appointmentDate < startOfToday || appointmentDate > next30) return false;
+      }
+      if (dateRange === "custom") {
+        if (customStart) {
+          const start = new Date(customStart);
+          if (!Number.isNaN(start.getTime()) && appointmentDate < start) return false;
+        }
+        if (customEnd) {
+          const end = new Date(customEnd);
+          if (!Number.isNaN(end.getTime())) {
+            const endOfDay = new Date(end.getFullYear(), end.getMonth(), end.getDate() + 1);
+            if (appointmentDate >= endOfDay) return false;
+          }
+        }
+      }
+
+      return true;
+    });
+
+    return filtered.sort((a, b) => {
+      if (sortOption === "date_desc") {
+        return (
+          new Date(b.appointment_datetime).getTime() -
+          new Date(a.appointment_datetime).getTime()
+        );
+      }
+      if (sortOption === "patient_asc") {
+        const nameA = (a.patient?.full_name ?? patientById.get(a.patient_id)?.full_name ?? "").toLowerCase();
+        const nameB = (b.patient?.full_name ?? patientById.get(b.patient_id)?.full_name ?? "").toLowerCase();
+        return nameA.localeCompare(nameB);
+      }
+      return (
+        new Date(a.appointment_datetime).getTime() -
+        new Date(b.appointment_datetime).getTime()
+      );
+    });
+  }, [
+    data,
+    statusTab,
+    searchTerm,
+    dateRange,
+    customStart,
+    customEnd,
+    departmentFilter,
+    doctorFilter,
+    sortOption,
+    patientById
+  ]);
 
   const handleView = (appointment: Appointment) => {
     setSelectedAppointment(appointment);
@@ -170,7 +385,9 @@ const AppointmentListPage = () => {
     setIsViewOpen(false);
     setIsEditOpen(false);
     setIsCancelOpen(false);
+    setIsCompleteOpen(false);
     setSelectedAppointment(null);
+    setCompleteTarget(null);
     setActionError(null);
   };
 
@@ -232,13 +449,50 @@ const AppointmentListPage = () => {
     }
   };
 
-  const handleComplete = async (appointmentId: number) => {
+  const handleConfirm = async (appointment: Appointment) => {
     setActionError(null);
     try {
-      await completeAppointment.mutateAsync(appointmentId);
-      setSuccessMessage("Appointment marked completed.");
+      await updateAppointment.mutateAsync({
+        appointmentId: appointment.id,
+        payload: { status: "Confirmed" }
+      });
+      setSuccessMessage("Appointment confirmed.");
+    } catch (confirmError: any) {
+      setActionError(getApiErrorMessage(confirmError));
+    }
+  };
+
+  const handleCompletePrompt = (appointment: Appointment) => {
+    setCompleteTarget(appointment);
+    setActionError(null);
+    setIsCompleteOpen(true);
+  };
+
+  const handleCompleteConfirm = async () => {
+    if (!completeTarget) return;
+    setActionError(null);
+    try {
+      const previousStatus = completeTarget.status;
+      await completeAppointment.mutateAsync(completeTarget.id);
+      setUndoState({ appointmentId: completeTarget.id, previousStatus });
+      closeModals();
     } catch (completeError: any) {
       setActionError(getApiErrorMessage(completeError));
+    }
+  };
+
+  const handleUndoComplete = async () => {
+    if (!undoState) return;
+    setActionError(null);
+    try {
+      await updateAppointment.mutateAsync({
+        appointmentId: undoState.appointmentId,
+        payload: { status: undoState.previousStatus }
+      });
+      setSuccessMessage("Completion undone.");
+      setUndoState(null);
+    } catch (undoError: any) {
+      setActionError(getApiErrorMessage(undoError));
     }
   };
 
@@ -252,15 +506,6 @@ const AppointmentListPage = () => {
         description="Review scheduled visits and recent activity."
         action={
           <div className="flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-2 text-sm text-text-muted">
-              <input
-                type="checkbox"
-                checked={showCancelled}
-                onChange={(event) => setShowCancelled(event.target.checked)}
-                className="h-4 w-4 rounded border-white/60 bg-white/70 text-primary focus:ring-primary/40"
-              />
-              Show cancelled
-            </label>
             <Button onClick={() => navigate("/appointments/create")} className="shadow-card">
               Create appointment
             </Button>
@@ -268,36 +513,228 @@ const AppointmentListPage = () => {
         }
       />
 
+      <div className="flex flex-col gap-4 rounded-3xl border border-border/60 bg-surface/70 p-4 shadow-sm backdrop-blur lg:flex-row lg:items-center lg:justify-between">
+        <div className="no-scrollbar flex items-center gap-2 overflow-x-auto">
+          {STATUS_TABS.map((tab) => {
+            const isActive = statusTab === tab.key;
+            const count = statusCounts[tab.key];
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setStatusTab(tab.key)}
+                className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  isActive
+                    ? "bg-surface text-text shadow-sm"
+                    : "text-text-muted hover:bg-surface/70 hover:text-text"
+                }`}
+              >
+                {tab.label} <span className="text-text-subtle">({count})</span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-subtle" />
+            <input
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search..."
+              className="glass-input w-full pl-9 text-sm"
+            />
+          </div>
+          <div className="relative" ref={filterRef}>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="gap-2"
+              type="button"
+              onClick={() => setFilterOpen((prev) => !prev)}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              Filter
+            </Button>
+            {filterOpen &&
+              createPortal(
+                <div className="fixed inset-0 z-[90]">
+                  <div className="absolute inset-0" onMouseDown={() => setFilterOpen(false)} />
+                  <div
+                    ref={filterPanelRef}
+                    className="absolute right-6 top-28 w-[320px] rounded-3xl border border-border/70 bg-surface/85 p-4 text-sm text-text-muted shadow-card backdrop-blur"
+                    onMouseDown={(event) => event.stopPropagation()}
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
+                          Date range
+                        </label>
+                        <select
+                          value={dateRange}
+                          onChange={(event) => setDateRange(event.target.value as DateRangeFilter)}
+                          className={filterControlClass}
+                        >
+                          <option value="any">Any time</option>
+                          <option value="today">Today</option>
+                          <option value="next7">Next 7 days</option>
+                          <option value="next30">Next 30 days</option>
+                          <option value="custom">Custom range</option>
+                        </select>
+                        {dateRange === "custom" && (
+                          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                            <input
+                              type="date"
+                              value={customStart}
+                              onChange={(event) => setCustomStart(event.target.value)}
+                              className="glass-input text-sm hover:border-primary/30 hover:bg-surface/90 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/40"
+                            />
+                            <input
+                              type="date"
+                              value={customEnd}
+                              onChange={(event) => setCustomEnd(event.target.value)}
+                              className="glass-input text-sm hover:border-primary/30 hover:bg-surface/90 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/40"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
+                          Department
+                        </label>
+                        <select
+                          value={departmentFilter}
+                          onChange={(event) => setDepartmentFilter(event.target.value)}
+                          className={filterControlClass}
+                        >
+                          <option value="all">All departments</option>
+                          {departments.map((department) => (
+                            <option key={department} value={department}>
+                              {department}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
+                          Doctor
+                        </label>
+                        <select
+                          value={doctorFilter}
+                          onChange={(event) => setDoctorFilter(event.target.value)}
+                          className={filterControlClass}
+                        >
+                          <option value="all">All doctors</option>
+                          {doctors.map((doctor) => (
+                            <option key={doctor} value={doctor}>
+                              {doctor}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
+                          Sort
+                        </label>
+                        <select
+                          value={sortOption}
+                          onChange={(event) => setSortOption(event.target.value as SortOption)}
+                          className={filterControlClass}
+                        >
+                          <option value="date_asc">Date (soonest)</option>
+                          <option value="date_desc">Date (latest)</option>
+                          <option value="patient_asc">Patient (A–Z)</option>
+                        </select>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          type="button"
+                          onClick={() => {
+                            setDateRange("any");
+                            setCustomStart("");
+                            setCustomEnd("");
+                            setDepartmentFilter("all");
+                            setDoctorFilter("all");
+                            setSortOption("date_asc");
+                            setSearchTerm("");
+                          }}
+                        >
+                          Clear
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          type="button"
+                          onClick={() => setFilterOpen(false)}
+                        >
+                          Done
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>,
+                document.body
+              )}
+          </div>
+        </div>
+      </div>
+
       {successMessage && (
         <div className="rounded-2xl border border-success/30 bg-success-soft/80 px-4 py-3 text-sm text-success shadow-sm animate-toastIn">
           {successMessage}
         </div>
       )}
+      {undoState && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-secondary/30 bg-secondary-soft/70 px-4 py-3 text-sm text-text shadow-sm animate-toastIn">
+          <span>Appointment marked as completed.</span>
+          <Button variant="ghost" size="sm" type="button" onClick={handleUndoComplete}>
+            Undo
+          </Button>
+        </div>
+      )}
 
-      {actionError && !isEditOpen && !isCancelOpen && (
+      {actionError && !isEditOpen && !isCancelOpen && !isCompleteOpen && (
         <ErrorState message={actionError} />
       )}
 
       {!!filteredAppointments.length && (
-        <div className="overflow-x-auto rounded-2xl border border-white/60 bg-white/60 shadow-sm backdrop-blur">
+        <div className="overflow-x-auto rounded-2xl border border-border/60 bg-surface/60 shadow-sm backdrop-blur">
           <table className="min-w-full text-left text-sm text-text-muted">
-            <thead className="bg-white/75 text-xs uppercase tracking-wide text-text-subtle backdrop-blur">
+            <thead className="bg-surface/75 text-xs uppercase tracking-wide text-text-subtle backdrop-blur">
               <tr>
                 <th className="px-4 py-3 font-medium">Patient</th>
                 <th className="px-4 py-3 font-medium">Date & Time</th>
+                <th className="px-4 py-3 font-medium">Contact</th>
                 <th className="px-4 py-3 font-medium">Doctor</th>
                 <th className="px-4 py-3 font-medium">Department</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/40 bg-white/60">
+            <tbody className="divide-y divide-border/40 bg-surface/60">
               {filteredAppointments.map((appointment) => {
                 const { dateLabel, timeRange } = formatDateTimeCell(appointment);
-                const patientName =
-                  appointment.patient?.full_name ?? `Patient #${appointment.patient_id}`;
+                const patientInfo = appointment.patient ?? patientById.get(appointment.patient_id);
+                const patientName = patientInfo?.full_name ?? `Patient #${appointment.patient_id}`;
+                const contactPhone = patientInfo?.phone;
+                const contactEmail = patientInfo?.email;
+                const derivedStatus = getDerivedStatus(appointment);
+                const isUnconfirmed = derivedStatus === "Unconfirmed";
+                const isConfirmed = derivedStatus === "Confirmed";
+                const isCompleted = derivedStatus === "Completed";
+                const isCancelled = derivedStatus === "Cancelled";
+                const canEdit = isUnconfirmed || isConfirmed;
+                const canConfirm = isUnconfirmed;
+                const canMarkCompleted = isConfirmed;
+                const canCancel = isUnconfirmed || isConfirmed;
                 return (
-                  <tr key={appointment.id} className="transition hover:bg-white/80">
+                  <tr key={appointment.id} className="transition hover:bg-surface/80">
                     <td className="px-4 py-3">
                       <p className="text-sm font-semibold text-text">{patientName}</p>
                     </td>
@@ -305,13 +742,27 @@ const AppointmentListPage = () => {
                       <p className="text-sm font-medium text-text">{dateLabel}</p>
                       <p className="text-xs text-text-subtle">{timeRange}</p>
                     </td>
+                    <td className="px-4 py-3">
+                      {contactPhone || contactEmail ? (
+                        <div className="space-y-1 text-xs text-text-muted">
+                          {contactPhone && (
+                            <p className="text-sm font-medium text-text">{contactPhone}</p>
+                          )}
+                          {contactEmail && (
+                            <p className="text-xs text-text-subtle">{contactEmail}</p>
+                          )}
+                        </div>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
                     <td className="px-4 py-3">{appointment.doctor_name}</td>
                     <td className="px-4 py-3">{appointment.department || "—"}</td>
                     <td className="px-4 py-3">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[appointment.status]}`}
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[derivedStatus]}`}
                       >
-                        {appointment.status}
+                        {derivedStatus}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -319,33 +770,39 @@ const AppointmentListPage = () => {
                         <Button variant="ghost" size="sm" onClick={() => handleView(appointment)}>
                           View
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(appointment)}
-                          disabled={appointment.status === "Cancelled"}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleComplete(appointment.id)}
-                          disabled={
-                            appointment.status === "Completed" ||
-                            appointment.status === "Cancelled"
-                          }
-                        >
-                          Mark Completed
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleCancelPrompt(appointment)}
-                          disabled={appointment.status === "Cancelled"}
-                        >
-                          Cancel
-                        </Button>
+                        {canEdit && (
+                          <Button variant="ghost" size="sm" onClick={() => handleEdit(appointment)}>
+                            Edit
+                          </Button>
+                        )}
+                        {canConfirm && (
+                          <button
+                            type="button"
+                            onClick={() => handleConfirm(appointment)}
+                            disabled={updateAppointment.isPending}
+                            className="rounded-full border border-success/30 bg-success-soft/60 px-3 py-1 text-xs font-semibold text-success transition hover:border-success/40 hover:bg-success-soft/80 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success/40 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            Confirm
+                          </button>
+                        )}
+                        {canMarkCompleted && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleCompletePrompt(appointment)}
+                          >
+                            Mark Completed
+                          </Button>
+                        )}
+                        {canCancel && (
+                          <button
+                            type="button"
+                            onClick={() => handleCancelPrompt(appointment)}
+                            className="rounded-full border border-danger/30 bg-danger-soft/60 px-3 py-1 text-xs font-semibold text-danger transition hover:border-danger/40 hover:bg-danger-soft/80 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/40 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            Cancel
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -357,11 +814,11 @@ const AppointmentListPage = () => {
       )}
 
       {!filteredAppointments.length && (
-        <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
+        <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
           <p>
-            {showCancelled
-              ? "No appointments found yet."
-              : "No active appointments scheduled yet."}
+            {statusTab === "cancelled"
+              ? "No cancelled appointments found yet."
+              : "No appointments match the current filters."}
           </p>
           <Button
             className="mt-4"
@@ -378,8 +835,8 @@ const AppointmentListPage = () => {
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={closeModals} />
-            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-white/60 bg-white/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
-              <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-white/60 bg-white/85 px-6 pb-4 pt-5 backdrop-blur">
+            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
+              <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-border/60 bg-surface/85 px-6 pb-4 pt-5 backdrop-blur">
                 <div>
                   <h3 className="text-lg font-semibold text-text">Appointment details</h3>
                   <p className="text-sm text-text-muted">
@@ -392,18 +849,20 @@ const AppointmentListPage = () => {
               </div>
               <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+                  <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Patient</p>
                     <p className="mt-1 text-sm text-text-muted">
                       {selectedAppointment.patient?.full_name ??
                         `Patient #${selectedAppointment.patient_id}`}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+                  <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Status</p>
-                    <p className="mt-1 text-sm text-text-muted">{selectedAppointment.status}</p>
+                    <p className="mt-1 text-sm text-text-muted">
+                      {getDerivedStatus(selectedAppointment)}
+                    </p>
                   </div>
-                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+                  <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Date & Time</p>
                     <p className="mt-1 text-sm text-text-muted">
                       {formatDateTimeCell(selectedAppointment).dateLabel}
@@ -412,19 +871,19 @@ const AppointmentListPage = () => {
                       {formatDateTimeCell(selectedAppointment).timeRange}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+                  <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Doctor</p>
                     <p className="mt-1 text-sm text-text-muted">
                       {selectedAppointment.doctor_name}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+                  <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Department</p>
                     <p className="mt-1 text-sm text-text-muted">
                       {selectedAppointment.department || "—"}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+                  <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
                     <p className="text-xs uppercase tracking-wide text-text-subtle">Notes</p>
                     <p className="mt-1 text-sm text-text-muted">
                       {selectedAppointment.notes || "—"}
@@ -432,7 +891,7 @@ const AppointmentListPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-white/60 bg-white/85 px-6 py-4 backdrop-blur">
+              <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-border/60 bg-surface/85 px-6 py-4 backdrop-blur">
                 <Button variant="secondary" type="button" onClick={closeModals}>
                   Close
                 </Button>
@@ -447,8 +906,8 @@ const AppointmentListPage = () => {
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={closeModals} />
-            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-white/60 bg-white/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
-              <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-white/60 bg-white/85 px-6 pb-4 pt-5 backdrop-blur">
+            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
+              <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-border/60 bg-surface/85 px-6 pb-4 pt-5 backdrop-blur">
                 <div>
                   <h3 className="text-lg font-semibold text-text">Reschedule appointment</h3>
                   <p className="text-sm text-text-muted">
@@ -501,7 +960,7 @@ const AppointmentListPage = () => {
                   />
                   {actionError && <ErrorState message={actionError} />}
                 </div>
-                <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-white/60 bg-white/85 px-6 py-4 backdrop-blur">
+                <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-border/60 bg-surface/85 px-6 py-4 backdrop-blur">
                   <Button variant="secondary" type="button" onClick={closeModals}>
                     Cancel
                   </Button>
@@ -524,8 +983,8 @@ const AppointmentListPage = () => {
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={closeModals} />
-            <div className="relative z-10 w-full max-w-md overflow-hidden rounded-[32px] border border-white/60 bg-white/80 shadow-card backdrop-blur-xl animate-modalIn">
-              <div className="border-b border-white/60 px-6 pb-4 pt-5">
+            <div className="relative z-10 w-full max-w-md overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card backdrop-blur-xl animate-modalIn">
+              <div className="border-b border-border/60 px-6 pb-4 pt-5">
                 <h3 className="text-lg font-semibold text-text">Cancel appointment</h3>
                 <p className="text-sm text-text-muted">
                   Are you sure you want to cancel this appointment? This will mark it as cancelled.
@@ -543,7 +1002,7 @@ const AppointmentListPage = () => {
                 </p>
                 {actionError && <ErrorState message={actionError} />}
               </div>
-              <div className="flex flex-wrap justify-end gap-3 border-t border-white/60 px-6 py-4">
+              <div className="flex flex-wrap justify-end gap-3 border-t border-border/60 px-6 py-4">
                 <Button variant="secondary" type="button" onClick={closeModals}>
                   Keep appointment
                 </Button>
@@ -555,6 +1014,48 @@ const AppointmentListPage = () => {
                   disabled={cancelAppointment.isPending}
                 >
                   {cancelAppointment.isPending ? "Cancelling..." : "Confirm cancel"}
+                </Button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {isCompleteOpen &&
+        completeTarget &&
+        createPortal(
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
+            <div className="absolute inset-0" onClick={closeModals} />
+            <div className="relative z-10 w-full max-w-md overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card backdrop-blur-xl animate-modalIn">
+              <div className="border-b border-border/60 px-6 pb-4 pt-5">
+                <h3 className="text-lg font-semibold text-text">Mark appointment as completed?</h3>
+                <p className="text-sm text-text-muted">
+                  This will finalize the visit in the schedule. You can undo for a short time.
+                </p>
+              </div>
+              <div className="space-y-3 px-6 py-5 text-sm text-text-muted">
+                <p>
+                  <span className="font-semibold text-text">Patient:</span>{" "}
+                  {completeTarget.patient?.full_name ??
+                    `Patient #${completeTarget.patient_id}`}
+                </p>
+                <p>
+                  <span className="font-semibold text-text">Date:</span>{" "}
+                  {formatDateTimeCell(completeTarget).dateLabel}
+                </p>
+                {actionError && <ErrorState message={actionError} />}
+              </div>
+              <div className="flex flex-wrap justify-end gap-3 border-t border-border/60 px-6 py-4">
+                <Button variant="secondary" type="button" onClick={closeModals}>
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleCompleteConfirm}
+                  isLoading={completeAppointment.isPending}
+                  disabled={completeAppointment.isPending}
+                >
+                  {completeAppointment.isPending ? "Marking..." : "Confirm"}
                 </Button>
               </div>
             </div>

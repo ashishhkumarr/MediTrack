@@ -12,7 +12,7 @@ interface KpiCardProps {
 export const KpiCard = ({ label, value, icon, hint }: KpiCardProps) => {
   return (
     <Card className="flex items-center gap-4">
-      <div className="rounded-2xl bg-white/70 p-3 text-primary shadow-sm backdrop-blur">
+      <div className="rounded-2xl bg-surface/70 p-3 text-primary shadow-sm backdrop-blur">
         {icon}
       </div>
       <div>

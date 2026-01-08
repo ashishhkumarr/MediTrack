@@ -44,7 +44,7 @@ def test_audit_logs_created_for_patient_and_appointment_actions(client):
             "patient_id": patient_id,
             "doctor_name": "Dr. Audit",
             "appointment_datetime": (datetime.utcnow() + timedelta(days=1)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     appointment_id = appointment_response.json()["id"]
@@ -107,7 +107,7 @@ def test_audit_logs_filtering(client):
             "patient_id": patient_id,
             "doctor_name": "Dr. Filter",
             "appointment_datetime": (datetime.utcnow() + timedelta(days=2)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert appointment_response.status_code == 201

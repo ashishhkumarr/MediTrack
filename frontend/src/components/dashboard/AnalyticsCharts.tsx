@@ -120,7 +120,9 @@ const BarChart = ({ data }: { data: WeekPoint[] }) => {
 const StatusBars = ({ data }: { data: StatusPoint[] }) => {
   const total = data.reduce((sum, point) => sum + point.count, 0) || 1;
   const colors: Record<string, string> = {
-    scheduled: "bg-primary/80",
+    unconfirmed: "bg-warning/80",
+    confirmed: "bg-primary/80",
+    scheduled: "bg-warning/80",
     completed: "bg-success/80",
     cancelled: "bg-danger/70",
     no_show: "bg-warning/80",
@@ -139,7 +141,7 @@ const StatusBars = ({ data }: { data: StatusPoint[] }) => {
                 {point.count} ({percentage}%)
               </span>
             </div>
-            <div className="h-2 w-full rounded-full bg-white/60">
+            <div className="h-2 w-full rounded-full bg-surface/60">
               <div
                 className={`h-2 rounded-full ${colors[point.status] || colors.other}`}
                 style={{ width: `${percentage}%` }}

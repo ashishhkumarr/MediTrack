@@ -104,7 +104,7 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
           {errors.patient_id && <span className="mt-1 block text-xs text-danger">{errors.patient_id}</span>}
         </label>
         {!filteredPatients.length && (
-          <p className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3 text-sm text-text-muted shadow-sm backdrop-blur">
+          <p className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3 text-sm text-text-muted shadow-sm backdrop-blur">
             No patients match your search.
           </p>
         )}

@@ -61,6 +61,22 @@ def _get_clinic_name(db: Session) -> str:
     return clinic.clinic_name if clinic and clinic.clinic_name else settings.PROJECT_NAME
 
 
+def _is_schedulable_status(status_value: AppointmentStatus) -> bool:
+    return status_value in {
+        AppointmentStatus.unconfirmed,
+        AppointmentStatus.confirmed,
+        AppointmentStatus.scheduled,
+    }
+
+
+def _should_send_confirmation_email(status_value: AppointmentStatus) -> bool:
+    return status_value in {AppointmentStatus.confirmed, AppointmentStatus.scheduled}
+
+
+def _should_send_update_email(status_value: AppointmentStatus) -> bool:
+    return status_value in {AppointmentStatus.confirmed, AppointmentStatus.scheduled}
+
+
 def _validate_time_range(start_time, end_time):
     if end_time and start_time and end_time <= start_time:
         raise HTTPException(
@@ -89,7 +105,13 @@ def _assert_no_overlapping_appointments(
         return
 
     query = db.query(Appointment).filter(
-        Appointment.status == AppointmentStatus.scheduled,
+        Appointment.status.in_(
+            [
+                AppointmentStatus.unconfirmed,
+                AppointmentStatus.confirmed,
+                AppointmentStatus.scheduled,
+            ]
+        ),
         Appointment.owner_user_id == owner_user_id,
     )
     if appointment_id is not None:
@@ -167,12 +189,14 @@ def _dispatch_email(recipient: str, subject: str, html_body: str, text_body: str
         ) from exc
 
 
-def _send_confirmation_email(db: Session, appointment: Appointment, patient: Patient) -> None:
+def _send_confirmation_email(
+    db: Session, appointment: Appointment, patient: Patient, event_label: str = "create"
+) -> None:
     recipient = _patient_email(patient)
-    if not recipient or appointment.status != AppointmentStatus.scheduled:
+    if not recipient or not _should_send_confirmation_email(appointment.status):
         return
     print(
-        f"EMAIL_TRIGGER event=create appointment_id={appointment.id} patient_email={recipient}"
+        f"EMAIL_TRIGGER event={event_label} appointment_id={appointment.id} patient_email={recipient}"
     )
     clinic_name = _get_clinic_name(db)
     start_time = appointment.appointment_datetime
@@ -283,8 +307,8 @@ def create_appointment(
         payload_data.get("appointment_datetime"),
         payload_data.get("appointment_end_datetime"),
     )
-    status_value = payload_data.get("status", AppointmentStatus.scheduled)
-    if status_value == AppointmentStatus.scheduled:
+    status_value = payload_data.get("status", AppointmentStatus.unconfirmed)
+    if _is_schedulable_status(status_value):
         _assert_no_overlapping_appointments(
             db,
             payload_data.get("appointment_datetime"),
@@ -334,7 +358,7 @@ def update_appointment(
     )
     status_value = update_data.get("status", appointment.status)
     _validate_time_range(start_time, end_time)
-    if status_value == AppointmentStatus.scheduled:
+    if _is_schedulable_status(status_value):
         _assert_no_overlapping_appointments(
             db,
             start_time,
@@ -353,6 +377,8 @@ def update_appointment(
             action = "appointment.cancel"
         elif appointment.status == AppointmentStatus.completed:
             action = "appointment.complete"
+        elif appointment.status == AppointmentStatus.confirmed:
+            action = "appointment.confirmed"
     elif old_snapshot["appointment_datetime"] != appointment.appointment_datetime or (
         old_snapshot["appointment_end_datetime"] != appointment.appointment_end_datetime
     ):
@@ -364,6 +390,8 @@ def update_appointment(
         summary = "Cancelled appointment"
     if action == "appointment.complete":
         summary = "Completed appointment"
+    if action == "appointment.confirmed":
+        summary = "Confirmed appointment"
     log_event(
         db,
         current_user,
@@ -377,7 +405,11 @@ def update_appointment(
     if appointment.status == AppointmentStatus.cancelled:
         if old_snapshot["status"] != AppointmentStatus.cancelled:
             _send_cancellation_email(db, appointment, appointment.patient, old_snapshot)
-    elif appointment.status == AppointmentStatus.scheduled and _has_update_changes(
+    elif appointment.status == AppointmentStatus.confirmed and (
+        old_snapshot["status"] != AppointmentStatus.confirmed
+    ):
+        _send_confirmation_email(db, appointment, appointment.patient, event_label="confirm")
+    elif _should_send_update_email(appointment.status) and _has_update_changes(
         old_snapshot, appointment
     ):
         _send_update_email(db, appointment, appointment.patient, old_snapshot)
@@ -403,7 +435,7 @@ def patch_appointment(
     )
     status_value = update_data.get("status", appointment.status)
     _validate_time_range(start_time, end_time)
-    if status_value == AppointmentStatus.scheduled:
+    if _is_schedulable_status(status_value):
         _assert_no_overlapping_appointments(
             db,
             start_time,
@@ -422,6 +454,8 @@ def patch_appointment(
             action = "appointment.cancel"
         elif appointment.status == AppointmentStatus.completed:
             action = "appointment.complete"
+        elif appointment.status == AppointmentStatus.confirmed:
+            action = "appointment.confirmed"
     elif old_snapshot["appointment_datetime"] != appointment.appointment_datetime or (
         old_snapshot["appointment_end_datetime"] != appointment.appointment_end_datetime
     ):
@@ -433,6 +467,8 @@ def patch_appointment(
         summary = "Cancelled appointment"
     if action == "appointment.complete":
         summary = "Completed appointment"
+    if action == "appointment.confirmed":
+        summary = "Confirmed appointment"
     log_event(
         db,
         current_user,
@@ -446,7 +482,11 @@ def patch_appointment(
     if appointment.status == AppointmentStatus.cancelled:
         if old_snapshot["status"] != AppointmentStatus.cancelled:
             _send_cancellation_email(db, appointment, appointment.patient, old_snapshot)
-    elif appointment.status == AppointmentStatus.scheduled and _has_update_changes(
+    elif appointment.status == AppointmentStatus.confirmed and (
+        old_snapshot["status"] != AppointmentStatus.confirmed
+    ):
+        _send_confirmation_email(db, appointment, appointment.patient, event_label="confirm")
+    elif _should_send_update_email(appointment.status) and _has_update_changes(
         old_snapshot, appointment
     ):
         _send_update_email(db, appointment, appointment.patient, old_snapshot)

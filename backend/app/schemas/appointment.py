@@ -7,6 +7,8 @@ from app.schemas.patient import PatientResponse
 
 
 class AppointmentStatus(str, Enum):
+    unconfirmed = "Unconfirmed"
+    confirmed = "Confirmed"
     scheduled = "Scheduled"
     completed = "Completed"
     cancelled = "Cancelled"
@@ -19,7 +21,7 @@ class AppointmentBase(BaseModel):
     appointment_datetime: datetime
     appointment_end_datetime: datetime | None = None
     notes: str | None = None
-    status: AppointmentStatus = AppointmentStatus.scheduled
+    status: AppointmentStatus = AppointmentStatus.unconfirmed
 
 
 class AppointmentCreate(AppointmentBase):

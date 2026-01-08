@@ -35,7 +35,7 @@ def _seed_for_user(db_session, owner: User):
         owner_user_id=owner.id,
         doctor_name="Seeder",
         appointment_datetime=datetime.utcnow() + timedelta(days=1),
-        status=AppointmentStatus.scheduled,
+        status=AppointmentStatus.unconfirmed,
     )
     db_session.add(appointment)
     db_session.commit()

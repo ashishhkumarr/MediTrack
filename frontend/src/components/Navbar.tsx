@@ -11,7 +11,7 @@ import {
   Users
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "./ui/Button";
@@ -22,6 +22,7 @@ const navBase =
 export const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isDark, setIsDark] = useState(false);
 
   const iconClass = "h-4 w-4";
@@ -43,6 +44,16 @@ export const Navbar = () => {
     ],
     []
   );
+
+  const isLinkActive = (to: string) => {
+    if (to === "/appointments") {
+      return location.pathname === "/appointments";
+    }
+    if (to === "/appointments/create") {
+      return ["/appointments/create", "/appointments/new"].includes(location.pathname);
+    }
+    return location.pathname === to || location.pathname.startsWith(`${to}/`);
+  };
 
   const publicLinks = [
     { href: "#features", label: "Features" },
@@ -76,7 +87,7 @@ export const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-30 px-4 pt-4 sm:px-6 lg:px-10">
-      <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between rounded-full border border-white/60 bg-white/70 px-4 py-3 shadow-card backdrop-blur">
+      <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between rounded-full border border-border/60 bg-surface/70 px-4 py-3 shadow-card backdrop-blur">
         <NavLink to="/" className="flex items-center gap-2 text-lg font-semibold text-text">
           <div className="rounded-2xl bg-primary-soft/80 p-2 text-primary">
             <Activity className="h-5 w-5" />
@@ -85,18 +96,16 @@ export const Navbar = () => {
         </NavLink>
         {user ? (
           <div className="flex flex-wrap items-center gap-3">
-            <nav className="no-scrollbar flex min-w-0 max-w-[58vw] items-center gap-1 overflow-x-auto rounded-full bg-white/70 px-2 py-1 shadow-sm backdrop-blur">
+            <nav className="no-scrollbar flex min-w-0 max-w-[58vw] items-center gap-1 overflow-x-auto rounded-full bg-surface/70 px-2 py-1 shadow-sm backdrop-blur">
               {links.map((link) => (
                 <NavLink
                   key={link.to}
                   to={link.to}
-                  className={({ isActive }) =>
-                    `${navBase} ${
-                      isActive
-                        ? "bg-white text-text shadow-sm"
-                        : "text-text-muted hover:bg-white/70 hover:text-text"
-                    }`
-                  }
+                  className={`${navBase} ${
+                    isLinkActive(link.to)
+                      ? "bg-surface text-text shadow-sm"
+                      : "text-text-muted hover:bg-surface/70 hover:text-text"
+                  }`}
                 >
                   {link.icon}
                   {link.label}
@@ -104,13 +113,11 @@ export const Navbar = () => {
               ))}
               <NavLink
                 to="/profile/edit"
-                className={({ isActive }) =>
-                  `${navBase} ${
-                    isActive
-                      ? "bg-white text-text shadow-sm"
-                      : "text-text-muted hover:bg-white/70 hover:text-text"
-                  }`
-                }
+                className={`${navBase} ${
+                  isLinkActive("/profile/edit")
+                    ? "bg-surface text-text shadow-sm"
+                    : "text-text-muted hover:bg-surface/70 hover:text-text"
+                }`}
               >
                 <UserCircle className={iconClass} />
                 Profile
@@ -119,7 +126,7 @@ export const Navbar = () => {
             <button
               type="button"
               onClick={() => setIsDark((prev) => !prev)}
-              className="rounded-full border border-white/60 bg-white/70 p-2 text-text-muted shadow-sm transition hover:text-text"
+              className="rounded-full border border-border/60 bg-surface/70 p-2 text-text-muted shadow-sm transition hover:text-text"
               aria-label="Toggle dark mode"
             >
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -138,6 +145,14 @@ export const Navbar = () => {
                 </a>
               ))}
             </nav>
+            <button
+              type="button"
+              onClick={() => setIsDark((prev) => !prev)}
+              className="rounded-full border border-border/60 bg-surface/70 p-2 text-text-muted shadow-sm transition hover:text-text"
+              aria-label="Toggle dark mode"
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <Button variant="secondary" size="sm" onClick={() => navigate("/login")}>
               Log in
             </Button>

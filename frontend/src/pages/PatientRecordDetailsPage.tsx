@@ -12,7 +12,9 @@ import { usePageTitle } from "../hooks/usePageTitle";
 import { Appointment, AppointmentStatus } from "../services/appointments";
 
 const statusStyles: Record<AppointmentStatus, string> = {
-  Scheduled: "bg-secondary-soft/80 text-secondary",
+  Confirmed: "bg-secondary-soft/80 text-secondary",
+  Unconfirmed: "bg-warning-soft/80 text-warning",
+  Scheduled: "bg-warning-soft/80 text-warning",
   Completed: "bg-success-soft/80 text-success",
   Cancelled: "bg-danger-soft/80 text-danger"
 };
@@ -222,27 +224,27 @@ const PatientDetailPage = () => {
           description="Core contact and profile details."
         />
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+          <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Full name</p>
             <p className="mt-1 text-sm text-text-muted">{patient.full_name}</p>
           </div>
-          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+          <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Date of birth</p>
             <p className="mt-1 text-sm text-text-muted">{formatDate(patient.date_of_birth)}</p>
           </div>
-          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+          <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Sex</p>
             <p className="mt-1 text-sm text-text-muted">{patient.sex || "—"}</p>
           </div>
-          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+          <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Email</p>
             <p className="mt-1 text-sm text-text-muted">{patient.email || "—"}</p>
           </div>
-          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+          <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Phone</p>
             <p className="mt-1 text-sm text-text-muted">{patient.phone || "—"}</p>
           </div>
-          <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3">
+          <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-3">
             <p className="text-xs uppercase tracking-wide text-text-subtle">Address</p>
             <p className="mt-1 text-sm text-text-muted">{patient.address || "—"}</p>
           </div>
@@ -297,7 +299,7 @@ const PatientDetailPage = () => {
         {!appointmentsLoading && !appointmentsError && (
           <div className="space-y-6">
             {!appointments?.length && (
-              <p className="rounded-2xl border border-white/60 bg-white/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
+              <p className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
                 No appointments yet. Schedule the first visit when the patient is ready.
               </p>
             )}
@@ -306,28 +308,35 @@ const PatientDetailPage = () => {
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-text">Upcoming</p>
                   {upcoming.length ? (
-                    upcoming.map((appointment) => (
-                      <div
-                        key={`upcoming-${appointment.id}`}
-                        className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/60 bg-white/70 px-4 py-3 shadow-sm backdrop-blur"
-                      >
-                        <div>
-                          <p className="text-sm font-semibold text-text">
-                            {formatDateTime(appointment.appointment_datetime)}
-                          </p>
-                          <p className="text-xs text-text-subtle">
-                            {appointment.department || "General"} · Dr. {appointment.doctor_name}
-                          </p>
-                        </div>
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[appointment.status]}`}
+                    upcoming.map((appointment) => {
+                      const displayStatus =
+                        appointment.status === "Scheduled"
+                          ? "Unconfirmed"
+                          : appointment.status;
+                      return (
+                        <div
+                          key={`upcoming-${appointment.id}`}
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-surface/70 px-4 py-3 shadow-sm backdrop-blur"
                         >
-                          {appointment.status}
-                        </span>
-                      </div>
-                    ))
+                          <div>
+                            <p className="text-sm font-semibold text-text">
+                              {formatDateTime(appointment.appointment_datetime)}
+                            </p>
+                            <p className="text-xs text-text-subtle">
+                              {appointment.department || "General"} · Dr.{" "}
+                              {appointment.doctor_name}
+                            </p>
+                          </div>
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[displayStatus]}`}
+                          >
+                            {displayStatus}
+                          </span>
+                        </div>
+                      );
+                    })
                   ) : (
-                    <p className="rounded-2xl border border-white/60 bg-white/70 px-4 py-4 text-sm text-text-muted shadow-sm backdrop-blur">
+                    <p className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-4 text-sm text-text-muted shadow-sm backdrop-blur">
                       No upcoming appointments scheduled.
                     </p>
                   )}
@@ -335,28 +344,35 @@ const PatientDetailPage = () => {
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-text">Past</p>
                   {past.length ? (
-                    past.map((appointment) => (
-                      <div
-                        key={`past-${appointment.id}`}
-                        className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/60 bg-white/70 px-4 py-3 shadow-sm backdrop-blur"
-                      >
-                        <div>
-                          <p className="text-sm font-semibold text-text">
-                            {formatDateTime(appointment.appointment_datetime)}
-                          </p>
-                          <p className="text-xs text-text-subtle">
-                            {appointment.department || "General"} · Dr. {appointment.doctor_name}
-                          </p>
-                        </div>
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[appointment.status]}`}
+                    past.map((appointment) => {
+                      const displayStatus =
+                        appointment.status === "Scheduled"
+                          ? "Unconfirmed"
+                          : appointment.status;
+                      return (
+                        <div
+                          key={`past-${appointment.id}`}
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-surface/70 px-4 py-3 shadow-sm backdrop-blur"
                         >
-                          {appointment.status}
-                        </span>
-                      </div>
-                    ))
+                          <div>
+                            <p className="text-sm font-semibold text-text">
+                              {formatDateTime(appointment.appointment_datetime)}
+                            </p>
+                            <p className="text-xs text-text-subtle">
+                              {appointment.department || "General"} · Dr.{" "}
+                              {appointment.doctor_name}
+                            </p>
+                          </div>
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[displayStatus]}`}
+                          >
+                            {displayStatus}
+                          </span>
+                        </div>
+                      );
+                    })
                   ) : (
-                    <p className="rounded-2xl border border-white/60 bg-white/70 px-4 py-4 text-sm text-text-muted shadow-sm backdrop-blur">
+                    <p className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-4 text-sm text-text-muted shadow-sm backdrop-blur">
                       No past appointments to show.
                     </p>
                   )}

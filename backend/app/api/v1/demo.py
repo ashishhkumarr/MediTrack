@@ -48,7 +48,7 @@ def _seed_demo_data(db: Session, owner: User) -> dict:
             department="General",
             appointment_datetime=now + timedelta(hours=2),
             appointment_end_datetime=now + timedelta(hours=2, minutes=30),
-            status=AppointmentStatus.scheduled,
+            status=AppointmentStatus.unconfirmed,
             notes="Demo visit",
         ),
         Appointment(
@@ -58,7 +58,7 @@ def _seed_demo_data(db: Session, owner: User) -> dict:
             department="Wellness",
             appointment_datetime=now + timedelta(days=3, hours=1),
             appointment_end_datetime=now + timedelta(days=3, hours=1, minutes=30),
-            status=AppointmentStatus.scheduled,
+            status=AppointmentStatus.confirmed,
             notes="Demo follow-up",
         ),
         Appointment(

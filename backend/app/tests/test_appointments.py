@@ -35,7 +35,7 @@ def test_admin_creates_appointment(client, db_session):
             "department": "Cardiology",
             "appointment_datetime": (datetime.utcnow() + timedelta(days=2)).isoformat(),
             "notes": "Follow-up",
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert response.status_code == 201
@@ -52,7 +52,7 @@ def test_admin_lists_appointments_with_patient_details(client, db_session):
             "patient_id": patient.id,
             "doctor_name": "Dr. Smith",
             "appointment_datetime": (datetime.utcnow() + timedelta(days=1)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     response = client.get("/api/v1/appointments/", headers=headers)
@@ -71,7 +71,7 @@ def test_admin_can_cancel_appointment(client, db_session):
             "patient_id": patient.id,
             "doctor_name": "Dr. Lee",
             "appointment_datetime": (datetime.utcnow() + timedelta(days=3)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     appointment_id = create_response.json()["id"]
@@ -93,7 +93,7 @@ def test_admin_can_mark_appointment_completed(client, db_session):
             "patient_id": patient.id,
             "doctor_name": "Dr. Stone",
             "appointment_datetime": (datetime.utcnow() - timedelta(days=1)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     appointment_id = create_response.json()["id"]
@@ -116,7 +116,7 @@ def test_end_time_must_be_after_start_time(client, db_session):
             "doctor_name": "Dr. Time",
             "appointment_datetime": (BASE_TIME + timedelta(hours=1)).isoformat(),
             "appointment_end_datetime": BASE_TIME.isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert response.status_code == 422
@@ -133,7 +133,7 @@ def test_overlap_on_create_fails(client, db_session):
             "doctor_name": "Dr. Overlap",
             "appointment_datetime": BASE_TIME.isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(minutes=30)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert first_response.status_code == 201
@@ -146,7 +146,7 @@ def test_overlap_on_create_fails(client, db_session):
             "doctor_name": "Dr. Overlap",
             "appointment_datetime": (BASE_TIME + timedelta(minutes=15)).isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(minutes=45)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert second_response.status_code == 400
@@ -167,7 +167,7 @@ def test_overlap_on_update_fails(client, db_session):
             "doctor_name": "Dr. Alpha",
             "appointment_datetime": BASE_TIME.isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(minutes=30)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert first_response.status_code == 201
@@ -179,7 +179,7 @@ def test_overlap_on_update_fails(client, db_session):
             "doctor_name": "Dr. Beta",
             "appointment_datetime": (BASE_TIME + timedelta(hours=1)).isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(hours=1, minutes=30)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert second_response.status_code == 201
@@ -211,7 +211,7 @@ def test_touching_edges_passes(client, db_session):
             "doctor_name": "Dr. Edge",
             "appointment_datetime": BASE_TIME.isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(minutes=30)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert first_response.status_code == 201
@@ -224,7 +224,7 @@ def test_touching_edges_passes(client, db_session):
             "doctor_name": "Dr. Edge",
             "appointment_datetime": (BASE_TIME + timedelta(minutes=30)).isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(minutes=60)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert second_response.status_code == 201
@@ -241,7 +241,7 @@ def test_cancelled_and_completed_do_not_block(client, db_session):
             "doctor_name": "Dr. Cancel",
             "appointment_datetime": (BASE_TIME + timedelta(hours=2)).isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(hours=2, minutes=30)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert cancel_target.status_code == 201
@@ -256,7 +256,7 @@ def test_cancelled_and_completed_do_not_block(client, db_session):
             "doctor_name": "Dr. New",
             "appointment_datetime": (BASE_TIME + timedelta(hours=2, minutes=10)).isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(hours=2, minutes=40)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert cancelled_overlap.status_code == 201
@@ -269,7 +269,7 @@ def test_cancelled_and_completed_do_not_block(client, db_session):
             "doctor_name": "Dr. Complete",
             "appointment_datetime": (BASE_TIME + timedelta(hours=4)).isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(hours=4, minutes=30)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert complete_target.status_code == 201
@@ -284,7 +284,7 @@ def test_cancelled_and_completed_do_not_block(client, db_session):
             "doctor_name": "Dr. New",
             "appointment_datetime": (BASE_TIME + timedelta(hours=4, minutes=10)).isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(hours=4, minutes=40)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert completed_overlap.status_code == 201
@@ -300,7 +300,7 @@ def test_null_end_time_uses_default_duration(client, db_session):
             "patient_id": patient.id,
             "doctor_name": "Dr. Default",
             "appointment_datetime": (BASE_TIME + timedelta(hours=6)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert first_response.status_code == 201
@@ -312,7 +312,7 @@ def test_null_end_time_uses_default_duration(client, db_session):
             "patient_id": patient.id,
             "doctor_name": "Dr. Default",
             "appointment_datetime": (BASE_TIME + timedelta(hours=6, minutes=15)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert second_response.status_code == 400
@@ -344,11 +344,19 @@ def test_email_sent_on_create_update_and_cancel(client, db_session, monkeypatch)
             "doctor_name": "Dr. Email",
             "appointment_datetime": (BASE_TIME + timedelta(hours=7)).isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(hours=7, minutes=30)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert create_response.status_code == 201
     appointment_id = create_response.json()["id"]
+    assert len(sent) == 0
+
+    confirm_response = client.patch(
+        f"/api/v1/appointments/{appointment_id}",
+        headers=headers,
+        json={"status": "Confirmed"},
+    )
+    assert confirm_response.status_code == 200
     assert len(sent) == 1
 
     update_response = client.patch(
@@ -391,8 +399,16 @@ def test_no_email_sent_when_patient_missing_email(client, db_session, monkeypatc
             "doctor_name": "Dr. Email",
             "appointment_datetime": (BASE_TIME + timedelta(hours=9)).isoformat(),
             "appointment_end_datetime": (BASE_TIME + timedelta(hours=9, minutes=30)).isoformat(),
-            "status": "Scheduled",
+            "status": "Unconfirmed",
         },
     )
     assert create_response.status_code == 201
+    assert len(sent) == 0
+
+    confirm_response = client.patch(
+        f"/api/v1/appointments/{create_response.json()['id']}",
+        headers=headers,
+        json={"status": "Confirmed"},
+    )
+    assert confirm_response.status_code == 200
     assert len(sent) == 0

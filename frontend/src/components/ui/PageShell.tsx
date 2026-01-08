@@ -7,7 +7,7 @@ export const PageShell = ({ children }: PageShellProps) => {
     <div className="app-shell">
       <div
         aria-hidden="true"
-        className="ambient-orb left-6 top-24 h-36 w-36 animate-float bg-gradient-to-br from-secondary/40 to-white/60"
+        className="ambient-orb left-6 top-24 h-36 w-36 animate-float bg-gradient-to-br from-secondary/40 to-surface/60"
         style={{ animationDuration: "11s" }}
       />
       <div
@@ -17,12 +17,12 @@ export const PageShell = ({ children }: PageShellProps) => {
       />
       <div
         aria-hidden="true"
-        className="ambient-orb right-24 top-72 h-20 w-20 animate-float bg-gradient-to-br from-danger-soft/70 to-white/50"
+        className="ambient-orb right-24 top-72 h-20 w-20 animate-float bg-gradient-to-br from-danger-soft/70 to-surface/50"
         style={{ animationDuration: "12s", animationDelay: "1s" }}
       />
       <div
         aria-hidden="true"
-        className="ambient-orb bottom-40 left-16 h-32 w-32 animate-float bg-gradient-to-br from-primary-soft/70 to-white/70"
+        className="ambient-orb bottom-40 left-16 h-32 w-32 animate-float bg-gradient-to-br from-primary-soft/70 to-surface/70"
         style={{ animationDuration: "10s", animationDelay: "0.4s" }}
       />
       <div
@@ -32,7 +32,7 @@ export const PageShell = ({ children }: PageShellProps) => {
       />
       <div
         aria-hidden="true"
-        className="ambient-orb bottom-32 left-1/2 h-24 w-24 animate-float bg-gradient-to-br from-warning-soft/70 to-white/50"
+        className="ambient-orb bottom-32 left-1/2 h-24 w-24 animate-float bg-gradient-to-br from-warning-soft/70 to-surface/50"
         style={{ animationDuration: "8s", animationDelay: "1.2s" }}
       />
       <div className="relative z-10">{children}</div>

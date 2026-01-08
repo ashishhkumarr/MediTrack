@@ -11,7 +11,7 @@ export const PatientCard = ({ patient, onSelect }: Props) => {
   return (
     <button
       onClick={() => onSelect?.(patient.id)}
-      className="w-full rounded-3xl border border-white/60 bg-white/70 p-4 text-left shadow-card backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+      className="w-full rounded-3xl border border-border/60 bg-surface/70 p-4 text-left shadow-card backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
     >
       <div className="flex items-center justify-between">
         <div>
@@ -37,7 +37,7 @@ export const PatientCard = ({ patient, onSelect }: Props) => {
         )}
       </div>
       {patient.medical_history && (
-        <p className="mt-3 rounded-2xl border border-white/60 bg-white/70 px-3 py-2 text-xs text-text-muted shadow-sm backdrop-blur">
+        <p className="mt-3 rounded-2xl border border-border/60 bg-surface/70 px-3 py-2 text-xs text-text-muted shadow-sm backdrop-blur">
           {patient.medical_history}
         </p>
       )}

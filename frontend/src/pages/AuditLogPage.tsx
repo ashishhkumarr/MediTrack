@@ -110,7 +110,7 @@ const AuditLogPage = () => {
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
-              <thead className="bg-white/70 text-xs uppercase text-text-muted backdrop-blur">
+              <thead className="bg-surface/70 text-xs uppercase text-text-muted backdrop-blur">
                 <tr>
                   <th className="px-4 py-3">Time</th>
                   <th className="px-4 py-3">Action</th>
@@ -129,7 +129,7 @@ const AuditLogPage = () => {
                   filtered.map((log) => (
                     <tr
                       key={log.id}
-                      className="border-b border-white/40 bg-white/60 hover:bg-white/80"
+                      className="border-b border-border/40 bg-surface/60 hover:bg-surface/80"
                     >
                       <td className="px-4 py-3 text-text-muted">
                         {new Date(log.created_at).toLocaleString()}

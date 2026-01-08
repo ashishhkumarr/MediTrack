@@ -26,7 +26,10 @@ def _week_start(value: date) -> date:
 def _normalize_status(status) -> str:
     if isinstance(status, AppointmentStatus):
         status = status.value
-    return str(status).lower()
+    normalized = str(status).lower()
+    if normalized == "scheduled":
+        return "unconfirmed"
+    return normalized
 
 
 @router.get("/analytics")
@@ -141,12 +144,24 @@ def get_dashboard_analytics(
     other_count = 0
     for status, count in status_rows:
         normalized = _normalize_status(status)
-        if normalized in {"scheduled", "completed", "cancelled", "no_show"}:
+        if normalized in {
+            "unconfirmed",
+            "confirmed",
+            "completed",
+            "cancelled",
+            "no_show",
+        }:
             status_counts[normalized] = int(count)
         else:
             other_count += int(count)
 
-    status_buckets = ["scheduled", "completed", "cancelled", "no_show"]
+    status_buckets = [
+        "unconfirmed",
+        "confirmed",
+        "completed",
+        "cancelled",
+        "no_show",
+    ]
     appointments_by_status = [
         {"status": status, "count": status_counts.get(status, 0)}
         for status in status_buckets

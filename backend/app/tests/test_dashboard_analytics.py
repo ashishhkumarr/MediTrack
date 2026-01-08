@@ -49,7 +49,7 @@ def test_dashboard_analytics_tenant_isolation(client, db_session):
         owner_user_id=admin.id,
         doctor_name="Dr. Tenant",
         appointment_datetime=datetime.utcnow() + timedelta(days=1),
-        status=AppointmentStatus.scheduled,
+        status=AppointmentStatus.unconfirmed,
     )
     db_session.add(appointment)
     db_session.commit()

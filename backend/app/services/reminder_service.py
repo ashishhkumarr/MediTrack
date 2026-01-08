@@ -45,7 +45,9 @@ def dispatch_reminders(db: Session, now: datetime | None = None) -> dict:
         db.query(Appointment)
         .join(Patient)
         .filter(
-            Appointment.status == AppointmentStatus.scheduled,
+            Appointment.status.in_(
+                [AppointmentStatus.confirmed, AppointmentStatus.scheduled]
+            ),
             Appointment.reminder_sent_at.is_(None),
             Appointment.appointment_datetime >= window_start,
             Appointment.appointment_datetime <= window_end,

@@ -85,7 +85,7 @@ def test_admin_can_export_patient_record_pdf(client, db_session):
         doctor_name="Dr. Export",
         appointment_datetime=datetime.utcnow() + timedelta(days=1),
         appointment_end_datetime=datetime.utcnow() + timedelta(days=1, minutes=30),
-        status=AppointmentStatus.scheduled,
+        status=AppointmentStatus.confirmed,
         notes="Initial visit",
         owner_user_id=admin.id,
     )

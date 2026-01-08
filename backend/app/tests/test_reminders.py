@@ -28,7 +28,7 @@ def test_reminder_sends_once_and_sets_timestamp(db_session, monkeypatch):
         patient_id=patient.id,
         doctor_name="Dr. Reminder",
         appointment_datetime=BASE_TIME + timedelta(hours=2),
-        status=AppointmentStatus.scheduled,
+        status=AppointmentStatus.confirmed,
         owner_user_id=patient.owner_user_id,
     )
     db_session.add(appointment)
@@ -60,7 +60,7 @@ def test_reminder_not_sent_if_already_sent(db_session, monkeypatch):
         patient_id=patient.id,
         doctor_name="Dr. Reminder",
         appointment_datetime=BASE_TIME + timedelta(hours=3),
-        status=AppointmentStatus.scheduled,
+        status=AppointmentStatus.confirmed,
         reminder_sent_at=BASE_TIME,
         owner_user_id=patient.owner_user_id,
     )

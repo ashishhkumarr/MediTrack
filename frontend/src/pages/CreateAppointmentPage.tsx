@@ -10,6 +10,7 @@ import { SectionHeader } from "../components/ui/SectionHeader";
 import { useCreateAppointment } from "../hooks/useAppointments";
 import { usePatients } from "../hooks/usePatients";
 import { usePageTitle } from "../hooks/usePageTitle";
+import type { Appointment, AppointmentStatus } from "../services/appointments";
 
 const CreateAppointmentPage = () => {
   usePageTitle("New Appointment");
@@ -40,13 +41,15 @@ const CreateAppointmentPage = () => {
 
   const handleSubmit = async (values: any) => {
     setApiError(null);
-    const payload = {
+    const defaultStatus: AppointmentStatus = "Unconfirmed";
+    const payload: Partial<Appointment> = {
       patient_id: values.patient_id,
       appointment_datetime: values.appointment_datetime,
       appointment_end_datetime: values.appointment_end_datetime || undefined,
       doctor_name: values.doctor_name || undefined,
       department: values.department || undefined,
-      notes: values.notes || undefined
+      notes: values.notes || undefined,
+      status: defaultStatus
     };
     try {
       await mutation.mutateAsync(payload);
@@ -76,7 +79,7 @@ const CreateAppointmentPage = () => {
           )}
         </div>
       ) : (
-        <div className="mt-4 rounded-2xl border border-white/60 bg-white/70 px-4 py-6 text-sm text-text-muted shadow-sm backdrop-blur">
+        <div className="mt-4 rounded-2xl border border-border/60 bg-surface/70 px-4 py-6 text-sm text-text-muted shadow-sm backdrop-blur">
           <p>Add a patient profile before scheduling appointments.</p>
           <Button
             variant="secondary"

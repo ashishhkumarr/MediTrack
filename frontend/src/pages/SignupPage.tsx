@@ -220,11 +220,11 @@ const SignupPage = () => {
 
   return (
     <div className="relative flex min-h-[70vh] items-center justify-center px-4 py-10">
-      <div className="pointer-events-none absolute left-10 top-10 h-32 w-32 rounded-full bg-gradient-to-br from-secondary/40 to-white/60 blur-2xl" />
-      <div className="pointer-events-none absolute right-10 top-16 h-24 w-24 rounded-full bg-gradient-to-br from-primary/40 to-white/60 blur-2xl" />
-      <div className="pointer-events-none absolute bottom-10 right-12 h-28 w-28 rounded-full bg-gradient-to-br from-warning-soft/70 to-white/60 blur-2xl" />
-      <div className="relative z-10 mx-auto w-full max-w-6xl space-y-6 rounded-[36px] border border-white/60 bg-white/75 p-6 shadow-card backdrop-blur-xl animate-fadeUp">
-        <div className="flex flex-col gap-3 border-b border-white/60 pb-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="pointer-events-none absolute left-10 top-10 h-32 w-32 rounded-full bg-gradient-to-br from-secondary/40 to-surface/60 blur-2xl" />
+      <div className="pointer-events-none absolute right-10 top-16 h-24 w-24 rounded-full bg-gradient-to-br from-primary/40 to-surface/60 blur-2xl" />
+      <div className="pointer-events-none absolute bottom-10 right-12 h-28 w-28 rounded-full bg-gradient-to-br from-warning-soft/70 to-surface/60 blur-2xl" />
+      <div className="relative z-10 mx-auto w-full max-w-6xl space-y-6 rounded-[36px] border border-border/60 bg-surface/75 p-6 shadow-card backdrop-blur-xl animate-fadeUp">
+        <div className="flex flex-col gap-3 border-b border-border/60 pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-primary">Clinic onboarding</p>
             <h1 className="mt-1 text-3xl font-semibold text-text">Create your MediTrack account</h1>
@@ -385,14 +385,14 @@ const SignupPage = () => {
                   error={errors.confirm_password}
                 />
               </div>
-              <div className="rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm backdrop-blur">
+              <div className="rounded-2xl border border-border/60 bg-surface/70 p-4 shadow-sm backdrop-blur">
                 <label className="flex items-start gap-3 text-sm text-text">
                   <input
                     type="checkbox"
                     name="acknowledgeDemo"
                     checked={formState.acknowledgeDemo}
                     onChange={handleChange}
-                    className="mt-1 h-4 w-4 rounded border-white/60 bg-white/70 text-primary focus:ring-primary"
+                    className="mt-1 h-4 w-4 rounded border-border/60 bg-surface/70 text-primary focus:ring-primary"
                   />
                   <span>
                     I understand this is a demo and I will not enter real patient data.
@@ -406,7 +406,7 @@ const SignupPage = () => {
           )}
 
           {step === "otp" && (
-            <div className="space-y-4 rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm backdrop-blur">
+            <div className="space-y-4 rounded-2xl border border-border/60 bg-surface/70 p-4 shadow-sm backdrop-blur">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-text">Verify your email</p>

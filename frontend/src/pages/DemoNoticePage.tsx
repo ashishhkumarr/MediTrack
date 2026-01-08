@@ -8,7 +8,7 @@ const DemoNoticePage = () => {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-      <Card className="border border-warning/40 bg-white/70 p-8">
+      <Card className="border border-warning/40 bg-surface/70 p-8">
         <p className="text-xs font-semibold uppercase tracking-wide text-warning">
           Demo Notice
         </p>

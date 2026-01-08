@@ -42,7 +42,7 @@ export default {
         }
       },
       boxShadow: {
-        card: "0 25px 60px rgba(120, 140, 190, 0.18)"
+        card: "var(--shadow-card)"
       },
       animation: {
         fadeIn: "fadeIn 0.25s ease-out both",

@@ -8,6 +8,8 @@ from app.db.session import Base
 
 
 class AppointmentStatus(str, PyEnum):
+    unconfirmed = "Unconfirmed"
+    confirmed = "Confirmed"
     scheduled = "Scheduled"
     completed = "Completed"
     cancelled = "Cancelled"
@@ -27,7 +29,7 @@ class Appointment(Base):
     notes = Column(Text, nullable=True)
     status = Column(
         Enum(AppointmentStatus),
-        default=AppointmentStatus.scheduled,
+        default=AppointmentStatus.unconfirmed,
         nullable=False,
     )
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

@@ -25,29 +25,37 @@
   --color-warning-soft: 255 240 212;
   --color-danger: 244 105 122;
   --color-danger-soft: 255 224 231;
+  --shadow-card: 0 25px 60px rgba(120, 140, 190, 0.18);
+  --glass-card: 255 255 255;
+  --glass-panel: 252 253 255;
+  --glass-input: 255 255 255;
 }
 
 .dark {
   color-scheme: dark;
-  --color-bg: 14 18 30;
-  --color-surface: 20 25 38;
-  --color-surface-subtle: 28 35 53;
-  --color-surface-muted: 38 46 68;
+  --color-bg: 10 14 28;
+  --color-surface: 16 22 38;
+  --color-surface-subtle: 20 28 46;
+  --color-surface-muted: 28 38 60;
   --color-text: 236 240 251;
-  --color-text-muted: 164 175 198;
-  --color-text-subtle: 121 134 158;
-  --color-border: 52 61 86;
-  --color-primary: 68 225 205;
-  --color-primary-strong: 43 200 182;
-  --color-primary-soft: 17 62 73;
-  --color-secondary: 137 173 255;
-  --color-secondary-soft: 38 52 97;
-  --color-success: 103 234 181;
-  --color-success-soft: 22 64 49;
-  --color-warning: 255 204 114;
-  --color-warning-soft: 85 57 24;
-  --color-danger: 255 135 150;
-  --color-danger-soft: 85 32 41;
+  --color-text-muted: 170 182 206;
+  --color-text-subtle: 122 135 162;
+  --color-border: 40 52 80;
+  --color-primary: 72 227 214;
+  --color-primary-strong: 36 198 184;
+  --color-primary-soft: 14 54 66;
+  --color-secondary: 132 164 255;
+  --color-secondary-soft: 33 45 86;
+  --color-success: 104 231 181;
+  --color-success-soft: 20 60 48;
+  --color-warning: 255 201 116;
+  --color-warning-soft: 84 56 24;
+  --color-danger: 255 134 152;
+  --color-danger-soft: 84 31 41;
+  --shadow-card: 0 28px 70px rgba(6, 10, 28, 0.7);
+  --glass-card: 18 25 44;
+  --glass-panel: 20 28 48;
+  --glass-input: 21 30 50;
 }
 
 html {
@@ -80,6 +88,14 @@ body {
   overflow: hidden;
 }
 
+.dark .app-shell {
+  background: radial-gradient(circle at 15% 8%, rgba(94, 116, 255, 0.25), transparent 42%),
+    radial-gradient(circle at 80% 6%, rgba(148, 108, 255, 0.28), transparent 40%),
+    radial-gradient(circle at 30% 40%, rgba(44, 208, 199, 0.22), transparent 45%),
+    radial-gradient(circle at 82% 70%, rgba(255, 122, 186, 0.18), transparent 45%),
+    linear-gradient(135deg, rgba(8, 12, 26, 0.98), rgba(18, 24, 44, 0.96));
+}
+
 .app-shell::before {
   content: "";
   position: absolute;
@@ -90,6 +106,11 @@ body {
   pointer-events: none;
 }
 
+.dark .app-shell::before {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  opacity: 0.18;
+}
+
 .ambient-orb {
   position: absolute;
   border-radius: 999px;
@@ -98,8 +119,15 @@ body {
   animation: float 12s ease-in-out infinite;
 }
 
+.dark .ambient-orb {
+  opacity: 0.45;
+  mix-blend-mode: screen;
+}
+
 .glass-card {
-  @apply rounded-[28px] border border-white/60 bg-white/65 shadow-card backdrop-blur-xl transition-all duration-300;
+  background-color: rgb(var(--glass-card) / 0.72);
+  border-color: rgb(var(--color-border) / 0.55);
+  @apply rounded-[28px] border shadow-card backdrop-blur-xl transition-all duration-300;
 }
 
 .section-heading {
@@ -107,11 +135,15 @@ body {
 }
 
 .glass-panel {
-  @apply rounded-[26px] border border-white/50 bg-white/55 shadow-card backdrop-blur-xl;
+  background-color: rgb(var(--glass-panel) / 0.68);
+  border-color: rgb(var(--color-border) / 0.5);
+  @apply rounded-[26px] border shadow-card backdrop-blur-xl;
 }
 
 .glass-input {
-  @apply rounded-2xl border border-white/60 bg-white/70 px-4 py-3 text-base text-text shadow-sm backdrop-blur transition-all duration-200 placeholder:text-text-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30;
+  background-color: rgb(var(--glass-input) / 0.78);
+  border-color: rgb(var(--color-border) / 0.55);
+  @apply rounded-2xl border px-4 py-3 text-base text-text shadow-sm backdrop-blur transition-all duration-200 placeholder:text-text-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30;
 }
 
 .no-scrollbar::-webkit-scrollbar {

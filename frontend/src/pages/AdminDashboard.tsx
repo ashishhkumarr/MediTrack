@@ -41,22 +41,22 @@ const AdminDashboard = () => {
         <SectionHeader
           title="Dashboard"
           description="Demo analytics overview"
-          action={<div className="h-10 w-32 rounded-xl bg-white/60" />}
+          action={<div className="h-10 w-32 rounded-xl bg-surface/60" />}
         />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
-              className="h-24 rounded-2xl border border-white/60 bg-white/60"
+              className="h-24 rounded-2xl border border-border/60 bg-surface/60"
             />
           ))}
         </div>
         <div className="grid gap-6 lg:grid-cols-[2fr,1fr]">
           <div className="space-y-6">
-            <div className="h-64 rounded-2xl border border-white/60 bg-white/60" />
-            <div className="h-60 rounded-2xl border border-white/60 bg-white/60" />
+            <div className="h-64 rounded-2xl border border-border/60 bg-surface/60" />
+            <div className="h-60 rounded-2xl border border-border/60 bg-surface/60" />
           </div>
-          <div className="h-[520px] rounded-2xl border border-white/60 bg-white/60" />
+          <div className="h-[520px] rounded-2xl border border-border/60 bg-surface/60" />
         </div>
       </div>
     );
@@ -174,8 +174,8 @@ const AdminDashboard = () => {
 
       {showResetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
-          <div className="w-full max-w-lg rounded-[32px] border border-white/60 bg-white/80 shadow-card backdrop-blur-xl">
-            <div className="flex items-center justify-between border-b border-white/60 px-6 py-4">
+          <div className="w-full max-w-lg rounded-[32px] border border-border/60 bg-surface/80 shadow-card backdrop-blur-xl">
+            <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
               <div>
                 <h3 className="text-lg font-semibold text-text">Reset demo data?</h3>
                 <p className="text-xs text-text-muted">
@@ -193,13 +193,13 @@ const AdminDashboard = () => {
                   type="checkbox"
                   checked={reseedAfterReset}
                   onChange={(event) => setReseedAfterReset(event.target.checked)}
-                  className="h-4 w-4 rounded border-white/60 bg-white/70 text-primary focus:ring-primary"
+                  className="h-4 w-4 rounded border-border/60 bg-surface/70 text-primary focus:ring-primary"
                 />
                 Reseed sample data after reset
               </label>
               <p className="text-xs text-text-muted">Dev/demo only. Remove before release.</p>
             </div>
-            <div className="flex items-center justify-end gap-3 border-t border-white/60 px-6 py-4">
+            <div className="flex items-center justify-end gap-3 border-t border-border/60 px-6 py-4">
               <Button variant="secondary" type="button" onClick={() => setShowResetModal(false)}>
                 Cancel
               </Button>

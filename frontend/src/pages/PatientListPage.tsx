@@ -219,7 +219,7 @@ const PatientListPage = () => {
       </div>
 
       {!totalCount && (
-        <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
+        <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
           <p>No patient records yet. Add a patient to get started.</p>
           <Button
             className="mt-4"
@@ -232,15 +232,15 @@ const PatientListPage = () => {
       )}
 
       {!!totalCount && !filteredPatients.length && (
-        <p className="rounded-2xl border border-white/60 bg-white/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
+        <p className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
           No patients match "{searchTerm.trim()}". Try a different name, email, or phone.
         </p>
       )}
 
       {!!filteredPatients.length && (
-        <div className="overflow-x-auto rounded-2xl border border-white/60 bg-white/60 shadow-sm backdrop-blur">
+        <div className="overflow-x-auto rounded-2xl border border-border/60 bg-surface/60 shadow-sm backdrop-blur">
           <table className="min-w-full text-left text-sm text-text-muted">
-            <thead className="bg-white/75 text-xs uppercase tracking-wide text-text-subtle backdrop-blur">
+            <thead className="bg-surface/75 text-xs uppercase tracking-wide text-text-subtle backdrop-blur">
               <tr>
                 <th className="px-4 py-3 font-medium">Patient</th>
                 <th className="px-4 py-3 font-medium">Email</th>
@@ -248,11 +248,11 @@ const PatientListPage = () => {
                 <th className="px-4 py-3 font-medium">Date of Birth</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/40 bg-white/60">
+            <tbody className="divide-y divide-border/40 bg-surface/60">
               {filteredPatients.map((patient) => (
                 <tr
                   key={patient.id}
-                  className="cursor-pointer transition hover:bg-white/80"
+                  className="cursor-pointer transition hover:bg-surface/80"
                   onClick={() => navigate(`/patients/${patient.id}`)}
                 >
                   <td className="px-4 py-3">
@@ -278,8 +278,8 @@ const PatientListPage = () => {
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={handleCloseModal} />
-            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-white/60 bg-white/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
-              <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-white/60 bg-white/85 px-6 pb-4 pt-5 backdrop-blur">
+            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
+              <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-border/60 bg-surface/85 px-6 pb-4 pt-5 backdrop-blur">
                 <div>
                   <h3 className="text-lg font-semibold text-text">New patient</h3>
                   <p className="text-sm text-text-muted">
@@ -364,7 +364,7 @@ const PatientListPage = () => {
                   />
                   {apiError && <ErrorState message={apiError} />}
                 </div>
-                <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-white/60 bg-white/85 px-6 py-4 backdrop-blur">
+                <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-border/60 bg-surface/85 px-6 py-4 backdrop-blur">
                   <Button variant="secondary" type="button" onClick={handleCloseModal}>
                     Cancel
                   </Button>
