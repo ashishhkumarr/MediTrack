@@ -7,6 +7,7 @@ import { ErrorState } from "../components/ErrorState";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
+import { DateTimePicker } from "../components/ui/DateTimePicker";
 import { InputField, TextAreaField } from "../components/ui/FormField";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import {
@@ -149,8 +150,10 @@ const AppointmentListPage = () => {
     if (!filterOpen) return;
     const handleClick = (event: MouseEvent) => {
       const target = event.target as Node;
+      const element = event.target as HTMLElement | null;
       if (filterPanelRef.current?.contains(target)) return;
       if (filterRef.current?.contains(target)) return;
+      if (element?.closest?.(".mt-date-picker-popper")) return;
       setFilterOpen(false);
     };
     const handleKey = (event: KeyboardEvent) => {
@@ -399,6 +402,14 @@ const AppointmentListPage = () => {
     setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleDateTimeChange = (
+    name: "appointment_datetime" | "appointment_end_datetime"
+  ) => {
+    return (value: string) => {
+      setFormState((prev) => ({ ...prev, [name]: value }));
+    };
+  };
+
   const validateForm = () => {
     const nextErrors: Partial<Record<keyof AppointmentFormState, string>> = {};
     if (!formState.appointment_datetime) {
@@ -585,18 +596,15 @@ const AppointmentListPage = () => {
                           <option value="custom">Custom range</option>
                         </select>
                         {dateRange === "custom" && (
-                          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                            <input
-                              type="date"
-                              value={customStart}
-                              onChange={(event) => setCustomStart(event.target.value)}
-                              className="glass-input text-sm hover:border-primary/30 hover:bg-surface/90 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/40"
-                            />
-                            <input
-                              type="date"
-                              value={customEnd}
-                              onChange={(event) => setCustomEnd(event.target.value)}
-                              className="glass-input text-sm hover:border-primary/30 hover:bg-surface/90 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/40"
+                          <div className="mt-3">
+                            <DateTimePicker
+                              label="Custom range"
+                              mode="daterange"
+                              value={{ start: customStart, end: customEnd }}
+                              onChange={(range) => {
+                                setCustomStart(range.start ?? "");
+                                setCustomEnd(range.end ?? "");
+                              }}
                             />
                           </div>
                         )}
@@ -924,21 +932,19 @@ const AppointmentListPage = () => {
               <form onSubmit={handleUpdate} className="flex min-h-0 flex-1 flex-col">
                 <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
                   <div className="grid gap-4 md:grid-cols-2">
-                    <InputField
+                    <DateTimePicker
                       label="Start time"
-                      type="datetime-local"
-                      name="appointment_datetime"
+                      mode="datetime"
                       value={formState.appointment_datetime}
-                      onChange={handleFieldChange}
+                      onChange={handleDateTimeChange("appointment_datetime")}
                       error={formErrors.appointment_datetime}
                       required
                     />
-                    <InputField
+                    <DateTimePicker
                       label="End time (optional)"
-                      type="datetime-local"
-                      name="appointment_end_datetime"
+                      mode="datetime"
                       value={formState.appointment_end_datetime}
-                      onChange={handleFieldChange}
+                      onChange={handleDateTimeChange("appointment_end_datetime")}
                       error={formErrors.appointment_end_datetime}
                     />
                     <InputField

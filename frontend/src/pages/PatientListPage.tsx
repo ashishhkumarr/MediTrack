@@ -6,6 +6,7 @@ import { ErrorState } from "../components/ErrorState";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
+import { DateTimePicker } from "../components/ui/DateTimePicker";
 import { InputField, TextAreaField } from "../components/ui/FormField";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { usePageTitle } from "../hooks/usePageTitle";
@@ -110,6 +111,10 @@ const PatientListPage = () => {
   ) => {
     const { name, value } = event.target;
     setFormState((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (value: string) => {
+    setFormState((prev) => ({ ...prev, date_of_birth: value }));
   };
 
   const validate = () => {
@@ -300,12 +305,11 @@ const PatientListPage = () => {
                       error={formErrors.last_name}
                       required
                     />
-                    <InputField
+                    <DateTimePicker
                       label="Date of birth (optional)"
-                      type="date"
-                      name="date_of_birth"
+                      mode="date"
                       value={formState.date_of_birth}
-                      onChange={handleChange}
+                      onChange={handleDateChange}
                       error={formErrors.date_of_birth}
                     />
                     <label className="flex flex-col gap-2 text-sm font-medium text-text">

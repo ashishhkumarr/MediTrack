@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "./ui/Button";
+import { DateTimePicker } from "./ui/DateTimePicker";
 import { InputField, TextAreaField } from "./ui/FormField";
 import { Patient } from "../services/patients";
 
@@ -51,6 +52,12 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
   ) => {
     const { name, value } = event.target;
     setFormState((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (name: "appointment_datetime" | "appointment_end_datetime") => {
+    return (value: string) => {
+      setFormState((prev) => ({ ...prev, [name]: value }));
+    };
   };
 
   const validate = () => {
@@ -110,21 +117,19 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
         )}
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <InputField
+        <DateTimePicker
           label="Start time"
-          type="datetime-local"
-          name="appointment_datetime"
+          mode="datetime"
           value={formState.appointment_datetime}
-          onChange={handleChange}
+          onChange={handleDateChange("appointment_datetime")}
           error={errors.appointment_datetime}
           required
         />
-        <InputField
+        <DateTimePicker
           label="End time (optional)"
-          type="datetime-local"
-          name="appointment_end_datetime"
+          mode="datetime"
           value={formState.appointment_end_datetime}
-          onChange={handleChange}
+          onChange={handleDateChange("appointment_end_datetime")}
           error={errors.appointment_end_datetime}
         />
         <InputField
