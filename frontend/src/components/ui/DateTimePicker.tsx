@@ -1,5 +1,6 @@
-import { forwardRef, useMemo } from "react";
+import { forwardRef, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { Calendar } from "lucide-react";
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -50,30 +51,67 @@ const parseDateTime = (value?: string) => {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 };
 
-const GlassInput = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
-  ({ className, ...props }, ref) => (
-    <input
-      ref={ref}
-      className={`glass-input w-full text-sm ${className ?? ""}`}
-      {...props}
-    />
+interface GlassInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  onToggle?: () => void;
+}
+
+const GlassInput = forwardRef<HTMLInputElement, GlassInputProps>(
+  ({ className, onToggle, disabled, ...props }, ref) => (
+    <div className="relative w-full">
+      <input
+        ref={ref}
+        className={`glass-input w-full pr-12 text-sm ${className ?? ""}`}
+        disabled={disabled}
+        {...props}
+      />
+      <button
+        type="button"
+        onClick={onToggle}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onToggle?.();
+          }
+        }}
+        aria-label="Open calendar"
+        className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full border border-border/60 bg-surface/70 p-2 text-text-muted shadow-sm transition hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+        disabled={disabled}
+      >
+        <Calendar className="h-4 w-4" />
+      </button>
+    </div>
   )
 );
 
 GlassInput.displayName = "GlassInput";
 
 export const DateTimePicker = (props: DateTimePickerProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const PopperContainer = ({ children }: { children: React.ReactNode }) =>
     createPortal(children, document.body);
   const commonInputClass = props.error ? "border-danger focus:ring-danger/40" : "";
+  const currentYear = new Date().getFullYear();
   const pickerProps = {
     popperClassName: "mt-date-picker-popper",
     calendarClassName: "mt-date-picker",
     wrapperClassName: "w-full",
     showPopperArrow: false,
     disabled: props.disabled,
-    customInput: <GlassInput className={commonInputClass} />,
-    popperContainer: PopperContainer
+    customInput: <GlassInput className={commonInputClass} onToggle={() => setIsOpen((v) => !v)} />,
+    popperContainer: PopperContainer,
+    showMonthDropdown: true,
+    showYearDropdown: true,
+    dropdownMode: "select" as const,
+    scrollableYearDropdown: true,
+    yearDropdownItemNumber: 120,
+    open: isOpen,
+    onClickOutside: () => setIsOpen(false),
+    onInputClick: () => null,
+    onKeyDown: (event: React.KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
   };
 
   const labelContent = (
@@ -105,7 +143,12 @@ export const DateTimePicker = (props: DateTimePickerProps) => {
               start: start ? formatDateOnly(start) : undefined,
               end: end ? formatDateOnly(end) : undefined
             });
+            if (start && end) {
+              setIsOpen(false);
+            }
           }}
+          minDate={new Date(1900, 0, 1)}
+          maxDate={new Date(currentYear + 5, 11, 31)}
           dateFormat="MMM d, yyyy"
         />
         {props.error && <span className="text-xs text-danger">{props.error}</span>}
@@ -131,7 +174,10 @@ export const DateTimePicker = (props: DateTimePickerProps) => {
             return;
           }
           props.onChange(props.mode === "date" ? formatDateOnly(next) : formatDateTime(next));
+          setIsOpen(false);
         }}
+        minDate={props.mode === "date" ? new Date(1900, 0, 1) : undefined}
+        maxDate={props.mode === "date" ? new Date(currentYear + 5, 11, 31) : undefined}
         placeholderText={props.placeholder ?? "Select date"}
         dateFormat={props.mode === "date" ? "MMM d, yyyy" : "MMM d, yyyy h:mm aa"}
         showTimeSelect={props.mode === "datetime"}

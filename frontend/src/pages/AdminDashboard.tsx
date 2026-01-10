@@ -7,12 +7,14 @@ import { KpiCard } from "../components/dashboard/KpiCard";
 import { ErrorState } from "../components/ErrorState";
 import { Button } from "../components/ui/Button";
 import { SectionHeader } from "../components/ui/SectionHeader";
+import { useAuth } from "../hooks/useAuth";
 import { useDashboardAnalytics } from "../hooks/useDashboardAnalytics";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { resetDemoData } from "../services/demo";
 
 const AdminDashboard = () => {
   usePageTitle("Dashboard");
+  const { user } = useAuth();
   const {
     data: analytics,
     isLoading,
@@ -36,9 +38,21 @@ const AdminDashboard = () => {
     return () => window.clearTimeout(timer);
   }, [resetNotice, resetError]);
 
+  const firstName = user?.first_name?.trim();
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour <= 11) return "Good morning";
+    if (hour >= 12 && hour <= 16) return "Good afternoon";
+    if (hour >= 17 && hour <= 22) return "Good evening";
+    return "Welcome back";
+  };
+  const baseGreeting = getGreeting();
+  const greeting = firstName ? `${baseGreeting}, ${firstName}` : "Welcome back";
+
   if (isLoading) {
     return (
       <div className="space-y-8 animate-fadeUp">
+        <p className="text-sm font-medium text-text-muted">{greeting}</p>
         <SectionHeader
           title="Dashboard"
           description="Demo analytics overview"
@@ -66,6 +80,7 @@ const AdminDashboard = () => {
   if (isError || !analytics) {
     return (
       <div className="space-y-4 animate-fadeUp">
+        <p className="text-sm font-medium text-text-muted">{greeting}</p>
         <SectionHeader
           title="Dashboard"
           description="Demo analytics overview"
@@ -165,6 +180,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-8 animate-fadeUp">
+      <p className="text-sm font-medium text-text-muted">{greeting}</p>
       <SectionHeader
         title="Dashboard"
         description="Demo analytics overview"
