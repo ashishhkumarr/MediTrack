@@ -92,7 +92,7 @@ def login(payload: UserLogin, db: Session = Depends(get_db), request: Request = 
     if user.role != UserRole.admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only clinic staff can access MediTrack",
+            detail="Only clinic staff can access Medyra",
         )
     if user.failed_login_attempts or user.locked_until:
         user.failed_login_attempts = 0

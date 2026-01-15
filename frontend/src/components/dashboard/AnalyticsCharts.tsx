@@ -36,7 +36,7 @@ const EmptyChartState = () => (
   <div className="flex min-h-[200px] flex-col items-center justify-center rounded-2xl border border-border/50 bg-surface/60 px-6 py-8 text-center text-sm text-text-muted">
     <p className="text-sm font-semibold text-text">No data in this period</p>
     <p className="mt-1 text-xs text-text-muted">
-      Activity will appear here once you start using MediTrack.
+      Activity will appear here once you start using Medyra.
     </p>
   </div>
 );

@@ -40,7 +40,7 @@ const LoginPage = () => {
       <div className="relative z-10 grid w-full max-w-6xl gap-10 rounded-[36px] border border-border/60 bg-surface/70 p-6 shadow-card backdrop-blur-xl sm:p-10 lg:p-12 xl:grid-cols-2">
         <div className="rounded-3xl border border-border/60 bg-surface/70 p-8 shadow-card backdrop-blur animate-fadeUp">
           <p className="text-sm font-medium uppercase tracking-wide text-primary">Clinic Portal</p>
-          <h1 className="mt-3 text-3xl font-semibold text-text">MediTrack Admin Portal</h1>
+          <h1 className="mt-3 text-3xl font-semibold text-text">Medyra Admin Portal</h1>
           <p className="mt-3 text-base text-text-muted">
             Only clinic staff can access orchestration tools for patient journeys, schedules, and communications.
           </p>

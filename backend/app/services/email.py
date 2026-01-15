@@ -175,9 +175,9 @@ def build_reminder_email(
 
 
 def build_signup_otp_email(otp_code: str, expires_in_minutes: int):
-    subject = "Your MediTrack verification code"
+    subject = "Your Medyra verification code"
     html_body = f"""
-    <p>Your MediTrack verification code is:</p>
+    <p>Your Medyra verification code is:</p>
     <p style="font-size: 22px; font-weight: bold; letter-spacing: 3px;">
       {otp_code}
     </p>
@@ -186,7 +186,7 @@ def build_signup_otp_email(otp_code: str, expires_in_minutes: int):
     """
     text_body = "\n".join(
         [
-            "Your MediTrack verification code is:",
+            "Your Medyra verification code is:",
             otp_code,
             f"This code expires in {expires_in_minutes} minutes.",
             "If you did not request this code, you can ignore this email.",

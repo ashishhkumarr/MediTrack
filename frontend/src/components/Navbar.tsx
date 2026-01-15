@@ -14,6 +14,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
+import { APP_NAME } from "../config/brand";
 import { Button } from "./ui/Button";
 
 const navBase =
@@ -93,7 +94,7 @@ export const Navbar = () => {
           <div className="rounded-2xl bg-primary-soft/80 p-2 text-primary">
             <Activity className="h-5 w-5" />
           </div>
-          MediTrack
+          {APP_NAME}
         </NavLink>
         {user ? (
           <div className="flex flex-wrap items-center gap-3">

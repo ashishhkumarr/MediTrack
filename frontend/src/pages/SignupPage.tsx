@@ -227,7 +227,7 @@ const SignupPage = () => {
         <div className="flex flex-col gap-3 border-b border-border/60 pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-primary">Clinic onboarding</p>
-            <h1 className="mt-1 text-3xl font-semibold text-text">Create your MediTrack account</h1>
+            <h1 className="mt-1 text-3xl font-semibold text-text">Create your Medyra account</h1>
             <p className="text-sm text-text-muted">
               Doctors and clinic admins can self-serve access. Patients never sign in.
             </p>

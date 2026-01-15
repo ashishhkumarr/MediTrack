@@ -1,12 +1,12 @@
-# MediTrack
+# Medyra
 
-MediTrack is a lightweight clinic management app for small practices. Clinic staff can create patient records, schedule appointments, and keep simple medical notes in one place without a full EMR. Patients do not log in; they only receive appointment emails.
+Medyra is a lightweight clinic management app for small practices. Clinic staff can create patient records, schedule appointments, and keep simple medical notes in one place without a full EMR. Patients do not log in; they only receive appointment emails.
 
-Under the hood, MediTrack pairs a FastAPI backend with a modern React + TypeScript frontend, supports JWT authentication for clinic staff, schedules reminder jobs, and ships with Docker assets plus deployment guidance.
+Under the hood, Medyra pairs a FastAPI backend with a modern React + TypeScript frontend, supports JWT authentication for clinic staff, schedules reminder jobs, and ships with Docker assets plus deployment guidance.
 
 Clinic staff can self-serve onboarding: sign up from the web app to create an admin account, then log in immediately. A seeded default admin still exists for local/dev but is not required for first-run access.
 
-MediTrack is multi-tenant: each account has isolated data.
+Medyra is multi-tenant: each account has isolated data.
 
 ```
               +-----------------------------+
@@ -246,7 +246,7 @@ docker compose -f docker-compose.dev.yml up --build
 
 ## Demo mode / Not for real patient data
 
-MediTrack includes demo guardrails. **Do not enter real patient data** in demo environments.
+Medyra includes demo guardrails. **Do not enter real patient data** in demo environments.
 
 - The UI shows a persistent demo-only banner.
 - Signup requires acknowledging the demo notice.
@@ -268,7 +268,7 @@ docker compose down -v && docker compose up --build
 
 ## Audit logs
 
-MediTrack records an audit trail for key actions (auth, patients, appointments, reminders). Logs are scoped per user and can be queried via `GET /api/v1/audit-logs/` with filters like `action`, `entity_type`, and `since`.
+Medyra records an audit trail for key actions (auth, patients, appointments, reminders). Logs are scoped per user and can be queried via `GET /api/v1/audit-logs/` with filters like `action`, `entity_type`, and `since`.
 
 ## API Summary
 
@@ -351,7 +351,7 @@ Ports and URLs:
 
 ## Email Delivery Modes (Dev vs Resend)
 
-MediTrack supports a safe dev logger plus optional real delivery via Resend.
+Medyra supports a safe dev logger plus optional real delivery via Resend.
 
 Dev mode (no real email, logs only):
 
@@ -428,4 +428,4 @@ Add real screenshots to `docs/screenshots/` and reference them below:
 
 ---
 
-MediTrack delivers the full-stack scaffolding—from secure admin authentication to scheduling automation—to get a clinic operations app into production quickly. Customize modules, extend the schema, or plug in third-party services as needed. Happy shipping!
+Medyra delivers the full-stack scaffolding—from secure admin authentication to scheduling automation—to get a clinic operations app into production quickly. Customize modules, extend the schema, or plug in third-party services as needed. Happy shipping!

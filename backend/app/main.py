@@ -86,7 +86,7 @@ def create_default_admin():
             admin = User(
                 email=settings.ADMIN_DEFAULT_EMAIL,
                 hashed_password=get_password_hash(settings.ADMIN_DEFAULT_PASSWORD),
-                full_name="MediTrack Admin",
+                full_name="Medyra Admin",
                 role=UserRole.admin,
             )
             db.add(admin)

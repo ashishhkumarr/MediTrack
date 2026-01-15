@@ -84,7 +84,7 @@ const LandingPage = () => {
   const location = useLocation();
   const primaryAction = user
     ? { label: "Open dashboard", to: "/admin" }
-    : { label: "Sign in to MediTrack", to: "/login" };
+    : { label: "Sign in to Medyra", to: "/login" };
 
   useEffect(() => {
     if (!location.hash) return;
@@ -119,7 +119,7 @@ const LandingPage = () => {
             Run your clinic with clarity and confidence
           </h1>
           <p className="mt-4 max-w-2xl text-base text-text-muted sm:text-lg">
-            MediTrack keeps patient profiles, scheduling, and audit history in one lightweight
+            Medyra keeps patient profiles, scheduling, and audit history in one lightweight
             workspace — built for demo safety and small-clinic speed.
           </p>
           <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
@@ -142,7 +142,7 @@ const LandingPage = () => {
 
           <img
             src={brainHero}
-            alt="MediTrack analytics"
+            alt="Medyra analytics"
             className="absolute bottom-0 left-1/2 z-0 w-[620px] -translate-x-1/2 drop-shadow-[0_40px_80px_rgba(126,142,200,0.35)] sm:w-[700px] lg:w-[780px]"
           />
 
@@ -287,13 +287,13 @@ const LandingPage = () => {
             A clear clinic flow from intake to follow-up.
           </h2>
           <p className="text-base text-text-muted">
-            MediTrack keeps staff aligned with a single view of patient profiles and appointments.
+            Medyra keeps staff aligned with a single view of patient profiles and appointments.
             Keep the day organized, prevent schedule conflicts, and maintain continuity of care.
           </p>
           <div className="rounded-3xl border border-border/60 bg-surface/65 p-6 text-sm text-text-muted shadow-card backdrop-blur">
-            <p className="text-sm font-semibold text-text">What MediTrack does not do</p>
+            <p className="text-sm font-semibold text-text">What Medyra does not do</p>
             <p className="mt-2 text-sm text-text-muted">
-              No billing, insurance claims, prescriptions, or advanced EMR charting. MediTrack
+              No billing, insurance claims, prescriptions, or advanced EMR charting. Medyra
               stays focused on essential clinic operations.
             </p>
           </div>
@@ -349,7 +349,7 @@ const LandingPage = () => {
           </div>
         </Card>
         <div className="rounded-3xl border border-border/60 bg-surface/70 p-6 text-sm text-text-muted shadow-card backdrop-blur">
-          <h3 className="text-lg font-semibold text-text">Why clinics choose MediTrack</h3>
+          <h3 className="text-lg font-semibold text-text">Why clinics choose Medyra</h3>
           <ul className="mt-4 space-y-3 text-sm text-text-muted">
             <li className="flex items-start gap-2">
               <CheckCircle2 className="mt-1 h-4 w-4 text-success" />
@@ -380,7 +380,7 @@ const LandingPage = () => {
               A calm, reliable clinic operations platform.
             </h2>
             <p className="text-base text-text-muted">
-              MediTrack keeps small practices on schedule with minimal training required. Give
+              Medyra keeps small practices on schedule with minimal training required. Give
               your staff a tool they can trust every day.
             </p>
           </div>

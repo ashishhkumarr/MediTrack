@@ -107,7 +107,7 @@ def _signup_payload(email: str, otp: str | None = None):
         "license_country": "USA",
         "npi_number": "1234567890",
         "taxonomy_code": "207R00000X",
-        "clinic_name": "MediTrack Clinic",
+        "clinic_name": "Medyra Clinic",
         "clinic_address": "123 Market St",
         "clinic_city": "San Francisco",
         "clinic_state": "CA",

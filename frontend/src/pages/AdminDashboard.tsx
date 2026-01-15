@@ -1,5 +1,14 @@
-import { Activity, CalendarClock, RefreshCcw, Trash2, UserPlus, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  Activity,
+  CalendarClock,
+  Moon,
+  RefreshCcw,
+  Sun,
+  Trash2,
+  UserPlus,
+  Users
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 import { AnalyticsCharts } from "../components/dashboard/AnalyticsCharts";
 import { DashboardEmptyState } from "../components/dashboard/DashboardEmptyState";
@@ -41,18 +50,52 @@ const AdminDashboard = () => {
   const firstName = user?.first_name?.trim();
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour >= 5 && hour <= 11) return "Good morning";
-    if (hour >= 12 && hour <= 16) return "Good afternoon";
-    if (hour >= 17 && hour <= 22) return "Good evening";
-    return "Welcome back";
+    if (hour >= 5 && hour <= 11) return { text: "Good morning", icon: Sun };
+    if (hour >= 12 && hour <= 16) return { text: "Good afternoon", icon: Sun };
+    if (hour >= 17 && hour <= 20) return { text: "Good evening", icon: Moon };
+    return { text: "Good night", icon: Moon };
   };
-  const baseGreeting = getGreeting();
-  const greeting = firstName ? `${baseGreeting}, ${firstName}` : "Welcome back";
+  const { text: baseGreeting, icon: GreetingIcon } = useMemo(getGreeting, []);
+  const greetingName = (firstName ?? "").trim();
+  const greetingLabel = `${baseGreeting}${greetingName ? "," : ""}`;
+  const [animateGreeting, setAnimateGreeting] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      setAnimateGreeting(false);
+      return;
+    }
+    const key = "medyra:greetingAnimated";
+    const hasAnimated = sessionStorage.getItem(key);
+    if (!hasAnimated) {
+      setAnimateGreeting(true);
+      sessionStorage.setItem(key, "true");
+    }
+  }, []);
+
+  const greetingBlock = (
+    <div
+      className={`flex items-center gap-2 text-xl font-semibold tracking-tight text-text ${
+        animateGreeting ? "animate-fadeUp" : ""
+      }`}
+      style={animateGreeting ? { animationDelay: "90ms" } : undefined}
+    >
+      <GreetingIcon className="h-5 w-5 text-text-muted" />
+      <span>{greetingLabel}</span>
+      {greetingName ? (
+        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          {` ${greetingName}`}
+        </span>
+      ) : null}
+    </div>
+  );
 
   if (isLoading) {
     return (
       <div className="space-y-8 animate-fadeUp">
-        <p className="text-sm font-medium text-text-muted">{greeting}</p>
+        {greetingBlock}
         <SectionHeader
           title="Dashboard"
           description="Demo analytics overview"
@@ -80,7 +123,7 @@ const AdminDashboard = () => {
   if (isError || !analytics) {
     return (
       <div className="space-y-4 animate-fadeUp">
-        <p className="text-sm font-medium text-text-muted">{greeting}</p>
+        {greetingBlock}
         <SectionHeader
           title="Dashboard"
           description="Demo analytics overview"
@@ -180,7 +223,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-8 animate-fadeUp">
-      <p className="text-sm font-medium text-text-muted">{greeting}</p>
+      {greetingBlock}
       <SectionHeader
         title="Dashboard"
         description="Demo analytics overview"

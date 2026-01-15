@@ -16,7 +16,7 @@ const DemoNoticePage = () => {
           This environment is for demonstration only.
         </h1>
         <p className="mt-3 text-sm text-text-muted">
-          MediTrack is running in demo mode. Please do not enter real patient
+          Medyra is running in demo mode. Please do not enter real patient
           data, PHI, or sensitive information. Use synthetic names and test
           contact details only.
         </p>
