@@ -491,9 +491,8 @@ const SignupPage = () => {
                     onClick={handleBypassSignup}
                     disabled={sendingOtp}
                   >
-                    Sign up without OTP (dev)
+                    Sign up without OTP
                   </Button>
-                  <p>Dev/demo only. Remove before release.</p>
                 </div>
               )}
             </div>
