@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "./ui/Button";
 import { DateTimePicker } from "./ui/DateTimePicker";
 import { InputField, TextAreaField } from "./ui/FormField";
+import { MicroHint } from "./ui/MicroHint";
 import { Patient } from "../services/patients";
 
 interface Props {
@@ -100,10 +101,6 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
   };
 
   const hasStartTime = Boolean(formState.appointment_datetime);
-  const reminderMessage = isPastAppointment
-    ? "Reminders aren’t available for completed or past visits."
-    : "Confirm the appointment to enable reminders.";
-
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-3">
@@ -136,14 +133,20 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
         )}
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <DateTimePicker
-          label="Start time"
-          mode="datetime"
-          value={formState.appointment_datetime}
-          onChange={handleDateChange("appointment_datetime")}
-          error={errors.appointment_datetime}
-          required
-        />
+        <div className="space-y-2">
+          <DateTimePicker
+            label="Start time"
+            mode="datetime"
+            value={formState.appointment_datetime}
+            onChange={handleDateChange("appointment_datetime")}
+            error={errors.appointment_datetime}
+            required
+          />
+          <MicroHint
+            condition={!formState.appointment_datetime}
+            text="Tip: Confirmed appointments can send reminders automatically."
+          />
+        </div>
         <DateTimePicker
           label="End time (optional)"
           mode="datetime"
@@ -166,11 +169,10 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
           placeholder="Cardiology"
         />
       </div>
-      {isPastAppointment && (
-        <p className="text-xs text-text-muted">
-          This is a past date. The appointment will be saved as a completed visit (no reminders).
-        </p>
-      )}
+      <MicroHint
+        condition={isPastAppointment}
+        text="Past appointments are saved as completed."
+      />
       <div className="rounded-3xl border border-border/60 bg-surface/70 px-4 py-4 text-sm text-text-muted shadow-sm backdrop-blur">
         <div className="flex items-center justify-between">
           <div>
@@ -182,6 +184,7 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
             </p>
           </div>
         </div>
+        <MicroHint text="Reminders trigger only after confirmation." />
         <div className="mt-4 space-y-3">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <label className="flex items-center gap-2">
@@ -255,12 +258,6 @@ export const AppointmentForm = ({ patients, onSubmit, isSubmitting }: Props) => 
                           ))}
                         </select>
                       </div>
-                      {!hasStartTime && !isPastAppointment && (
-                        <p className="text-xs text-text-subtle">
-                          Select a start time to enable reminder scheduling.
-                        </p>
-                      )}
-                      <p className="text-xs text-text-subtle">{reminderMessage}</p>
                     </div>
                   </div>
       <TextAreaField

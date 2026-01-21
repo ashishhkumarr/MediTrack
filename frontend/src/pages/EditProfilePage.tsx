@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -8,11 +8,12 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { InputField } from "../components/ui/FormField";
+import { MicroHint } from "../components/ui/MicroHint";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { useAuth } from "../hooks/useAuth";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { toast } from "../lib/toast";
-import { fetchCurrentUser, updateCurrentUser } from "../services/users";
+import { deleteMe, fetchCurrentUser, updateCurrentUser } from "../services/users";
 
 type ProfileFormState = {
   first_name: string;
@@ -68,7 +69,7 @@ const buildFormState = (data?: {
 
 const EditProfilePage = () => {
   usePageTitle("Profile");
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
   const navigate = useNavigate();
   const { data, isLoading, error } = useQuery({
     queryKey: ["currentUser"],
@@ -78,6 +79,12 @@ const EditProfilePage = () => {
   const [formState, setFormState] = useState<ProfileFormState>(buildFormState(data));
   const [baseline, setBaseline] = useState<ProfileFormState>(buildFormState(data));
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const deleteModalRef = useRef<HTMLDivElement | null>(null);
+  const deleteLastFocusRef = useRef<HTMLElement | null>(null);
+  const [deletePhrase, setDeletePhrase] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const deletionEnabled = import.meta.env.VITE_ENABLE_ACCOUNT_DELETION === "true";
   const mutation = useMutation({
     mutationFn: updateCurrentUser,
     onSuccess: (updated) => {
@@ -152,6 +159,33 @@ const EditProfilePage = () => {
       toast.error("Unable to update profile");
     }
   };
+
+  const handleStartTour = () => {
+    const key = user?.id ? `medyra:tour:v1:${user.id}` : user?.email ? `medyra:tour:v1:${user.email}` : null;
+    if (key) {
+      localStorage.removeItem(key);
+    }
+    sessionStorage.setItem("medyra:tour:pending", "true");
+    navigate("/admin");
+  };
+
+  useEffect(() => {
+    if (!showDeleteModal) return;
+    deleteLastFocusRef.current = document.activeElement as HTMLElement | null;
+    requestAnimationFrame(() => deleteModalRef.current?.focus());
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowDeleteModal(false);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+      deleteLastFocusRef.current?.focus();
+    };
+  }, [showDeleteModal]);
+
+  const canDelete = deletePhrase.trim().toUpperCase() === "DELETE";
 
   return (
     <Card className="animate-fadeUp">
@@ -307,12 +341,116 @@ const EditProfilePage = () => {
             variant="secondary"
             size="lg"
             className="w-full justify-center sm:w-auto"
+            onClick={handleStartTour}
+          >
+            Start guided tour
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            className="w-full justify-center sm:w-auto"
             onClick={() => navigate("/change-password")}
           >
             Change Password
           </Button>
         </div>
+        {deletionEnabled && (
+          <div className="mt-8 rounded-[28px] border border-danger/30 bg-danger-soft/40 p-5 shadow-card backdrop-blur">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-danger">
+              Danger zone
+            </h3>
+            <p className="mt-2 text-sm text-text-muted">
+              Deleting your account permanently removes your profile, patients, appointments, and
+              audit history. This cannot be undone.
+            </p>
+            <div className="mt-4 flex flex-col gap-3">
+              <MicroHint text="This permanently removes all data associated with your account." />
+              <div className="flex items-center gap-3">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    setDeletePhrase("");
+                    setShowDeleteModal(true);
+                  }}
+                >
+                  Delete account
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </form>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 animate-fadeIn">
+          <div className="absolute inset-0" onClick={() => setShowDeleteModal(false)} />
+          <div
+            ref={deleteModalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+            aria-describedby="delete-account-desc"
+            tabIndex={-1}
+            className="relative z-10 w-full max-w-lg overflow-hidden rounded-[32px] border border-border/60 bg-surface/85 shadow-card backdrop-blur-xl animate-modalIn"
+          >
+            <div className="border-b border-border/60 px-6 py-4">
+              <h3 id="delete-account-title" className="text-lg font-semibold text-text">
+                Delete account?
+              </h3>
+              <p id="delete-account-desc" className="mt-1 text-sm text-text-muted">
+                This permanently deletes your profile, patients, appointments, and audit history.
+              </p>
+            </div>
+            <div className="space-y-4 px-6 py-5 text-sm text-text-muted">
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wide text-text-subtle">
+                  Type DELETE to confirm
+                </label>
+                <input
+                  value={deletePhrase}
+                  onChange={(event) => setDeletePhrase(event.target.value)}
+                  className="mt-2 w-full rounded-2xl border border-border/60 bg-surface/70 px-4 py-3 text-sm text-text shadow-sm backdrop-blur focus:border-danger focus:outline-none focus:ring-2 focus:ring-danger/30"
+                  placeholder="DELETE"
+                />
+              </div>
+              <p className="text-xs text-text-subtle">
+                This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex items-center justify-end gap-3 border-t border-border/60 px-6 py-4">
+              <Button variant="secondary" type="button" onClick={() => setShowDeleteModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                type="button"
+                disabled={!canDelete || deleting}
+                isLoading={deleting}
+                onClick={async () => {
+                  if (!canDelete || deleting) return;
+                  setDeleting(true);
+                  try {
+                    await deleteMe();
+                    toast.success("Account deleted");
+                    setShowDeleteModal(false);
+                    logout();
+                    navigate("/");
+                  } catch (error: any) {
+                    toast.error("Unable to delete account");
+                  } finally {
+                    setDeleting(false);
+                  }
+                }}
+              >
+                {deleting ? "Deleting..." : "Delete account"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 };

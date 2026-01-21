@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useState } from "react";
+import { forwardRef, useId, useMemo, useState } from "react";
 import type { InputHTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Calendar } from "lucide-react";
@@ -88,6 +88,8 @@ GlassInput.displayName = "GlassInput";
 
 export const DateTimePicker = (props: DateTimePickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const inputId = useId();
+  const errorId = props.error ? `${inputId}-error` : undefined;
   const PopperContainer = ({ children }: { children: ReactNode }) =>
     createPortal(children, document.body);
   const commonInputClass = props.error ? "border-danger focus:ring-danger/40" : "";
@@ -98,7 +100,16 @@ export const DateTimePicker = (props: DateTimePickerProps) => {
     wrapperClassName: "w-full",
     showPopperArrow: false,
     disabled: props.disabled,
-    customInput: <GlassInput className={commonInputClass} onToggle={() => setIsOpen((v) => !v)} />,
+    customInput: (
+      <GlassInput
+        id={inputId}
+        aria-required={props.required ?? undefined}
+        aria-invalid={props.error ? true : undefined}
+        aria-describedby={errorId}
+        className={commonInputClass}
+        onToggle={() => setIsOpen((v) => !v)}
+      />
+    ),
     popperContainer: PopperContainer,
     showMonthDropdown: true,
     showYearDropdown: true,
@@ -152,7 +163,11 @@ export const DateTimePicker = (props: DateTimePickerProps) => {
           maxDate={new Date(currentYear + 5, 11, 31)}
           dateFormat="MMM d, yyyy"
         />
-        {props.error && <span className="text-xs text-danger">{props.error}</span>}
+        {props.error && (
+          <span id={errorId} className="text-xs text-danger">
+            {props.error}
+          </span>
+        )}
       </label>
     );
   }
@@ -161,6 +176,8 @@ export const DateTimePicker = (props: DateTimePickerProps) => {
     () => (props.mode === "date" ? parseDateOnly(props.value) : parseDateTime(props.value)),
     [props.mode, props.value]
   );
+
+  const shouldCloseOnSelect = props.mode !== "datetime";
 
   return (
     <label className="flex w-full flex-col gap-2 text-sm font-medium text-text">
@@ -174,8 +191,22 @@ export const DateTimePicker = (props: DateTimePickerProps) => {
             props.onChange("");
             return;
           }
+          const previous = props.mode === "datetime" ? parseDateTime(props.value) : null;
           props.onChange(props.mode === "date" ? formatDateOnly(next) : formatDateTime(next));
-          setIsOpen(false);
+          if (props.mode === "date") {
+            setIsOpen(false);
+            return;
+          }
+          if (props.mode === "datetime") {
+            if (!previous) return;
+            const sameDay = previous.toDateString() === next.toDateString();
+            const timeChanged =
+              previous.getHours() !== next.getHours() ||
+              previous.getMinutes() !== next.getMinutes();
+            if (sameDay && timeChanged) {
+              setIsOpen(false);
+            }
+          }
         }}
         minDate={props.mode === "date" ? new Date(1900, 0, 1) : undefined}
         maxDate={props.mode === "date" ? new Date(currentYear + 5, 11, 31) : undefined}
@@ -184,8 +215,13 @@ export const DateTimePicker = (props: DateTimePickerProps) => {
         showTimeSelect={props.mode === "datetime"}
         timeIntervals={15}
         timeFormat="h:mm aa"
+        shouldCloseOnSelect={shouldCloseOnSelect}
       />
-      {props.error && <span className="text-xs text-danger">{props.error}</span>}
+      {props.error && (
+        <span id={errorId} className="text-xs text-danger">
+          {props.error}
+        </span>
+      )}
     </label>
   );
 };

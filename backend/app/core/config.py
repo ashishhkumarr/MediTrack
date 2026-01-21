@@ -22,8 +22,10 @@ class Settings(BaseSettings):
     RESEND_API_KEY: str | None = None
     EMAIL_FROM: str = "onboarding@resend.dev"
     EMAIL_ENABLED: bool = False
+    ENABLE_EMAIL_OTP: bool = False
     ENABLE_DEV_AUTH_BYPASS: bool = False
     ENABLE_DEMO_RESET: bool = False
+    ENABLE_ACCOUNT_DELETION: bool = False
     CORS_ALLOWED_ORIGINS: str = ""
     DEMO_MODE: bool = True
     MAX_LOGIN_ATTEMPTS: int = 5

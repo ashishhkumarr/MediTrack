@@ -89,5 +89,5 @@ def test_demo_reset_reseeded(client, db_session, monkeypatch):
     response = client.post("/api/v1/demo/reset?reseed=true", headers=headers)
     assert response.status_code == 200
     payload = response.json()
-    assert payload["seeded"]["patients"] == 2
-    assert payload["seeded"]["appointments"] == 3
+    assert payload["seeded"]["patients"] == 4
+    assert payload["seeded"]["appointments"] == 6

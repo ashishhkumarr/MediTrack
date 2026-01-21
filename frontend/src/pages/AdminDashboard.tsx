@@ -1,6 +1,7 @@
 import {
   Activity,
   CalendarClock,
+  Info,
   Moon,
   RefreshCcw,
   Sun,
@@ -8,11 +9,13 @@ import {
   UserPlus,
   Users
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { AnalyticsCharts } from "../components/dashboard/AnalyticsCharts";
 import { DashboardEmptyState } from "../components/dashboard/DashboardEmptyState";
 import { KpiCard } from "../components/dashboard/KpiCard";
+import { WhatsNextPanel } from "../components/dashboard/WhatsNextPanel";
 import { ErrorState } from "../components/ErrorState";
 import { Button } from "../components/ui/Button";
 import { SectionHeader } from "../components/ui/SectionHeader";
@@ -37,6 +40,13 @@ const AdminDashboard = () => {
   const [resetNotice, setResetNotice] = useState<string | null>(null);
   const [resetError, setResetError] = useState<string | null>(null);
   const resetEnabled = import.meta.env.VITE_ENABLE_DEMO_RESET === "true";
+  const infoRef = useRef<HTMLButtonElement | null>(null);
+  const resetModalRef = useRef<HTMLDivElement | null>(null);
+  const resetLastFocusRef = useRef<HTMLElement | null>(null);
+  const [showInfoTooltip, setShowInfoTooltip] = useState(false);
+  const [infoPosition, setInfoPosition] = useState<{ top: number; left: number } | null>(
+    null
+  );
 
   useEffect(() => {
     if (!resetNotice && !resetError) return;
@@ -47,7 +57,77 @@ const AdminDashboard = () => {
     return () => window.clearTimeout(timer);
   }, [resetNotice, resetError]);
 
+  useEffect(() => {
+    if (!showInfoTooltip || !infoRef.current) return;
+    const updatePosition = () => {
+      if (!infoRef.current) return;
+      const rect = infoRef.current.getBoundingClientRect();
+      setInfoPosition({
+        top: rect.bottom + 10,
+        left: rect.left + rect.width / 2
+      });
+    };
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [showInfoTooltip]);
+
+  useEffect(() => {
+    if (!showInfoTooltip) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowInfoTooltip(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showInfoTooltip]);
+
+  useEffect(() => {
+    if (!showResetModal) return;
+    resetLastFocusRef.current = document.activeElement as HTMLElement | null;
+    requestAnimationFrame(() => resetModalRef.current?.focus());
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowResetModal(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      resetLastFocusRef.current?.focus();
+    };
+  }, [showResetModal]);
+
+  const infoTooltip =
+    showInfoTooltip && infoPosition
+      ? createPortal(
+          <div
+            role="tooltip"
+            className="fixed z-[9999] w-[260px] -translate-x-1/2 rounded-2xl border border-border/60 bg-surface/90 px-3 py-2 text-xs text-text shadow-card backdrop-blur transition-opacity duration-150"
+            style={{ top: infoPosition.top, left: infoPosition.left }}
+          >
+            <p className="text-xs font-semibold text-text">What this dashboard shows</p>
+            <p className="mt-1 text-xs text-text-muted">
+              This dashboard provides a high-level overview of your clinic activity,
+              including patient growth, appointment volume, and recent trends. All
+              metrics are calculated per account and reflect demo data only.
+            </p>
+          </div>,
+          document.body
+        )
+      : null;
+
   const firstName = user?.first_name?.trim();
+  const emptyOnceKey = user?.id
+    ? `dashboard-empty-${user.id}`
+    : user?.email
+      ? `dashboard-empty-${user.email}`
+      : undefined;
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour >= 5 && hour <= 11) return { text: "Good morning", icon: Sun };
@@ -96,12 +176,30 @@ const AdminDashboard = () => {
     return (
       <div className="space-y-8 animate-fadeUp">
         {greetingBlock}
+        {infoTooltip}
         <SectionHeader
-          title="Dashboard"
+          title={
+            <span className="inline-flex items-center gap-2">
+              Dashboard
+              <button
+                ref={infoRef}
+                type="button"
+                aria-label="What this dashboard shows"
+                onMouseEnter={() => setShowInfoTooltip(true)}
+                onMouseLeave={() => setShowInfoTooltip(false)}
+                onFocus={() => setShowInfoTooltip(true)}
+                onBlur={() => setShowInfoTooltip(false)}
+                onClick={() => setShowInfoTooltip((prev) => !prev)}
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-surface/70 text-text-muted shadow-sm backdrop-blur transition hover:text-text"
+              >
+                <Info className="h-4 w-4" />
+              </button>
+            </span>
+          }
           description="Demo analytics overview"
           action={<div className="h-10 w-32 rounded-xl bg-surface/60" />}
         />
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4" data-tour="dash-kpis">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
@@ -124,8 +222,26 @@ const AdminDashboard = () => {
     return (
       <div className="space-y-4 animate-fadeUp">
         {greetingBlock}
+        {infoTooltip}
         <SectionHeader
-          title="Dashboard"
+          title={
+            <span className="inline-flex items-center gap-2">
+              Dashboard
+              <button
+                ref={infoRef}
+                type="button"
+                aria-label="What this dashboard shows"
+                onMouseEnter={() => setShowInfoTooltip(true)}
+                onMouseLeave={() => setShowInfoTooltip(false)}
+                onFocus={() => setShowInfoTooltip(true)}
+                onBlur={() => setShowInfoTooltip(false)}
+                onClick={() => setShowInfoTooltip((prev) => !prev)}
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-surface/70 text-text-muted shadow-sm backdrop-blur transition hover:text-text"
+              >
+                <Info className="h-4 w-4" />
+              </button>
+            </span>
+          }
           description="Demo analytics overview"
           action={
             <div className="flex items-center gap-2">
@@ -150,7 +266,7 @@ const AdminDashboard = () => {
                   size="sm"
                   onClick={() => setShowResetModal(true)}
                 >
-                  Reset demo (dev)
+                  Clear data
                 </Button>
               )}
             </div>
@@ -224,8 +340,26 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-8 animate-fadeUp">
       {greetingBlock}
+      {infoTooltip}
       <SectionHeader
-        title="Dashboard"
+        title={
+          <span className="inline-flex items-center gap-2">
+            Dashboard
+            <button
+              ref={infoRef}
+              type="button"
+              aria-label="What this dashboard shows"
+              onMouseEnter={() => setShowInfoTooltip(true)}
+              onMouseLeave={() => setShowInfoTooltip(false)}
+              onFocus={() => setShowInfoTooltip(true)}
+              onBlur={() => setShowInfoTooltip(false)}
+              onClick={() => setShowInfoTooltip((prev) => !prev)}
+              className="flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-surface/70 text-text-muted shadow-sm backdrop-blur transition hover:text-text"
+            >
+              <Info className="h-4 w-4" />
+            </button>
+          </span>
+        }
         description="Demo analytics overview"
         action={
           <div className="flex flex-wrap items-center gap-2">
@@ -241,7 +375,7 @@ const AdminDashboard = () => {
             {resetEnabled && (
               <Button variant="destructive" size="sm" onClick={() => setShowResetModal(true)}>
                 <Trash2 className="mr-2 h-4 w-4" />
-                Reset demo (dev)
+                Clear data
               </Button>
             )}
           </div>
@@ -259,7 +393,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4" data-tour="dash-kpis">
         <KpiCard
           label="Total patients"
           value={kpis.totalPatients}
@@ -291,7 +425,12 @@ const AdminDashboard = () => {
       </div>
 
       {isEmpty ? (
-        <DashboardEmptyState />
+        <DashboardEmptyState
+          onSampleLoaded={async () => {
+            await refetch();
+          }}
+          onceKey={emptyOnceKey}
+        />
       ) : (
         <AnalyticsCharts
           appointmentsByDay={trends.appointmentsByDay30d}
@@ -300,14 +439,26 @@ const AdminDashboard = () => {
         />
       )}
 
+      <WhatsNextPanel />
+
       {showResetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
-          <div className="w-full max-w-lg rounded-[32px] border border-border/60 bg-surface/80 shadow-card backdrop-blur-xl">
+          <div
+            ref={resetModalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reset-demo-title"
+            aria-describedby="reset-demo-desc"
+            tabIndex={-1}
+            className="w-full max-w-lg rounded-[32px] border border-border/60 bg-surface/80 shadow-card backdrop-blur-xl"
+          >
             <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
               <div>
-                <h3 className="text-lg font-semibold text-text">Reset demo data?</h3>
-                <p className="text-xs text-text-muted">
-                  This will delete your demo patients and appointments.
+                <h3 id="reset-demo-title" className="text-lg font-semibold text-text">
+                  Clear all data?
+                </h3>
+                <p id="reset-demo-desc" className="text-xs text-text-muted">
+                  This will delete the entire data.
                 </p>
               </div>
               <Button variant="ghost" type="button" onClick={() => setShowResetModal(false)}>
@@ -325,7 +476,6 @@ const AdminDashboard = () => {
                 />
                 Reseed sample data after reset
               </label>
-              <p className="text-xs text-text-muted">Dev/demo only. Remove before release.</p>
             </div>
             <div className="flex items-center justify-end gap-3 border-t border-border/60 px-6 py-4">
               <Button variant="secondary" type="button" onClick={() => setShowResetModal(false)}>

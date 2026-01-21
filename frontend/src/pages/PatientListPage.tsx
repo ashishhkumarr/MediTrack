@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -8,6 +8,7 @@ import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { DateTimePicker } from "../components/ui/DateTimePicker";
 import { InputField, TextAreaField } from "../components/ui/FormField";
+import { MicroHint } from "../components/ui/MicroHint";
 import { SectionHeader } from "../components/ui/SectionHeader";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { useCreatePatient, usePatients } from "../hooks/usePatients";
@@ -44,6 +45,8 @@ const PatientListPage = () => {
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const lastFocusRef = useRef<HTMLElement | null>(null);
   const [formState, setFormState] = useState<PatientFormState>(initialFormState);
   const [formErrors, setFormErrors] = useState<
     Partial<Record<keyof PatientFormState, string>>
@@ -66,8 +69,18 @@ const PatientListPage = () => {
   useEffect(() => {
     if (!isModalOpen) return;
     document.body.classList.add("overflow-hidden");
+    lastFocusRef.current = document.activeElement as HTMLElement | null;
+    requestAnimationFrame(() => modalRef.current?.focus());
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleCloseModal();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.classList.remove("overflow-hidden");
+      window.removeEventListener("keydown", handleKeyDown);
+      lastFocusRef.current?.focus();
     };
   }, [isModalOpen]);
 
@@ -216,6 +229,9 @@ const PatientListPage = () => {
       {!totalCount && (
         <div className="rounded-2xl border border-border/60 bg-surface/70 px-4 py-6 text-center text-sm text-text-muted shadow-sm backdrop-blur">
           <p>No patient records yet. Add a patient to get started.</p>
+          <div className="mt-2 flex justify-center">
+            <MicroHint text="Start by adding a patient — everything else builds from there." />
+          </div>
           <Button
             className="mt-4"
             variant="secondary"
@@ -273,11 +289,21 @@ const PatientListPage = () => {
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={handleCloseModal} />
-            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
+            <div
+              ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="new-patient-title"
+              aria-describedby="new-patient-desc"
+              tabIndex={-1}
+              className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn"
+            >
               <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-border/60 bg-surface/85 px-6 pb-4 pt-5 backdrop-blur">
                 <div>
-                  <h3 className="text-lg font-semibold text-text">New patient</h3>
-                  <p className="text-sm text-text-muted">
+                  <h3 id="new-patient-title" className="text-lg font-semibold text-text">
+                    New patient
+                  </h3>
+                  <p id="new-patient-desc" className="text-sm text-text-muted">
                     Capture patient demographics and contact details.
                   </p>
                 </div>

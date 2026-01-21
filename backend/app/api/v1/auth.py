@@ -36,6 +36,30 @@ def _get_primary_user(db: Session) -> User | None:
     return db.query(User).order_by(User.created_at.asc(), User.id.asc()).first()
 
 
+def _build_user_from_signup(payload: UserSignup, email: str) -> User:
+    return User(
+        email=email,
+        hashed_password=get_password_hash(payload.password),
+        full_name=f"{payload.first_name} {payload.last_name}".strip(),
+        first_name=payload.first_name,
+        last_name=payload.last_name,
+        phone=payload.phone,
+        specialty=payload.specialty,
+        license_number=payload.license_number,
+        license_state=payload.license_state,
+        license_country=payload.license_country,
+        npi_number=payload.npi_number,
+        taxonomy_code=payload.taxonomy_code,
+        clinic_name=payload.clinic_name,
+        clinic_address=payload.clinic_address,
+        clinic_city=payload.clinic_city,
+        clinic_state=payload.clinic_state,
+        clinic_zip=payload.clinic_zip,
+        clinic_country=payload.clinic_country,
+        role=UserRole.admin,
+    )
+
+
 @router.post("/login")
 @limiter.limit("5/minute", key_func=get_ip_email_key)
 @limiter.limit("20/minute")
@@ -116,12 +140,49 @@ def login(payload: UserLogin, db: Session = Depends(get_db), request: Request = 
     return {"access_token": token, "token_type": "bearer", "user": UserResponse.from_orm(user)}
 
 
-@router.post("/signup", response_model=dict, status_code=status.HTTP_410_GONE)
-def signup(_: UserSignup, __: Session = Depends(get_db)):
-    raise HTTPException(
-        status_code=status.HTTP_410_GONE,
-        detail="Signup now requires email verification. Use /auth/signup/request-otp.",
+@router.post("/signup", response_model=dict, status_code=status.HTTP_201_CREATED)
+def signup(
+    payload: UserSignup,
+    db: Session = Depends(get_db),
+    request: Request = None,
+):
+    if settings.ENABLE_EMAIL_OTP:
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail="Signup now requires email verification. Use /auth/signup/request-otp.",
+        )
+
+    email = _normalize_email(payload.email)
+    existing = db.query(User).filter(User.email == email).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered",
+        )
+
+    user = _build_user_from_signup(payload, email)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    token = create_access_token(
+        {"sub": str(user.id), "role": user.role.value},
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
+    log_event(
+        db,
+        user,
+        action="auth.signup_verified",
+        entity_type="user",
+        entity_id=user.id,
+        summary="Signup completed (OTP disabled)",
+        metadata={"email": email},
+        request=request,
+    )
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": UserResponse.from_orm(user),
+    }
 
 
 # TEMPORARY / REMOVE BEFORE RELEASE.
@@ -199,6 +260,12 @@ def request_signup_otp(
     db: Session = Depends(get_db),
     request: Request = None,
 ):
+    if not settings.ENABLE_EMAIL_OTP:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found",
+        )
+
     email = _normalize_email(payload.email)
     existing = db.query(User).filter(User.email == email).first()
     if existing:
@@ -271,6 +338,12 @@ def verify_signup_otp(
     db: Session = Depends(get_db),
     request: Request = None,
 ):
+    if not settings.ENABLE_EMAIL_OTP:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found",
+        )
+
     email = _normalize_email(payload.email)
     existing = db.query(User).filter(User.email == email).first()
     if existing:
@@ -318,27 +391,7 @@ def verify_signup_otp(
             detail="Invalid verification code.",
         )
 
-    user = User(
-        email=email,
-        hashed_password=get_password_hash(payload.password),
-        full_name=f"{payload.first_name} {payload.last_name}".strip(),
-        first_name=payload.first_name,
-        last_name=payload.last_name,
-        phone=payload.phone,
-        specialty=payload.specialty,
-        license_number=payload.license_number,
-        license_state=payload.license_state,
-        license_country=payload.license_country,
-        npi_number=payload.npi_number,
-        taxonomy_code=payload.taxonomy_code,
-        clinic_name=payload.clinic_name,
-        clinic_address=payload.clinic_address,
-        clinic_city=payload.clinic_city,
-        clinic_state=payload.clinic_state,
-        clinic_zip=payload.clinic_zip,
-        clinic_country=payload.clinic_country,
-        role=UserRole.admin,
-    )
+    user = _build_user_from_signup(payload, email)
     db.add(user)
     db.delete(otp_record)
     db.commit()

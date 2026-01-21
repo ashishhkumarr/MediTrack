@@ -119,6 +119,14 @@ body {
   animation: float 12s ease-in-out infinite;
 }
 
+.brand-badge {
+  background: rgb(var(--color-surface) / 0.6);
+  border-color: rgb(var(--color-border) / 0.7);
+  box-shadow:
+    0 10px 24px rgb(var(--color-primary) / 0.2),
+    0 0 0 1px rgb(var(--color-primary) / 0.08);
+}
+
 .dark .ambient-orb {
   opacity: 0.45;
   mix-blend-mode: screen;
@@ -314,5 +322,12 @@ body {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+  }
+}
+
+@layer base {
+  :where(a, button, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: 2px solid rgb(var(--color-primary) / 0.55);
+    outline-offset: 3px;
   }
 }

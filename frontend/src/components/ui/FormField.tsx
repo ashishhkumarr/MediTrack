@@ -1,5 +1,5 @@
 import clsx from "classnames";
-import { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
+import { InputHTMLAttributes, TextareaHTMLAttributes, useId } from "react";
 
 interface BaseFieldProps {
   label: string;
@@ -17,6 +17,9 @@ export const InputField = ({
   hint,
   ...props
 }: InputFieldProps) => {
+  const fieldId = useId();
+  const inputId = props.id ?? fieldId;
+  const errorId = error ? `${inputId}-error` : undefined;
   return (
     <label className="flex flex-col gap-2 text-sm font-medium text-text">
       {label}
@@ -26,10 +29,18 @@ export const InputField = ({
           error && "border-danger focus:ring-danger/40",
           className
         )}
+        id={inputId}
+        aria-required={props.required ?? undefined}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={errorId}
         {...props}
       />
       {hint && !error && <span className="text-xs text-text-subtle">{hint}</span>}
-      {error && <span className="text-xs text-danger">{error}</span>}
+      {error && (
+        <span id={errorId} className="text-xs text-danger">
+          {error}
+        </span>
+      )}
     </label>
   );
 };
@@ -43,6 +54,9 @@ export const TextAreaField = ({
   hint,
   ...props
 }: TextAreaProps) => {
+  const fieldId = useId();
+  const inputId = props.id ?? fieldId;
+  const errorId = error ? `${inputId}-error` : undefined;
   return (
     <label className="flex flex-col gap-2 text-sm font-medium text-text">
       {label}
@@ -52,10 +66,18 @@ export const TextAreaField = ({
           error && "border-danger focus:ring-danger/40",
           className
         )}
+        id={inputId}
+        aria-required={props.required ?? undefined}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={errorId}
         {...props}
       />
       {hint && !error && <span className="text-xs text-text-subtle">{hint}</span>}
-      {error && <span className="text-xs text-danger">{error}</span>}
+      {error && (
+        <span id={errorId} className="text-xs text-danger">
+          {error}
+        </span>
+      )}
     </label>
   );
 };

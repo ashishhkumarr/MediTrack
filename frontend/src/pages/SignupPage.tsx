@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { Button } from "../components/ui/Button";
 import { InputField } from "../components/ui/FormField";
-import { requestSignupOtp, signupBypass, verifySignupOtp } from "../services/auth";
+import { requestSignupOtp, signupBypass, signupRequest, verifySignupOtp } from "../services/auth";
 import { useAuthContext } from "../context/AuthContext";
 import { usePageTitle } from "../hooks/usePageTitle";
 
@@ -64,6 +64,7 @@ const SignupPage = () => {
   const [step, setStep] = useState<"details" | "otp">("details");
   const [otpMessage, setOtpMessage] = useState<string | null>(null);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const otpEnabled = import.meta.env.VITE_ENABLE_EMAIL_OTP === "true";
   // TEMPORARY / REMOVE BEFORE RELEASE.
   const bypassEnabled = import.meta.env.VITE_ENABLE_DEV_AUTH_BYPASS === "true";
 
@@ -111,6 +112,13 @@ const SignupPage = () => {
     }, 1000);
     return () => window.clearInterval(timer);
   }, [resendCooldown]);
+
+  useEffect(() => {
+    if (!otpEnabled && step !== "details") {
+      setStep("details");
+      setOtp("");
+    }
+  }, [otpEnabled, step]);
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
@@ -185,6 +193,22 @@ const SignupPage = () => {
     }
   };
 
+  const handleDirectSignup = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setApiError(null);
+    if (!validate()) return;
+    setSendingOtp(true);
+    try {
+      await signupRequest(buildSignupPayload());
+      await login(formState.email, formState.password);
+      navigate("/admin");
+    } catch (error: any) {
+      setApiError(getApiErrorMessage(error));
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
   const handleVerifyOtp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setApiError(null);
@@ -241,7 +265,13 @@ const SignupPage = () => {
         </div>
 
         <form
-          onSubmit={step === "details" ? handleSendOtp : handleVerifyOtp}
+          onSubmit={
+            otpEnabled
+              ? step === "details"
+                ? handleSendOtp
+                : handleVerifyOtp
+              : handleDirectSignup
+          }
           className="space-y-6"
         >
           {step === "details" && (
@@ -405,7 +435,7 @@ const SignupPage = () => {
             </>
           )}
 
-          {step === "otp" && (
+          {step === "otp" && otpEnabled && (
             <div className="space-y-4 rounded-2xl border border-border/60 bg-surface/70 p-4 shadow-sm backdrop-blur">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -479,10 +509,21 @@ const SignupPage = () => {
           {step === "details" ? (
             <div className="space-y-3">
               <Button type="submit" size="lg" className="w-full" isLoading={sendingOtp}>
-                {sendingOtp ? "Sending code..." : "Send OTP"}
+                {otpEnabled
+                  ? sendingOtp
+                    ? "Sending code..."
+                    : "Send OTP"
+                  : sendingOtp
+                    ? "Creating account..."
+                    : "Create account"}
               </Button>
-              {bypassEnabled && (
-                <div className="space-y-2 text-center text-xs text-text-muted">
+              {!otpEnabled && (
+                <p className="text-center text-xs text-text-muted">
+                  Email verification is temporarily disabled for demo purposes.
+                </p>
+              )}
+              {bypassEnabled && otpEnabled && (
+                <div className="space-y-2 text-center">
                   <Button
                     type="button"
                     variant="secondary"

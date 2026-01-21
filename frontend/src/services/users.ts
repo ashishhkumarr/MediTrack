@@ -35,3 +35,7 @@ export const changePassword = async (payload: {
   const { data } = await apiClient.post("/users/change-password", payload);
   return data;
 };
+
+export const deleteMe = async (): Promise<void> => {
+  await apiClient.delete("/users/me");
+};

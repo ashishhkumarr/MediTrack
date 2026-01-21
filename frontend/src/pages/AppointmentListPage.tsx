@@ -125,6 +125,8 @@ const AppointmentListPage = () => {
   const [sortOption, setSortOption] = useState<SortOption>("date_asc");
   const filterRef = useRef<HTMLDivElement | null>(null);
   const filterPanelRef = useRef<HTMLDivElement | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const modalLastFocusRef = useRef<HTMLElement | null>(null);
   const filterControlClass =
     "glass-input mt-2 w-full text-sm hover:border-primary/30 hover:bg-surface/90 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/40";
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -215,8 +217,21 @@ const AppointmentListPage = () => {
   useEffect(() => {
     if (!isModalOpen) return;
     document.body.classList.add("overflow-hidden");
+    modalLastFocusRef.current = document.activeElement as HTMLElement | null;
+    requestAnimationFrame(() => modalRef.current?.focus());
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsViewOpen(false);
+        setIsEditOpen(false);
+        setIsCancelOpen(false);
+        setIsCompleteOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.classList.remove("overflow-hidden");
+      window.removeEventListener("keydown", handleKeyDown);
+      modalLastFocusRef.current?.focus();
     };
   }, [isModalOpen]);
 
@@ -932,11 +947,21 @@ const AppointmentListPage = () => {
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={closeModals} />
-            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
+            <div
+              ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="appointment-view-title"
+              aria-describedby="appointment-view-desc"
+              tabIndex={-1}
+              className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn"
+            >
               <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-border/60 bg-surface/85 px-6 pb-4 pt-5 backdrop-blur">
                 <div>
-                  <h3 className="text-lg font-semibold text-text">Appointment details</h3>
-                  <p className="text-sm text-text-muted">
+                  <h3 id="appointment-view-title" className="text-lg font-semibold text-text">
+                    Appointment details
+                  </h3>
+                  <p id="appointment-view-desc" className="text-sm text-text-muted">
                     Review appointment information and status.
                   </p>
                 </div>
@@ -1052,11 +1077,21 @@ const AppointmentListPage = () => {
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={closeModals} />
-            <div className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn">
+            <div
+              ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="appointment-edit-title"
+              aria-describedby="appointment-edit-desc"
+              tabIndex={-1}
+              className="relative z-10 flex w-full max-w-3xl flex-col overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card max-h-[90vh] backdrop-blur-xl animate-modalIn"
+            >
               <div className="sticky top-0 z-10 flex flex-wrap items-start justify-between gap-3 border-b border-border/60 bg-surface/85 px-6 pb-4 pt-5 backdrop-blur">
                 <div>
-                  <h3 className="text-lg font-semibold text-text">Reschedule appointment</h3>
-                  <p className="text-sm text-text-muted">
+                  <h3 id="appointment-edit-title" className="text-lg font-semibold text-text">
+                    Reschedule appointment
+                  </h3>
+                  <p id="appointment-edit-desc" className="text-sm text-text-muted">
                     Update timing, clinician details, or notes.
                   </p>
                 </div>
@@ -1215,10 +1250,20 @@ const AppointmentListPage = () => {
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={closeModals} />
-            <div className="relative z-10 w-full max-w-md overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card backdrop-blur-xl animate-modalIn">
+            <div
+              ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="appointment-cancel-title"
+              aria-describedby="appointment-cancel-desc"
+              tabIndex={-1}
+              className="relative z-10 w-full max-w-md overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card backdrop-blur-xl animate-modalIn"
+            >
               <div className="border-b border-border/60 px-6 pb-4 pt-5">
-                <h3 className="text-lg font-semibold text-text">Cancel appointment</h3>
-                <p className="text-sm text-text-muted">
+                <h3 id="appointment-cancel-title" className="text-lg font-semibold text-text">
+                  Cancel appointment
+                </h3>
+                <p id="appointment-cancel-desc" className="text-sm text-text-muted">
                   Are you sure you want to cancel this appointment? This will mark it as cancelled.
                 </p>
               </div>
@@ -1258,10 +1303,20 @@ const AppointmentListPage = () => {
         createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 sm:p-6 animate-fadeIn">
             <div className="absolute inset-0" onClick={closeModals} />
-            <div className="relative z-10 w-full max-w-md overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card backdrop-blur-xl animate-modalIn">
+            <div
+              ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="appointment-complete-title"
+              aria-describedby="appointment-complete-desc"
+              tabIndex={-1}
+              className="relative z-10 w-full max-w-md overflow-hidden rounded-[32px] border border-border/60 bg-surface/80 shadow-card backdrop-blur-xl animate-modalIn"
+            >
               <div className="border-b border-border/60 px-6 pb-4 pt-5">
-                <h3 className="text-lg font-semibold text-text">Mark appointment as completed?</h3>
-                <p className="text-sm text-text-muted">
+                <h3 id="appointment-complete-title" className="text-lg font-semibold text-text">
+                  Mark appointment as completed?
+                </h3>
+                <p id="appointment-complete-desc" className="text-sm text-text-muted">
                   This will finalize the visit in the schedule. You can undo for a short time.
                 </p>
               </div>

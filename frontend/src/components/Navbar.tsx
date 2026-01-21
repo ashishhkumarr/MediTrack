@@ -1,9 +1,9 @@
 import {
-  Activity,
   Calendar,
   CalendarPlus,
   ClipboardList,
   Home,
+  Info,
   LogOut,
   Moon,
   Sun,
@@ -15,6 +15,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
 import { APP_NAME } from "../config/brand";
+import { BrandLogo } from "./BrandLogo";
 import { Button } from "./ui/Button";
 
 const navBase =
@@ -82,6 +83,7 @@ export const Navbar = () => {
     localStorage.setItem("theme", isDark ? "dark" : "light");
   }, [isDark]);
 
+
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -90,10 +92,12 @@ export const Navbar = () => {
   return (
     <header className="sticky top-0 z-30 px-4 pt-4 sm:px-6 lg:px-10">
       <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between rounded-full border border-border/60 bg-surface/70 px-4 py-3 shadow-card backdrop-blur">
-        <NavLink to="/" className="flex items-center gap-2 text-lg font-semibold text-text">
-          <div className="rounded-2xl bg-primary-soft/80 p-2 text-primary">
-            <Activity className="h-5 w-5" />
-          </div>
+        <NavLink
+          to="/"
+          data-tour="nav-brand"
+          className="flex items-center gap-2 text-lg font-semibold text-text"
+        >
+          <BrandLogo />
           {APP_NAME}
         </NavLink>
         {user ? (
@@ -103,6 +107,17 @@ export const Navbar = () => {
                 <NavLink
                   key={link.to}
                   to={link.to}
+                  data-tour={
+                    link.to === "/patients"
+                      ? "nav-patients"
+                      : link.to === "/appointments"
+                        ? "nav-appointments"
+                        : link.to === "/appointments/create"
+                          ? "nav-new-appointment"
+                          : link.to === "/audit-logs"
+                            ? "nav-audit"
+                            : undefined
+                  }
                   className={`${navBase} ${
                     isLinkActive(link.to)
                       ? "bg-surface text-text shadow-sm"
@@ -115,6 +130,7 @@ export const Navbar = () => {
               ))}
               <NavLink
                 to="/profile/edit"
+                data-tour="nav-profile"
                 className={`${navBase} ${
                   isLinkActive("/profile/edit")
                     ? "bg-surface text-text shadow-sm"
@@ -125,6 +141,17 @@ export const Navbar = () => {
                 Profile
               </NavLink>
             </nav>
+            <NavLink
+              to="/about"
+              className={`${navBase} ${
+                isLinkActive("/about")
+                  ? "bg-surface text-text shadow-sm"
+                  : "text-text-muted hover:bg-surface/70 hover:text-text"
+              }`}
+            >
+              <Info className={iconClass} />
+              About
+            </NavLink>
             <button
               type="button"
               onClick={() => setIsDark((prev) => !prev)}

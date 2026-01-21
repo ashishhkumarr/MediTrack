@@ -1,6 +1,9 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.security import (
     get_current_active_user,
     get_current_admin,
@@ -8,11 +11,15 @@ from app.core.security import (
     verify_password,
 )
 from app.db.session import get_db
+from app.models.appointment import Appointment
+from app.models.audit_log import AuditLog
+from app.models.patient import Patient
 from app.models.user import User
 from app.schemas.user import PasswordChange, UserProfileUpdate, UserResponse, UserUpdate
 from app.services.audit_log import log_event
 
 router = APIRouter(prefix="/users", tags=["users"])
+logger = logging.getLogger("medyra.account")
 
 
 @router.get("/me", response_model=UserResponse)
@@ -70,6 +77,46 @@ def patch_me(
             request=request,
         )
     return current_user
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+def delete_me(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    if not settings.ENABLE_ACCOUNT_DELETION:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found",
+        )
+
+    logger.warning(
+        "Account deletion requested for user_id=%s", current_user.id
+    )
+
+    try:
+        db.query(Appointment).filter(
+            Appointment.owner_user_id == current_user.id
+        ).delete(synchronize_session=False)
+        db.query(Patient).filter(
+            Patient.owner_user_id == current_user.id
+        ).delete(synchronize_session=False)
+        db.query(AuditLog).filter(
+            AuditLog.owner_user_id == current_user.id
+        ).delete(synchronize_session=False)
+        db.query(User).filter(User.id == current_user.id).delete(
+            synchronize_session=False
+        )
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        logger.exception("Account deletion failed for user_id=%s", current_user.id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unable to delete account",
+        ) from exc
+
+    return None
 
 
 def _apply_profile_update(payload: UserProfileUpdate, current_user: User) -> list[str]:

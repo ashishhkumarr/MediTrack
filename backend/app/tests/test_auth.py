@@ -1,11 +1,18 @@
 from datetime import datetime, timedelta
 
+import pytest
+
 from app.core.config import settings
 from app.core.limiter import limiter
 from app.core.security import get_password_hash
 from app.models.signup_otp import SignupOtp
 from app.models.user import User, UserRole
 from app.api.v1 import auth as auth_routes
+
+
+@pytest.fixture(autouse=True)
+def _enable_email_otp(monkeypatch):
+    monkeypatch.setattr(settings, "ENABLE_EMAIL_OTP", True)
 
 
 def get_admin_headers(client):
