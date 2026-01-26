@@ -70,9 +70,9 @@ cd backend && pytest
 cd frontend && npm run build
 ```
 
-## Contributing
+## Development Notes
 
-See `CONTRIBUTING.md` for setup, workflow, and PR guidance. Engineering notes live in `docs/DEVELOPMENT.md`.
+See `docs/DEVELOPMENT.md` for setup notes, environment flags, and troubleshooting.
 
 ## Configuration and Feature Flags
 
