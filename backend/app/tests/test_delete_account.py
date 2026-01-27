@@ -37,6 +37,7 @@ def test_delete_account_deletes_only_current_user_data(client, db_session, monke
     db_session.refresh(other_user)
 
     admin_user = db_session.query(User).filter(User.email == "admin@test.com").first()
+    admin_user_id = admin_user.id
 
     admin_patient = Patient(
         owner_user_id=admin_user.id,
@@ -93,22 +94,22 @@ def test_delete_account_deletes_only_current_user_data(client, db_session, monke
     response = client.delete("/api/v1/users/me", headers=headers)
     assert response.status_code == 204
 
-    assert db_session.query(User).filter(User.id == admin_user.id).first() is None
+    assert db_session.query(User).filter(User.id == admin_user_id).first() is None
     assert (
         db_session.query(Patient)
-        .filter(Patient.owner_user_id == admin_user.id)
+        .filter(Patient.owner_user_id == admin_user_id)
         .count()
         == 0
     )
     assert (
         db_session.query(Appointment)
-        .filter(Appointment.owner_user_id == admin_user.id)
+        .filter(Appointment.owner_user_id == admin_user_id)
         .count()
         == 0
     )
     assert (
         db_session.query(AuditLog)
-        .filter(AuditLog.owner_user_id == admin_user.id)
+        .filter(AuditLog.owner_user_id == admin_user_id)
         .count()
         == 0
     )
