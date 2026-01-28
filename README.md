@@ -2,7 +2,7 @@
 
 Medyra is a demo-first Electronic Medical Record (EMR) app for small clinics. It showcases full-stack engineering, UX, and product thinking through realistic workflows without handling real patient data.
 
-Live Demo: https://example.com (placeholder)
+Live Demo: https://ashish-medyra.vercel.app/
 
 ## Academic Integrity & Usage Notice
 

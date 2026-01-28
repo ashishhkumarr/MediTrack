@@ -87,7 +87,6 @@ const LoginPage = () => {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="••••••••"
-              hint="Use the admin credentials from setup documentation."
             />
             {error && (
               <div className="rounded-2xl border border-danger/40 bg-danger-soft/80 px-4 py-3 text-sm text-danger shadow-sm">
